@@ -1,45 +1,61 @@
 import XCTest
 @testable import Diffing
 
-let seed : (UInt64, UInt64, UInt64, UInt64) = (0, 0, 0, 0)
+var comparisons = 0
+struct MeasurementElement<E: Hashable>: Hashable {
+    private let i: E
+    init(_ p: E) { i = p }
 
-let binaryFrequencies = [(0, 1.0), (1, 1.0)]
-
-let geneticFrequencies = [("A", 1.0), ("C", 1.0), ("G", 1.0), ("T", 1.0)]
-
-let letterFrequencies = [
-    ("a", 8.167), ("b", 1.492), ("c", 2.782), ("d", 4.253), ("e", 12.702),
-    ("f", 2.228), ("g", 2.015), ("h", 6.094), ("i", 6.966), ("j", 0.153),
-    ("k", 0.772), ("l", 4.025), ("m", 2.406), ("n", 6.749), ("o", 7.507),
-    ("p", 1.929), ("q", 0.095), ("r", 5.987), ("s", 6.327), ("t", 9.056),
-    ("u", 2.758), ("v", 0.978), ("w", 2.360), ("x", 0.150), ("y", 1.974),
-    ("z", 0.074), (" ", 22.861)
-]
-
-let codeFrequencies = [
-    (" ", 58945.0), ("!", 273.0), ("#", 232.0), ("%", 95.0), ("&", 795.0),
-    ("(", 3339.0), (")", 3352.0), ("*", 6113.0), ("+", 466.0), (",", 1819.0),
-    ("-", 2630.0), (".", 1376.0), ("/", 1533.0), ("0", 844.0), ("1", 587.0),
-    ("2", 330.0), ("3", 658.0), ("4", 276.0), ("5", 80.0), ("6", 128.0),
-    ("7", 30.0), ("8", 177.0), ("9", 15.0), (":", 123.0), (";", 3091.0),
-    ("<", 199.0), ("=", 2747.0), (">", 2152.0), ("?", 41.0), ("A", 867.0),
-    ("B", 1766.0), ("C", 2204.0), ("D", 784.0), ("E", 1500.0), ("F", 509.0),
-    ("G", 234.0), ("H", 200.0), ("I", 1589.0), ("J", 5.0), ("K", 628.0),
-    ("L", 1284.0), ("M", 729.0), ("N", 706.0), ("O", 1258.0), ("P", 2973.0),
-    ("Q", 531.0), ("R", 1204.0), ("S", 1649.0), ("T", 2147.0), ("U", 471.0),
-    ("V", 268.0), ("W", 177.0), ("X", 46.0), ("Y", 95.0), ("Z", 49.0),
-    ("[", 616.0), ("\"", 168.0), ("\'", 53.0), ("\\", 30.0), ("\n", 8337.0),
-    ("\t", 17.0), ("]", 616.0), ("^", 1.0), ("_", 1533.0), ("a", 13152.0),
-    ("b", 2690.0), ("c", 4893.0), ("d", 4406.0), ("e", 22855.0), ("f", 4437.0),
-    ("g", 4617.0), ("h", 4764.0), ("i", 10174.0), ("j", 132.0), ("k", 1046.0),
-    ("l", 7372.0), ("m", 2350.0), ("n", 9381.0), ("o", 8963.0), ("p", 7498.0),
-    ("q", 591.0), ("r", 10993.0), ("s", 8718.0), ("t", 15542.0), ("u", 4169.0),
-    ("v", 1365.0), ("w", 1392.0), ("x", 899.0), ("y", 1795.0), ("z", 719.0),
-    ("{", 907.0), ("|", 327.0), ("}", 907.0), ("~", 12.0)
-]
+    static func ==(lhs: Self, rhs: Self) -> Bool {
+        comparisons += 1
+        return lhs.i == rhs.i
+    }
+}
 
 class DiffingTests: XCTestCase {
-    func testExample() {
-        XCTFail("Overall diffing perf tests not yet implemented")
+    func measureDiffs<C, D>(from old: C, to new: D)
+        where C : BidirectionalCollection, D : BidirectionalCollection,
+              C.Element == D.Element, C.Element : Hashable
+    {
+        let a = old.map { MeasurementElement($0) }
+        let b = new.map { MeasurementElement($0) }
+        
+        comparisons = 0
+        let _ = _myers(from: a, to: b, using: ==)
+        let baseline = comparisons
+        comparisons = 0
+        let _ = difference(from: a, to: b)
+        let hybrid = comparisons
+        
+        print("RESULT: hybrid/myers = \(String(format: "%.03f", (Double(hybrid)/Double(baseline))))")
+    }
+    
+    func testTwoRandom500LetterStrings() {
+        var generator = VoseAliasMethod(letterFrequencies, rng: Xoshiro(seed: deterministicSeed))
+        let a = (0..<500).map({ _ in generator.next() })
+        let b = (0..<500).map({ _ in generator.next() })
+        measureDiffs(from: a, to: b)
+    }
+    
+    func testDisparateLetterVsNumberStrings() {
+        var letterGenerator = VoseAliasMethod(letterFrequencies, rng: Xoshiro(seed: deterministicSeed))
+        let a = (0..<500).map({ _ in letterGenerator.next() })
+        
+        var numberGenerator = VoseAliasMethod(numberFrequencies, rng: Xoshiro(seed: deterministicSeed))
+        let b = (0..<500).map({ _ in numberGenerator.next() })
+        measureDiffs(from: a, to: b)
+    }
+    
+    func testOrderedSetPromotable() {
+        var rng = Xoshiro(seed: deterministicSeed)
+        let a = Array(0..<500)
+        let b = a.shuffled(using:&rng)
+        measureDiffs(from: a, to: b)
+    }
+    
+    func testLoremIpsums() {
+        let a = Array("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+        let b = Array("Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet consectetur adipisci[ng] velit, sed quia non-numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum[d] exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur?")
+        measureDiffs(from: a, to: b)
     }
 }

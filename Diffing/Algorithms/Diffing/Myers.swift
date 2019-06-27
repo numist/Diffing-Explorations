@@ -5,7 +5,7 @@
  * Attribution is appreciated but not necessary.
  */
 
-func myers<C,D>(
+func _myers<C,D>(
     from old: C, to new: D,
     using cmp: (C.Element, D.Element) -> Bool
 ) -> CollectionDifference<C.Element>
@@ -38,20 +38,21 @@ where
     
     return _withContiguousStorage(for: old) { a in
         return _withContiguousStorage(for: new) { b in
-            return myers(from: a, to: b, using: cmp)
+            return _myers(from: a, to: b, using: cmp)
         }
     }
 }
 
-func myers<E>(
+func _myers<E>(
     from a: UnsafeBufferPointer<E>,
     to b: UnsafeBufferPointer<E>,
     using cmp: (E, E) -> Bool
 ) -> CollectionDifference<E> {
-    return myers(from: a[0..<a.count], to: b[0..<b.count], using: cmp)
+    return _myers(from: a[0..<a.count], to: b[0..<b.count], using: cmp)
 }
 
-func myers<E>(
+// TODO: this is wrong, needs to be (UnsafeBufferPointer, Range, UnsafeBufferPointer, Range)
+func _myers<E>(
     from a: Slice<UnsafeBufferPointer<E>>,
     to b: Slice<UnsafeBufferPointer<E>>,
     using cmp: (E, E) -> Bool
@@ -128,6 +129,7 @@ func myers<E>(
         using trace: [_V]
     ) -> [CollectionDifference<E>.Change] {
         var changes = [CollectionDifference<E>.Change]()
+        changes.reserveCapacity(trace.count)
         
         var x = a.count
         var y = b.count

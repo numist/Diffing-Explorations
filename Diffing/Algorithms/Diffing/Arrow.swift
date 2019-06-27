@@ -1,4 +1,4 @@
-func arrow<E>(
+func _arrow<E>(
     from a: OrderedSet<E>, to b: OrderedSet<E>
 ) -> CollectionDifference<E> {
     let n = a.count

@@ -19,10 +19,16 @@
 public struct Xoshiro: RandomNumberGenerator {
     public typealias StateType = (UInt64, UInt64, UInt64, UInt64)
     
-    private var state: StateType = (0, 0, 0, 0)
+    private var state: StateType
+    
+    public init() {
+        var rng = SystemRandomNumberGenerator()
+        self.init(seed: (rng.next(), rng.next(), rng.next(), rng.next()))
+    }
     
     public init(seed: StateType) {
-        self.state = seed
+        precondition(seed != (0, 0, 0, 0))
+        state = seed
     }
     
     public mutating func next() -> UInt64 {

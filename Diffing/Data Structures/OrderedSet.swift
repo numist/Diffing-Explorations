@@ -5,24 +5,35 @@
  * Attribution is appreciated but not necessary.
  */
 
-public struct OrderedSet<T : Hashable> {
-    private var elements: [T] = []
-    private var indexOfElement: [T: Int] = [:]
+public struct OrderedSet<Element : Hashable> {
+    private var elements: [Element] = []
+    private var indexOfElement: [Element:Int] = [:]
+    
+    init<C : Collection>(_ c: C) where C.Element == Element {
+        elements.reserveCapacity(c.count)
+        indexOfElement.reserveCapacity(c.count)
+
+        var i = 0
+        for e in c {
+            assert(!contains(e))
+            self[i] = e
+            i += 1
+        }
+    }
     
     func contains(_ element: Element) -> Bool {
         return index(of: element) != nil
     }
     
-    func index(of element: T) -> Int? {
+    func index(of element: Element) -> Int? {
         return indexOfElement[element]
     }
 }
 
 extension OrderedSet : MutableCollection, RandomAccessCollection {
-    public typealias Element = T
     public typealias Index = Int
 
-    public subscript(position: Int) -> T {
+    public subscript(position: Int) -> Element {
         get {
             return elements[position]
         }
@@ -32,17 +43,21 @@ extension OrderedSet : MutableCollection, RandomAccessCollection {
                 return
             }
             
-            indexOfElement.removeValue(forKey: elements[position])
+            if position < endIndex {
+                indexOfElement.removeValue(forKey: elements[position])
+                elements[position] = newValue
+            } else if position == endIndex {
+                elements.append(newValue)
+            }
             indexOfElement[newValue] = position
-            elements[position] = newValue
         }
     }
         
-    public var startIndex: OrderedSet<T>.Index {
+    public var startIndex: OrderedSet<Element>.Index {
         return elements.startIndex
     }
     
-    public var endIndex: OrderedSet<T>.Index {
+    public var endIndex: OrderedSet<Element>.Index {
         return elements.endIndex
     }
     
