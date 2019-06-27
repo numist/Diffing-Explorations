@@ -1,34 +1,45 @@
-//
-//  DiffingTests.swift
-//  DiffingTests
-//
-//  Created by numist on 2019-06-26.
-//  Copyright © 2019 numist. All rights reserved.
-//
-
 import XCTest
 @testable import Diffing
 
+let seed : (UInt64, UInt64, UInt64, UInt64) = (0, 0, 0, 0)
+
+let binaryFrequencies = [(0, 1.0), (1, 1.0)]
+
+let geneticFrequencies = [("A", 1.0), ("C", 1.0), ("G", 1.0), ("T", 1.0)]
+
+let letterFrequencies = [
+    ("a", 8.167), ("b", 1.492), ("c", 2.782), ("d", 4.253), ("e", 12.702),
+    ("f", 2.228), ("g", 2.015), ("h", 6.094), ("i", 6.966), ("j", 0.153),
+    ("k", 0.772), ("l", 4.025), ("m", 2.406), ("n", 6.749), ("o", 7.507),
+    ("p", 1.929), ("q", 0.095), ("r", 5.987), ("s", 6.327), ("t", 9.056),
+    ("u", 2.758), ("v", 0.978), ("w", 2.360), ("x", 0.150), ("y", 1.974),
+    ("z", 0.074), (" ", 22.861)
+]
+
+let codeFrequencies = [
+    (" ", 58945.0), ("!", 273.0), ("#", 232.0), ("%", 95.0), ("&", 795.0),
+    ("(", 3339.0), (")", 3352.0), ("*", 6113.0), ("+", 466.0), (",", 1819.0),
+    ("-", 2630.0), (".", 1376.0), ("/", 1533.0), ("0", 844.0), ("1", 587.0),
+    ("2", 330.0), ("3", 658.0), ("4", 276.0), ("5", 80.0), ("6", 128.0),
+    ("7", 30.0), ("8", 177.0), ("9", 15.0), (":", 123.0), (";", 3091.0),
+    ("<", 199.0), ("=", 2747.0), (">", 2152.0), ("?", 41.0), ("A", 867.0),
+    ("B", 1766.0), ("C", 2204.0), ("D", 784.0), ("E", 1500.0), ("F", 509.0),
+    ("G", 234.0), ("H", 200.0), ("I", 1589.0), ("J", 5.0), ("K", 628.0),
+    ("L", 1284.0), ("M", 729.0), ("N", 706.0), ("O", 1258.0), ("P", 2973.0),
+    ("Q", 531.0), ("R", 1204.0), ("S", 1649.0), ("T", 2147.0), ("U", 471.0),
+    ("V", 268.0), ("W", 177.0), ("X", 46.0), ("Y", 95.0), ("Z", 49.0),
+    ("[", 616.0), ("\"", 168.0), ("\'", 53.0), ("\\", 30.0), ("\n", 8337.0),
+    ("\t", 17.0), ("]", 616.0), ("^", 1.0), ("_", 1533.0), ("a", 13152.0),
+    ("b", 2690.0), ("c", 4893.0), ("d", 4406.0), ("e", 22855.0), ("f", 4437.0),
+    ("g", 4617.0), ("h", 4764.0), ("i", 10174.0), ("j", 132.0), ("k", 1046.0),
+    ("l", 7372.0), ("m", 2350.0), ("n", 9381.0), ("o", 8963.0), ("p", 7498.0),
+    ("q", 591.0), ("r", 10993.0), ("s", 8718.0), ("t", 15542.0), ("u", 4169.0),
+    ("v", 1365.0), ("w", 1392.0), ("x", 899.0), ("y", 1795.0), ("z", 719.0),
+    ("{", 907.0), ("|", 327.0), ("}", 907.0), ("~", 12.0)
+]
+
 class DiffingTests: XCTestCase {
-
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
     func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        XCTFail("Overall diffing perf tests not yet implemented")
     }
-
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
 }

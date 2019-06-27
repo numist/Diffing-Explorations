@@ -10,6 +10,14 @@
 		BCA2155022C471E500290D70 /* Diffing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCA2154622C471E500290D70 /* Diffing.framework */; };
 		BCA2155522C471E500290D70 /* DiffingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2155422C471E500290D70 /* DiffingTests.swift */; };
 		BCA2155722C471E500290D70 /* Diffing.h in Headers */ = {isa = PBXBuildFile; fileRef = BCA2154922C471E500290D70 /* Diffing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BCA2156122C471FA00290D70 /* Vose.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156022C471FA00290D70 /* Vose.swift */; };
+		BCA2156322C4722600290D70 /* Myers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156222C4722600290D70 /* Myers.swift */; };
+		BCA2156522C4764900290D70 /* MyersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156422C4764900290D70 /* MyersTests.swift */; };
+		BCA2156722C476D400290D70 /* Xoshiro.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156622C476D400290D70 /* Xoshiro.swift */; };
+		BCA2156B22C4772A00290D70 /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156A22C4772A00290D70 /* OrderedSet.swift */; };
+		BCA2156D22C47C2700290D70 /* Arrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156C22C47C2700290D70 /* Arrow.swift */; };
+		BCA2156F22C47C4900290D70 /* Difference.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156E22C47C4900290D70 /* Difference.swift */; };
+		BCA2157122C4844400290D70 /* ArrowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157022C4844400290D70 /* ArrowTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +37,14 @@
 		BCA2154F22C471E500290D70 /* DiffingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DiffingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCA2155422C471E500290D70 /* DiffingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffingTests.swift; sourceTree = "<group>"; };
 		BCA2155622C471E500290D70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BCA2156022C471FA00290D70 /* Vose.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vose.swift; sourceTree = "<group>"; };
+		BCA2156222C4722600290D70 /* Myers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Myers.swift; sourceTree = "<group>"; };
+		BCA2156422C4764900290D70 /* MyersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyersTests.swift; sourceTree = "<group>"; };
+		BCA2156622C476D400290D70 /* Xoshiro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Xoshiro.swift; sourceTree = "<group>"; };
+		BCA2156A22C4772A00290D70 /* OrderedSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedSet.swift; sourceTree = "<group>"; };
+		BCA2156C22C47C2700290D70 /* Arrow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arrow.swift; sourceTree = "<group>"; };
+		BCA2156E22C47C4900290D70 /* Difference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Difference.swift; sourceTree = "<group>"; };
+		BCA2157022C4844400290D70 /* ArrowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,8 +87,11 @@
 		BCA2154822C471E500290D70 /* Diffing */ = {
 			isa = PBXGroup;
 			children = (
+				BCA2156922C4770F00290D70 /* Data Structures */,
+				BCA2156822C476EE00290D70 /* Algorithms */,
 				BCA2154922C471E500290D70 /* Diffing.h */,
 				BCA2154A22C471E500290D70 /* Info.plist */,
+				BCA2156E22C47C4900290D70 /* Difference.swift */,
 			);
 			path = Diffing;
 			sourceTree = "<group>";
@@ -80,10 +99,39 @@
 		BCA2155322C471E500290D70 /* DiffingTests */ = {
 			isa = PBXGroup;
 			children = (
+				BCA2157222C4848100290D70 /* Algorithms */,
 				BCA2155422C471E500290D70 /* DiffingTests.swift */,
 				BCA2155622C471E500290D70 /* Info.plist */,
 			);
 			path = DiffingTests;
+			sourceTree = "<group>";
+		};
+		BCA2156822C476EE00290D70 /* Algorithms */ = {
+			isa = PBXGroup;
+			children = (
+				BCA2156022C471FA00290D70 /* Vose.swift */,
+				BCA2156222C4722600290D70 /* Myers.swift */,
+				BCA2156622C476D400290D70 /* Xoshiro.swift */,
+				BCA2156C22C47C2700290D70 /* Arrow.swift */,
+			);
+			path = Algorithms;
+			sourceTree = "<group>";
+		};
+		BCA2156922C4770F00290D70 /* Data Structures */ = {
+			isa = PBXGroup;
+			children = (
+				BCA2156A22C4772A00290D70 /* OrderedSet.swift */,
+			);
+			path = "Data Structures";
+			sourceTree = "<group>";
+		};
+		BCA2157222C4848100290D70 /* Algorithms */ = {
+			isa = PBXGroup;
+			children = (
+				BCA2157022C4844400290D70 /* ArrowTests.swift */,
+				BCA2156422C4764900290D70 /* MyersTests.swift */,
+			);
+			path = Algorithms;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -148,6 +196,7 @@
 				TargetAttributes = {
 					BCA2154522C471E500290D70 = {
 						CreatedOnToolsVersion = 11.0;
+						LastSwiftMigration = 1100;
 					};
 					BCA2154E22C471E500290D70 = {
 						CreatedOnToolsVersion = 11.0;
@@ -195,6 +244,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BCA2156B22C4772A00290D70 /* OrderedSet.swift in Sources */,
+				BCA2156322C4722600290D70 /* Myers.swift in Sources */,
+				BCA2156722C476D400290D70 /* Xoshiro.swift in Sources */,
+				BCA2156D22C47C2700290D70 /* Arrow.swift in Sources */,
+				BCA2156F22C47C4900290D70 /* Difference.swift in Sources */,
+				BCA2156122C471FA00290D70 /* Vose.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,6 +257,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BCA2156522C4764900290D70 /* MyersTests.swift in Sources */,
+				BCA2157122C4844400290D70 /* ArrowTests.swift in Sources */,
 				BCA2155522C471E500290D70 /* DiffingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -340,6 +397,7 @@
 		BCA2155B22C471E500290D70 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -355,6 +413,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.numist.Diffing;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -363,6 +422,7 @@
 		BCA2155C22C471E500290D70 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -386,6 +446,7 @@
 		BCA2155E22C471E500290D70 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = DiffingTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -403,6 +464,7 @@
 		BCA2155F22C471E500290D70 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = DiffingTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
