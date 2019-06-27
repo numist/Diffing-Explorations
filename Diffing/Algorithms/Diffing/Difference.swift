@@ -13,8 +13,32 @@ where
     C.Element == D.Element,
     C.Element : Hashable
 {
+    func _withContiguousStorage<C : Collection, R>(
+        for values: C,
+        _ body: (UnsafeBufferPointer<C.Element>) throws -> R
+    ) rethrows -> R {
+        if let result = try values.withContiguousStorageIfAvailable(body) { return result }
+        let array = ContiguousArray(values)
+        return try array.withUnsafeBufferPointer(body)
+    }
+
     // TODO: strip matching elements from head and tail first
-    // TODO: everything else must be done in terms of ranges!!
+    // TODO: everything must be in terms of UnsafeBufferPointer!
+    let a = _withContiguousStorage(for: old, { $0 })
+    let b = _withContiguousStorage(for: new, { $0 })
+
+    // TODO: everything must be in terms of ranges!!
+    var start = 0
+    while start < min(a.count, b.count) && a[start] == b[start] { start += 1 }
+    if start == a.count && a.count == b.count {
+        print("Identity diff")
+        return CollectionDifference<C.Element>([])!
+    }
+    
+    var end = 0
+    while end < min(a.count, b.count) && a[a.endIndex - (1 + end)] == b[b.endIndex - (1 + end)] { end += 1 }
+    
+    print("first \(start) and last \(end) elements match")
     
     let oldA = _Alphabet(old)
     let newA = _Alphabet(new)
