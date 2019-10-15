@@ -10,13 +10,13 @@ public struct OrderedSet<Element : Hashable> {
     private var indexOfElement: [Element:Int] = [:]
     
     init<C : Collection>(_ c: C) where C.Element == Element {
-        elements.reserveCapacity(c.count)
+        elements = Array(c)
         indexOfElement.reserveCapacity(c.count)
 
         var i = 0
         for e in c {
             assert(!contains(e))
-            self[i] = e
+            indexOfElement[e] = i
             i += 1
         }
     }
@@ -30,26 +30,12 @@ public struct OrderedSet<Element : Hashable> {
     }
 }
 
-extension OrderedSet : MutableCollection, RandomAccessCollection {
+extension OrderedSet : RandomAccessCollection {
     public typealias Index = Int
 
     public subscript(position: Int) -> Element {
         get {
             return elements[position]
-        }
-        set(newValue) {
-            guard indexOfElement[newValue] == nil else {
-                assertionFailure()
-                return
-            }
-            
-            if position < endIndex {
-                indexOfElement.removeValue(forKey: elements[position])
-                elements[position] = newValue
-            } else if position == endIndex {
-                elements.append(newValue)
-            }
-            indexOfElement[newValue] = position
         }
     }
         

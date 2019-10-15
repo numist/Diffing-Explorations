@@ -6,7 +6,7 @@
 //  Copyright © 2019 numist. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 //! Project version number for Diffing.
 FOUNDATION_EXPORT double DiffingVersionNumber;

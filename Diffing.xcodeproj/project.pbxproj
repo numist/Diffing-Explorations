@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BC0A730A23552B680037EAFD /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0A730923552B680037EAFD /* main.swift */; };
+		BC0A730E23552B700037EAFD /* Alphabet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157A22C5731000290D70 /* Alphabet.swift */; };
 		BCA2155022C471E500290D70 /* Diffing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCA2154622C471E500290D70 /* Diffing.framework */; };
-		BCA2155522C471E500290D70 /* DiffingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2155422C471E500290D70 /* DiffingTests.swift */; };
+		BCA2155522C471E500290D70 /* PrngTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2155422C471E500290D70 /* PrngTests.swift */; };
 		BCA2155722C471E500290D70 /* Diffing.h in Headers */ = {isa = PBXBuildFile; fileRef = BCA2154922C471E500290D70 /* Diffing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BCA2156122C471FA00290D70 /* Vose.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156022C471FA00290D70 /* Vose.swift */; };
 		BCA2156322C4722600290D70 /* Myers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156222C4722600290D70 /* Myers.swift */; };
@@ -23,6 +25,8 @@
 		BCA2157822C56A8D00290D70 /* VoseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157722C56A8D00290D70 /* VoseTests.swift */; };
 		BCA2157B22C5731000290D70 /* Alphabet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157A22C5731000290D70 /* Alphabet.swift */; };
 		BCA2157F22C57E5400290D70 /* Disparate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157E22C57E5400290D70 /* Disparate.swift */; };
+		BCA2158222C5BBDA00290D70 /* DiffingTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2158122C5BBDA00290D70 /* DiffingTestCase.swift */; };
+		BCA2158422C5BC1C00290D70 /* LiteralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2158322C5BC1C00290D70 /* LiteralTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,12 +39,26 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		BC0A730523552B680037EAFD /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		BC0A730723552B680037EAFD /* EditGraphGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EditGraphGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC0A730923552B680037EAFD /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		BCA2154622C471E500290D70 /* Diffing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Diffing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCA2154922C471E500290D70 /* Diffing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Diffing.h; sourceTree = "<group>"; };
 		BCA2154A22C471E500290D70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BCA2154F22C471E500290D70 /* DiffingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DiffingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		BCA2155422C471E500290D70 /* DiffingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffingTests.swift; sourceTree = "<group>"; };
+		BCA2155422C471E500290D70 /* PrngTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrngTests.swift; sourceTree = "<group>"; };
 		BCA2155622C471E500290D70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BCA2156022C471FA00290D70 /* Vose.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vose.swift; sourceTree = "<group>"; };
 		BCA2156222C4722600290D70 /* Myers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Myers.swift; sourceTree = "<group>"; };
@@ -55,9 +73,18 @@
 		BCA2157722C56A8D00290D70 /* VoseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoseTests.swift; sourceTree = "<group>"; };
 		BCA2157A22C5731000290D70 /* Alphabet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alphabet.swift; sourceTree = "<group>"; };
 		BCA2157E22C57E5400290D70 /* Disparate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Disparate.swift; sourceTree = "<group>"; };
+		BCA2158122C5BBDA00290D70 /* DiffingTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffingTestCase.swift; sourceTree = "<group>"; };
+		BCA2158322C5BC1C00290D70 /* LiteralTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiteralTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		BC0A730423552B680037EAFD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BCA2154322C471E500290D70 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -76,11 +103,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BC0A730823552B680037EAFD /* EditGraphGenerator */ = {
+			isa = PBXGroup;
+			children = (
+				BC0A730923552B680037EAFD /* main.swift */,
+			);
+			path = EditGraphGenerator;
+			sourceTree = "<group>";
+		};
 		BCA2153C22C471E500290D70 = {
 			isa = PBXGroup;
 			children = (
 				BCA2154822C471E500290D70 /* Diffing */,
 				BCA2155322C471E500290D70 /* DiffingTests */,
+				BC0A730823552B680037EAFD /* EditGraphGenerator */,
 				BCA2154722C471E500290D70 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +126,7 @@
 			children = (
 				BCA2154622C471E500290D70 /* Diffing.framework */,
 				BCA2154F22C471E500290D70 /* DiffingTests.xctest */,
+				BC0A730723552B680037EAFD /* EditGraphGenerator */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -110,7 +147,6 @@
 			isa = PBXGroup;
 			children = (
 				BCA2157222C4848100290D70 /* Algorithms */,
-				BCA2155422C471E500290D70 /* DiffingTests.swift */,
 				BCA2155622C471E500290D70 /* Info.plist */,
 			);
 			path = DiffingTests;
@@ -138,6 +174,7 @@
 		BCA2157222C4848100290D70 /* Algorithms */ = {
 			isa = PBXGroup;
 			children = (
+				BCA2158022C5BBAC00290D70 /* Hybrid */,
 				BCA2157022C4844400290D70 /* ArrowTests.swift */,
 				BCA2156422C4764900290D70 /* MyersTests.swift */,
 				BCA2157322C5695F00290D70 /* XoshiroTests.swift */,
@@ -157,6 +194,16 @@
 			path = Diffing;
 			sourceTree = "<group>";
 		};
+		BCA2158022C5BBAC00290D70 /* Hybrid */ = {
+			isa = PBXGroup;
+			children = (
+				BCA2155422C471E500290D70 /* PrngTests.swift */,
+				BCA2158122C5BBDA00290D70 /* DiffingTestCase.swift */,
+				BCA2158322C5BC1C00290D70 /* LiteralTests.swift */,
+			);
+			path = Hybrid;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -171,6 +218,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		BC0A730623552B680037EAFD /* EditGraphGenerator */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BC0A730D23552B690037EAFD /* Build configuration list for PBXNativeTarget "EditGraphGenerator" */;
+			buildPhases = (
+				BC0A730323552B680037EAFD /* Sources */,
+				BC0A730423552B680037EAFD /* Frameworks */,
+				BC0A730523552B680037EAFD /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EditGraphGenerator;
+			productName = EditGraphGenerator;
+			productReference = BC0A730723552B680037EAFD /* EditGraphGenerator */;
+			productType = "com.apple.product-type.tool";
+		};
 		BCA2154522C471E500290D70 /* Diffing */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BCA2155A22C471E500290D70 /* Build configuration list for PBXNativeTarget "Diffing" */;
@@ -213,10 +277,13 @@
 		BCA2153D22C471E500290D70 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1100;
+				LastSwiftUpdateCheck = 1120;
 				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = numist;
 				TargetAttributes = {
+					BC0A730623552B680037EAFD = {
+						CreatedOnToolsVersion = 11.2;
+					};
 					BCA2154522C471E500290D70 = {
 						CreatedOnToolsVersion = 11.0;
 						LastSwiftMigration = 1100;
@@ -241,6 +308,7 @@
 			targets = (
 				BCA2154522C471E500290D70 /* Diffing */,
 				BCA2154E22C471E500290D70 /* DiffingTests */,
+				BC0A730623552B680037EAFD /* EditGraphGenerator */,
 			);
 		};
 /* End PBXProject section */
@@ -263,6 +331,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		BC0A730323552B680037EAFD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BC0A730E23552B700037EAFD /* Alphabet.swift in Sources */,
+				BC0A730A23552B680037EAFD /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BCA2154222C471E500290D70 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -284,9 +361,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				BCA2157422C5695F00290D70 /* XoshiroTests.swift in Sources */,
+				BCA2158222C5BBDA00290D70 /* DiffingTestCase.swift in Sources */,
 				BCA2156522C4764900290D70 /* MyersTests.swift in Sources */,
 				BCA2157122C4844400290D70 /* ArrowTests.swift in Sources */,
-				BCA2155522C471E500290D70 /* DiffingTests.swift in Sources */,
+				BCA2155522C471E500290D70 /* PrngTests.swift in Sources */,
+				BCA2158422C5BC1C00290D70 /* LiteralTests.swift in Sources */,
 				BCA2157822C56A8D00290D70 /* VoseTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -302,6 +381,28 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		BC0A730B23552B690037EAFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BC0A730C23552B690037EAFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		BCA2155822C471E500290D70 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -354,10 +455,12 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macos";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -411,9 +514,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macos";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
@@ -510,6 +615,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		BC0A730D23552B690037EAFD /* Build configuration list for PBXNativeTarget "EditGraphGenerator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC0A730B23552B690037EAFD /* Debug */,
+				BC0A730C23552B690037EAFD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		BCA2154022C471E500290D70 /* Build configuration list for PBXProject "Diffing" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

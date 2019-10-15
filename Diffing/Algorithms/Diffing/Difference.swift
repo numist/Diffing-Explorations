@@ -1,9 +1,3 @@
-public func difference<Element>(
-    from old: OrderedSet<Element>, to new: OrderedSet<Element>
-) -> CollectionDifference<Element> {
-    return _arrow(from: old, to: new)
-}
-
 public func difference<C, D>(
     from old: C, to new: D
 ) -> CollectionDifference<C.Element>
@@ -21,53 +15,82 @@ where
         let array = ContiguousArray(values)
         return try array.withUnsafeBufferPointer(body)
     }
+    
+    return _withContiguousStorage(for: old, { a in
+        _withContiguousStorage(for: new, { b in
+            return _bufferDifference(from: a, to: b)
+        })
+    })
+}
 
-    // TODO: strip matching elements from head and tail first
-    // TODO: everything must be in terms of UnsafeBufferPointer!
-    let a = _withContiguousStorage(for: old, { $0 })
-    let b = _withContiguousStorage(for: new, { $0 })
+func _rangeContainingDifferences<Element>(
+    between buffers: (UnsafeBufferPointer<Element>, UnsafeBufferPointer<Element>)
+) -> (Range<Int>, Range<Int>) where Element : Equatable {
+    let (a, b) = buffers
+    return _rangeContainingDifferences(between: buffers, in: (0..<a.count, 0..<b.count))
+}
 
-    // TODO: everything must be in terms of ranges!!
+func _rangeContainingDifferences<Element>(
+    between buffers: (UnsafeBufferPointer<Element>, UnsafeBufferPointer<Element>),
+    in ranges: (Range<Int>, Range<Int>)
+) -> (Range<Int>, Range<Int>) where Element : Equatable {
+    let (a, b) = buffers
+    let (rangeA, rangeB) = ranges
+    
     var start = 0
-    while start < min(a.count, b.count) && a[start] == b[start] { start += 1 }
-    if start == a.count && a.count == b.count {
-        print("Identity diff")
-        return CollectionDifference<C.Element>([])!
+    while start < min(rangeA.count, rangeB.count) && a[rangeA[start]] == b[rangeB[start]] { start += 1 }
+    if start == rangeA.count && rangeA.count == rangeB.count {
+        return (0..<0, 0..<0)
+    }
+
+    var end = 0
+    while end < min(rangeA.count, rangeB.count) && a[rangeA[rangeA.count - (1 + end)]] == b[rangeB[rangeB.count - (1 + end)]] { end += 1 }
+
+    return ((rangeA.startIndex + start)..<(rangeA.endIndex - end), (rangeB.startIndex + start)..<(rangeB.endIndex - end))
+}
+
+func _bufferDifference<Element>(
+    from a: UnsafeBufferPointer<Element>,
+    to b: UnsafeBufferPointer<Element>
+) -> CollectionDifference<Element>
+where
+    Element : Hashable
+{
+    let (aDiffRange, bDiffRange) = _rangeContainingDifferences(between: (a, b))
+    
+    if aDiffRange.count == 0 && bDiffRange.count == 0 {
+        print("[l] Using algorithm: Identity(a[\(aDiffRange)], b[\(bDiffRange)])")
+        return CollectionDifference([])!
     }
     
-    var end = 0
-    while end < min(a.count, b.count) && a[a.endIndex - (1 + end)] == b[b.endIndex - (1 + end)] { end += 1 }
-    
-    print("first \(start) and last \(end) elements match")
-    
-    let oldA = _Alphabet(old)
-    let newA = _Alphabet(new)
-    
-    if oldA.highestFreq == 1 && newA.highestFreq == 1 {
-        print("Arrow diff")
-        let orderedA = OrderedSet(old)
-        let orderedB = OrderedSet(new)
+    // TODO: range support!
+    let alphaA = _Alphabet(a)
+    let alphaB = _Alphabet(b)
+    if alphaA.count == a.count && alphaB.count == b.count {
+        print("[l] Using algorithm: Arrow(a[\(aDiffRange)], b[\(bDiffRange)])")
+        // TODO: range support!
+        // TODO: this can be done without OrderedSet by adapting _Alphabet!
+        let orderedA = OrderedSet(a)
+        let orderedB = OrderedSet(b)
         return _arrow(from: orderedA, to: orderedB)
     }
 
-    let overlap = oldA.intersection(with: newA)
+    let overlap = alphaA.intersection(with: alphaB)
     if overlap.count == 0 {
-        print("Disparate diff")
-        return _disparate(from: old, to: new)
+        print("[l] Using algorithm: Disparate(a[\(aDiffRange)], b[\(bDiffRange)])")
+        // TODO: range support…
+        return _disparate(from: a, to: b)
     }
 
-    if overlap.highestFreq == 1 {
-        print("Performance opportunity?")
-        // TODO: does it make sense to construct a view that only includes common elements and then run myers on that? 
-        //       the speedup could be significant when overlap < some factor.
-        return _myers(from: old, to: new, using: ==)
-    }
+    // MARK: s/range/_View<E>/g?
     
-    // TODO: divide and conquer?
+    // TODO: divide and conquer when the number of shared uniques is favourable?
     
-    print("Myers diff")
-    return _myers(from: old, to: new, using: ==)
+    print("[X] Using algorithm: Myers(a[\(aDiffRange)], b[\(bDiffRange)])")
+    return _myers(from: a, to: b, using: ==)
 }
+
+// MARK: - Non-hybrid implementations
 
 public func difference<C, D>(
     from old: C, to new: D
@@ -78,7 +101,7 @@ where
     C.Element == D.Element,
     C.Element : Equatable
 {
-    return _myers(from: old, to: new, using: ==)
+    return difference(from: old, to: new, using: ==)
 }
 
 public func difference<C, D>(

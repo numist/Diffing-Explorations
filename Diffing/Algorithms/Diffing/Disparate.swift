@@ -2,6 +2,8 @@
  * but technically it never returns a wrong answer!
  */
 
+// TODO: range parameters
+
 public func _disparate<C, D>(
     from old: C, to new: D
 ) -> CollectionDifference<C.Element>
