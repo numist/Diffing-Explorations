@@ -9,20 +9,6 @@
 import XCTest
 @testable import Diffing
 
-//class ArrowCorrectness: Correctness {
-//    override func diff<C, D>(from old: C, to new: D) -> CollectionDifference<C.Element> where C : BidirectionalCollection, D : BidirectionalCollection, C.Element : Hashable, C.Element == D.Element {
-//        let orderedA = OrderedSet(old)
-//        let orderedB = OrderedSet(new)
-//        return _arrow(from: orderedA, to: orderedB)
-//    }
-//}
-//
-//class MyersCorrectness: Correctness {
-//    override func diff<C, D>(from old: C, to new: D) -> CollectionDifference<C.Element> where C : BidirectionalCollection, D : BidirectionalCollection, C.Element : Hashable, C.Element == D.Element {
-//        return _myers(from: old, to: new, using: ==)
-//    }
-//}
-
 class Correctness: XCTestCase {
     func rng() -> Xoshiro { Xoshiro(seed: deterministicSeed) }
     
@@ -66,7 +52,7 @@ class Correctness: XCTestCase {
         }
     }
     
-    func testOverlap() {
+    func testCommonPrefixAndSuffixOverlap() {
         // Test case: common prefix and common suffix overlap
         //            [     !!]
         let a = Array("nhlwl  eie".utf8)
@@ -77,19 +63,22 @@ class Correctness: XCTestCase {
         verify(from: a, to: b, produced: d)
     }
 
-    func testArrowMinimalDiff() {
-        let a = ["b", "i", "m", "e", "t", " ", "d", "u", "s", "o"     ]
-        let b = ["b",      "m", "e", "t", " ", "d", "u", "s", "o", "i"]
-
-        let d = diff(from: a, to: b)
-        verify(from: a, to: b, produced: d, mutationCount: 2)
-    }
-    
-    func testArrowMinimalDiff2() {
-        // Greedy arrow diff only finds one match ("n") instead of two ("o", "c")
+    func testArrowDefeatingMinimalDiff() {
+        // Arrow diff only finds one match ("n") instead of two ("o", "c")
         let a = [               "o", "c", "n"]
         let b = ["n", "d", "y", "o", "c"]
         let d = diff(from: a, to: b)
         verify(from: a, to: b, produced: d, mutationCount: 4)
+    }
+    
+    func testLargeDiff() {
+        XCTFail("This test does not complete in acceptable time")
+//        var rng = Xoshiro(seed: deterministicSeed)
+//        let a = OrderedSet(Array(0..<9000).shuffled(using: &rng))
+//        let b = OrderedSet(Array(1000..<10000).shuffled(using: &rng))
+//        measure {
+//            let diff = difference(from: a, to: b)
+//            XCTAssert(Array(b) == Array(a).applying(diff))
+//        }
     }
 }

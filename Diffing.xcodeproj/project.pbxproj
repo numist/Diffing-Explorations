@@ -20,7 +20,6 @@
 		BCA2156B22C4772A00290D70 /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156A22C4772A00290D70 /* OrderedSet.swift */; };
 		BCA2156D22C47C2700290D70 /* Arrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156C22C47C2700290D70 /* Arrow.swift */; };
 		BCA2156F22C47C4900290D70 /* Difference.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156E22C47C4900290D70 /* Difference.swift */; };
-		BCA2157122C4844400290D70 /* ArrowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157022C4844400290D70 /* ArrowTests.swift */; };
 		BCA2157422C5695F00290D70 /* XoshiroTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157322C5695F00290D70 /* XoshiroTests.swift */; };
 		BCA2157622C56A6800290D70 /* Frequencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157522C56A6800290D70 /* Frequencies.swift */; };
 		BCA2157822C56A8D00290D70 /* VoseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157722C56A8D00290D70 /* VoseTests.swift */; };
@@ -82,7 +81,6 @@
 		BCA2156A22C4772A00290D70 /* OrderedSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedSet.swift; sourceTree = "<group>"; };
 		BCA2156C22C47C2700290D70 /* Arrow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arrow.swift; sourceTree = "<group>"; };
 		BCA2156E22C47C4900290D70 /* Difference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Difference.swift; sourceTree = "<group>"; };
-		BCA2157022C4844400290D70 /* ArrowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrowTests.swift; sourceTree = "<group>"; };
 		BCA2157322C5695F00290D70 /* XoshiroTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XoshiroTests.swift; sourceTree = "<group>"; };
 		BCA2157522C56A6800290D70 /* Frequencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frequencies.swift; sourceTree = "<group>"; };
 		BCA2157722C56A8D00290D70 /* VoseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoseTests.swift; sourceTree = "<group>"; };
@@ -202,7 +200,6 @@
 			isa = PBXGroup;
 			children = (
 				BCA2158022C5BBAC00290D70 /* Hybrid */,
-				BCA2157022C4844400290D70 /* ArrowTests.swift */,
 				BCA2156422C4764900290D70 /* MyersTests.swift */,
 				BCA2157322C5695F00290D70 /* XoshiroTests.swift */,
 				BCA2157722C56A8D00290D70 /* VoseTests.swift */,
@@ -422,7 +419,6 @@
 				BCA2157422C5695F00290D70 /* XoshiroTests.swift in Sources */,
 				BCA2158222C5BBDA00290D70 /* DiffingTestCase.swift in Sources */,
 				BCA2156522C4764900290D70 /* MyersTests.swift in Sources */,
-				BCA2157122C4844400290D70 /* ArrowTests.swift in Sources */,
 				BCA2155522C471E500290D70 /* PrngTests.swift in Sources */,
 				BCA2158422C5BC1C00290D70 /* LiteralTests.swift in Sources */,
 				BCA2157822C56A8D00290D70 /* VoseTests.swift in Sources */,

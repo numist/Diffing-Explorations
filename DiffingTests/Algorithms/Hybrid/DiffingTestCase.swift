@@ -30,7 +30,7 @@ class DiffingTestCase: XCTestCase {
         let hybrid = comparisons
         
         let ratio = Double(hybrid)/Double(baseline) 
-        print("--==:: hybrid/myers = \(String(format: "%.03f",ratio)) ::==--")
+        print("--==:: hybrid/myers = \(hybrid)/\(baseline) = \(String(format: "%.03f",ratio)) ::==--")
         XCTAssert(ratio < 1.5)
     }
 }

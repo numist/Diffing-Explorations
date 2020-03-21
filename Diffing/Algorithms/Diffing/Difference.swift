@@ -30,22 +30,6 @@ func _bufferDifference<Element>(
 where
     Element : Hashable
 {
-    if a.count == b.count && a.elementsEqual(b) {
-        return CollectionDifference([])!
-    }
-    
-    let alphaA = _Alphabet(a)
-    let alphaB = _Alphabet(b)
-    if alphaA.count == a.count && alphaB.count == b.count {
-        return _arrow(from: alphaA, to: alphaB)
-    }
-
-    let overlap = alphaA.intersection(with: alphaB)
-    if overlap.count == 0 {
-        return _disparate(from: a, to: b)
-    }
-
-    // TODO: divide and conquer when the number of shared uniques is favourable?
     return _myers(from: a, to: b, using: ==)
 }
 
