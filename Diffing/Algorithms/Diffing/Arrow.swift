@@ -1,5 +1,5 @@
 func _arrow<E>(
-    from a: OrderedSet<E>, to b: OrderedSet<E>
+    from a: _Alphabet<E>, to b: _Alphabet<E>
 ) -> CollectionDifference<E> {
     let n = a.count
     let m = b.count
@@ -23,8 +23,8 @@ func _arrow<E>(
                 x += 1; if x < n { o = a[x]; ob = -1 }
                 y += 1; if y < m { p = b[y]; pa = -1 }
             } else {
-                if ob == -1 { ob = b.index(of: o) }
-                if pa == -1 { pa = a.index(of: p) }
+                if ob == -1 { ob = b.offset(of: o) }
+                if pa == -1 { pa = a.offset(of: p) }
 
                 switch (ob, pa) {
                     case (.none, _), (.some(0..<y), _):

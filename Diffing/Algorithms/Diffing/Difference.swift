@@ -37,10 +37,7 @@ where
     let alphaA = _Alphabet(a)
     let alphaB = _Alphabet(b)
     if alphaA.count == a.count && alphaB.count == b.count {
-        // TODO: this can be done without OrderedSet by adapting _Alphabet!
-        let orderedA = OrderedSet(a)
-        let orderedB = OrderedSet(b)
-        return _arrow(from: orderedA, to: orderedB)
+        return _arrow(from: alphaA, to: alphaB)
     }
 
     let overlap = alphaA.intersection(with: alphaB)

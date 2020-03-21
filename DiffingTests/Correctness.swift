@@ -84,4 +84,12 @@ class Correctness: XCTestCase {
         let d = diff(from: a, to: b)
         verify(from: a, to: b, produced: d, mutationCount: 2)
     }
+    
+    func testArrowMinimalDiff2() {
+        // Greedy arrow diff only finds one match ("n") instead of two ("o", "c")
+        let a = [               "o", "c", "n"]
+        let b = ["n", "d", "y", "o", "c"]
+        let d = diff(from: a, to: b)
+        verify(from: a, to: b, produced: d, mutationCount: 4)
+    }
 }
