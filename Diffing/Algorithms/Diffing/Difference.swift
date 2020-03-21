@@ -30,31 +30,5 @@ func _bufferDifference<Element>(
 where
     Element : Hashable
 {
-    return _myers(from: a, to: b, using: ==)
-}
-
-// MARK: - Non-hybrid implementations
-
-public func difference<C, D>(
-    from old: C, to new: D
-) -> CollectionDifference<C.Element>
-where
-    C : BidirectionalCollection,
-    D : BidirectionalCollection,
-    C.Element == D.Element,
-    C.Element : Equatable
-{
-    return difference(from: old, to: new, using: ==)
-}
-
-public func difference<C, D>(
-    from old: C, to new: D,
-    using cmp: (C.Element, D.Element) -> Bool
-) -> CollectionDifference<C.Element>
-where
-    C : BidirectionalCollection,
-    D : BidirectionalCollection,
-    C.Element == D.Element
-{
-    return _myers(from: old, to: new, using: cmp)
+    return _club(from: a, to: b)
 }

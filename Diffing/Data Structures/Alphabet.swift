@@ -39,8 +39,11 @@ struct _Alphabet<Element> where Element : Hashable {
     }
     
     func offset(of e: Element, after offset: Int = -1) -> Int? {
-        // The [Int] stored in _f[e] is sorted, so a binary search will suffice when the time comes
-        assert(offset == -1, "non-negative offsets not yet implemented")
-        return _f[e]?.first
+        guard let offsets = _f[e] else { return nil }
+        // TODO: binary search
+        for o in offsets {
+            if o > offset { return o }
+        }
+        return nil
     }
 }

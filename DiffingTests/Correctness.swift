@@ -71,13 +71,21 @@ class Correctness: XCTestCase {
         verify(from: a, to: b, produced: d, mutationCount: 4)
     }
     
-    func testLargeDiff() {
+    func testClubMissingLastInsert() {
+        let a = ["u", "o", "t", "d", "n", "o", "y", "l", "r", "r"]
+        let b = ["e", "i", "o", " ", " ", "n", "l", "d"]
+        let d = diff(from: a, to: b)
+        verify(from: a, to: b, produced: d)
+    }
+    
+    func testLargeDiffPerf() {
         XCTFail("This test does not complete in acceptable time")
 //        var rng = Xoshiro(seed: deterministicSeed)
 //        let a = OrderedSet(Array(0..<9000).shuffled(using: &rng))
 //        let b = OrderedSet(Array(1000..<10000).shuffled(using: &rng))
 //        measure {
 //            let diff = difference(from: a, to: b)
+//            // verify(from: a, to: b, produced: diff)
 //            XCTAssert(Array(b) == Array(a).applying(diff))
 //        }
     }
