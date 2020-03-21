@@ -9,8 +9,7 @@ func _arrow<E>(
     var x = 0
     var y = 0
 
-    // is there some better way to scope o/ob/p/pa?
-    if true {
+    if x < n && y < m {
         // o and ob are dependant on the value of x and must be updated or invalidated when it changes
         var o = a[x]
         var ob : Int? = -1
@@ -36,11 +35,11 @@ func _arrow<E>(
                         y += 1; if y < m { p = b[y]; pa = -1 }
                     case (.some(let obs), .some(let pas)):
                         if obs - y < pas - x {
-                            changes.append(.remove(offset: x, element: o, associatedWith: nil))
-                            x += 1; if x < n { o = a[x]; ob = -1 }
-                        } else {
                             changes.append(.insert(offset: y, element: p, associatedWith: nil))
                             y += 1; if y < m { p = b[y]; pa = -1 }
+                        } else {
+                            changes.append(.remove(offset: x, element: o, associatedWith: nil))
+                            x += 1; if x < n { o = a[x]; ob = -1 }
                         }
                 }
             }

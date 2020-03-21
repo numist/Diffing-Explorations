@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		BC0A730A23552B680037EAFD /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0A730923552B680037EAFD /* main.swift */; };
 		BC0A730E23552B700037EAFD /* Alphabet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157A22C5731000290D70 /* Alphabet.swift */; };
+		BC390C032425B93C00E2E916 /* Correctness.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C022425B93C00E2E916 /* Correctness.swift */; };
 		BCA2155022C471E500290D70 /* Diffing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCA2154622C471E500290D70 /* Diffing.framework */; };
 		BCA2155522C471E500290D70 /* PrngTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2155422C471E500290D70 /* PrngTests.swift */; };
 		BCA2155722C471E500290D70 /* Diffing.h in Headers */ = {isa = PBXBuildFile; fileRef = BCA2154922C471E500290D70 /* Diffing.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -27,6 +28,10 @@
 		BCA2157F22C57E5400290D70 /* Disparate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157E22C57E5400290D70 /* Disparate.swift */; };
 		BCA2158222C5BBDA00290D70 /* DiffingTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2158122C5BBDA00290D70 /* DiffingTestCase.swift */; };
 		BCA2158422C5BC1C00290D70 /* LiteralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2158322C5BC1C00290D70 /* LiteralTests.swift */; };
+		BCBA1F172356464800DD6048 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCBA1F162356464800DD6048 /* main.swift */; };
+		BCBA1F1B235AE1B200DD6048 /* Vose.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156022C471FA00290D70 /* Vose.swift */; };
+		BCBA1F1C235AE1B800DD6048 /* Xoshiro.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156622C476D400290D70 /* Xoshiro.swift */; };
+		BCBA1F1D235AE1BC00DD6048 /* Frequencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157522C56A6800290D70 /* Frequencies.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,11 +54,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		BCBA1F122356464800DD6048 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		BC0A730723552B680037EAFD /* EditGraphGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EditGraphGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC0A730923552B680037EAFD /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		BC390C022425B93C00E2E916 /* Correctness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Correctness.swift; path = DiffingTests/Correctness.swift; sourceTree = SOURCE_ROOT; };
 		BCA2154622C471E500290D70 /* Diffing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Diffing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCA2154922C471E500290D70 /* Diffing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Diffing.h; sourceTree = "<group>"; };
 		BCA2154A22C471E500290D70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -75,6 +90,8 @@
 		BCA2157E22C57E5400290D70 /* Disparate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Disparate.swift; sourceTree = "<group>"; };
 		BCA2158122C5BBDA00290D70 /* DiffingTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffingTestCase.swift; sourceTree = "<group>"; };
 		BCA2158322C5BC1C00290D70 /* LiteralTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiteralTests.swift; sourceTree = "<group>"; };
+		BCBA1F142356464800DD6048 /* DynamicMyersTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DynamicMyersTest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCBA1F162356464800DD6048 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +117,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BCBA1F112356464800DD6048 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -117,6 +141,7 @@
 				BCA2154822C471E500290D70 /* Diffing */,
 				BCA2155322C471E500290D70 /* DiffingTests */,
 				BC0A730823552B680037EAFD /* EditGraphGenerator */,
+				BCBA1F152356464800DD6048 /* DynamicMyersTest */,
 				BCA2154722C471E500290D70 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -127,6 +152,7 @@
 				BCA2154622C471E500290D70 /* Diffing.framework */,
 				BCA2154F22C471E500290D70 /* DiffingTests.xctest */,
 				BC0A730723552B680037EAFD /* EditGraphGenerator */,
+				BCBA1F142356464800DD6048 /* DynamicMyersTest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -146,6 +172,7 @@
 		BCA2155322C471E500290D70 /* DiffingTests */ = {
 			isa = PBXGroup;
 			children = (
+				BC390C022425B93C00E2E916 /* Correctness.swift */,
 				BCA2157222C4848100290D70 /* Algorithms */,
 				BCA2155622C471E500290D70 /* Info.plist */,
 			);
@@ -202,6 +229,14 @@
 				BCA2158322C5BC1C00290D70 /* LiteralTests.swift */,
 			);
 			path = Hybrid;
+			sourceTree = "<group>";
+		};
+		BCBA1F152356464800DD6048 /* DynamicMyersTest */ = {
+			isa = PBXGroup;
+			children = (
+				BCBA1F162356464800DD6048 /* main.swift */,
+			);
+			path = DynamicMyersTest;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -271,6 +306,23 @@
 			productReference = BCA2154F22C471E500290D70 /* DiffingTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		BCBA1F132356464800DD6048 /* DynamicMyersTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCBA1F1A2356464800DD6048 /* Build configuration list for PBXNativeTarget "DynamicMyersTest" */;
+			buildPhases = (
+				BCBA1F102356464800DD6048 /* Sources */,
+				BCBA1F112356464800DD6048 /* Frameworks */,
+				BCBA1F122356464800DD6048 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DynamicMyersTest;
+			productName = DynamicMyersTest;
+			productReference = BCBA1F142356464800DD6048 /* DynamicMyersTest */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -291,6 +343,9 @@
 					BCA2154E22C471E500290D70 = {
 						CreatedOnToolsVersion = 11.0;
 					};
+					BCBA1F132356464800DD6048 = {
+						CreatedOnToolsVersion = 11.2;
+					};
 				};
 			};
 			buildConfigurationList = BCA2154022C471E500290D70 /* Build configuration list for PBXProject "Diffing" */;
@@ -309,6 +364,7 @@
 				BCA2154522C471E500290D70 /* Diffing */,
 				BCA2154E22C471E500290D70 /* DiffingTests */,
 				BC0A730623552B680037EAFD /* EditGraphGenerator */,
+				BCBA1F132356464800DD6048 /* DynamicMyersTest */,
 			);
 		};
 /* End PBXProject section */
@@ -335,8 +391,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BCBA1F1C235AE1B800DD6048 /* Xoshiro.swift in Sources */,
 				BC0A730E23552B700037EAFD /* Alphabet.swift in Sources */,
+				BCBA1F1D235AE1BC00DD6048 /* Frequencies.swift in Sources */,
 				BC0A730A23552B680037EAFD /* main.swift in Sources */,
+				BCBA1F1B235AE1B200DD6048 /* Vose.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,6 +426,15 @@
 				BCA2155522C471E500290D70 /* PrngTests.swift in Sources */,
 				BCA2158422C5BC1C00290D70 /* LiteralTests.swift in Sources */,
 				BCA2157822C56A8D00290D70 /* VoseTests.swift in Sources */,
+				BC390C032425B93C00E2E916 /* Correctness.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCBA1F102356464800DD6048 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BCBA1F172356464800DD6048 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -455,12 +523,12 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macos";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -514,11 +582,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macos";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
@@ -612,6 +680,26 @@
 			};
 			name = Release;
 		};
+		BCBA1F182356464800DD6048 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BCBA1F192356464800DD6048 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -647,6 +735,15 @@
 			buildConfigurations = (
 				BCA2155E22C471E500290D70 /* Debug */,
 				BCA2155F22C471E500290D70 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCBA1F1A2356464800DD6048 /* Build configuration list for PBXNativeTarget "DynamicMyersTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCBA1F182356464800DD6048 /* Debug */,
+				BCBA1F192356464800DD6048 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

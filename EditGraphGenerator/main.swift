@@ -10,7 +10,17 @@ import Foundation
 
 precondition(CommandLine.arguments.count >= 3)
 
+let deterministicSeed : Xoshiro.StateType = (42, 42, 42, 42)
+var rng = Xoshiro(seed: deterministicSeed)
+
+//var generator = VoseAliasMethod(binaryFrequencies, rng: rng)
+//let a = (0..<8).map({_ in generator.next()})
+//let b = (0..<8).map({_ in generator.next()})
+//let a = [[0,0,0],[0,0,1],[0,1,0],[1,0,1],[0,1,1],[1,1,0]]
+//let b = [[1,0,1],[0,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,0]]
+
 let a = Array(CommandLine.arguments[CommandLine.arguments.count - 2])
+//let b = a.shuffled()
 let b = Array(CommandLine.arguments[CommandLine.arguments.count - 1])
 
 //print("diffing \(a) and \(b)")
@@ -73,7 +83,7 @@ for x in 0...a.count {
                 digraph += "color=\"#DDDDDD\""
             }
             if x == 0 {
-                digraph += ", label=\"\(b[y])\""
+                digraph += ", label=\"\(b[y]) \""
             }
             digraph += "]\n"
         }
