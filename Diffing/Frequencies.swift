@@ -1,3 +1,10 @@
+/*
+ * The source in this file was written by Scott Perry <dev@numist.net>.
+ *
+ * The author has released it to the public domain.
+ * Attribution is appreciated but not necessary.
+ */
+
 let binaryFrequencies = [("0", 1.0), ("1", 1.0)]
 
 let geneticFrequencies = [("A", 1.0), ("C", 1.0), ("G", 1.0), ("T", 1.0)]

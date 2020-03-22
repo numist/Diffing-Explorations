@@ -1,10 +1,9 @@
-//
-//  Queue.swift
-//  Diffing
-//
-//  Created by Scott Perry on 3/21/20.
-//  Copyright © 2020 numist. All rights reserved.
-//
+/*
+ * The source in this file was written by Scott Perry <dev@numist.net>.
+ *
+ * The author has released it to the public domain.
+ * Attribution is appreciated but not necessary.
+ */
 
 struct Queue<Element> {
     private class SinglyLinkedNode {

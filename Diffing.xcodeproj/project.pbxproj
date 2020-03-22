@@ -18,7 +18,6 @@
 		BCA2155722C471E500290D70 /* Diffing.h in Headers */ = {isa = PBXBuildFile; fileRef = BCA2154922C471E500290D70 /* Diffing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BCA2156122C471FA00290D70 /* Vose.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156022C471FA00290D70 /* Vose.swift */; };
 		BCA2156322C4722600290D70 /* Myers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156222C4722600290D70 /* Myers.swift */; };
-		BCA2156522C4764900290D70 /* MyersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156422C4764900290D70 /* MyersTests.swift */; };
 		BCA2156722C476D400290D70 /* Xoshiro.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156622C476D400290D70 /* Xoshiro.swift */; };
 		BCA2156B22C4772A00290D70 /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156A22C4772A00290D70 /* OrderedSet.swift */; };
 		BCA2156F22C47C4900290D70 /* Difference.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156E22C47C4900290D70 /* Difference.swift */; };
@@ -80,7 +79,6 @@
 		BCA2155622C471E500290D70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BCA2156022C471FA00290D70 /* Vose.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vose.swift; sourceTree = "<group>"; };
 		BCA2156222C4722600290D70 /* Myers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Myers.swift; sourceTree = "<group>"; };
-		BCA2156422C4764900290D70 /* MyersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyersTests.swift; sourceTree = "<group>"; };
 		BCA2156622C476D400290D70 /* Xoshiro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Xoshiro.swift; sourceTree = "<group>"; };
 		BCA2156A22C4772A00290D70 /* OrderedSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedSet.swift; sourceTree = "<group>"; };
 		BCA2156E22C47C4900290D70 /* Difference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Difference.swift; sourceTree = "<group>"; };
@@ -204,7 +202,6 @@
 			isa = PBXGroup;
 			children = (
 				BCA2158022C5BBAC00290D70 /* Hybrid */,
-				BCA2156422C4764900290D70 /* MyersTests.swift */,
 				BCA2157322C5695F00290D70 /* XoshiroTests.swift */,
 				BCA2157722C56A8D00290D70 /* VoseTests.swift */,
 			);
@@ -422,7 +419,6 @@
 			files = (
 				BCA2157422C5695F00290D70 /* XoshiroTests.swift in Sources */,
 				BCA2158222C5BBDA00290D70 /* DiffingTestCase.swift in Sources */,
-				BCA2156522C4764900290D70 /* MyersTests.swift in Sources */,
 				BCA2155522C471E500290D70 /* PrngTests.swift in Sources */,
 				BCA2158422C5BC1C00290D70 /* LiteralTests.swift in Sources */,
 				BCA2157822C56A8D00290D70 /* VoseTests.swift in Sources */,

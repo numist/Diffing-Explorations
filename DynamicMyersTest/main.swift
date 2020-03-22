@@ -1,10 +1,9 @@
-//
-//  main.swift
-//  DynamicMyersTest
-//
-//  Created by numist on 2019-10-15.
-//  Copyright © 2019 numist. All rights reserved.
-//
+/*
+ * The source in this file was written by Scott Perry <dev@numist.net>.
+ *
+ * The author has released it to the public domain.
+ * Attribution is appreciated but not necessary.
+ */
 
 import Foundation
 

@@ -1,10 +1,9 @@
-//
-//  Club.swift
-//  Diffing
-//
-//  Created by Scott Perry on 3/21/20.
-//  Copyright © 2020 numist. All rights reserved.
-//
+/*
+ * The source in this file was written by Scott Perry <dev@numist.net>.
+ *
+ * The author has released it to the public domain.
+ * Attribution is appreciated but not necessary.
+ */
 
 import Foundation // for log()
 
@@ -72,7 +71,13 @@ fileprivate struct WorkQueue {
     
     private var head: DoublyLinkedNode? = nil
     private var tail: DoublyLinkedNode? = nil
-    private var vanguard = Array<DoublyLinkedNode?>()
+    private var vanguard: Array<DoublyLinkedNode?>
+    private var vanguardCount = 0
+
+    init(maxEditLength: Int) {
+        // TODO: take advantage of maxEditLength to avoid reallocating the Array every time we finish a level of diffs
+        vanguard = Array<DoublyLinkedNode?>()
+    }
     
     mutating func popFirst() -> EditTreeNode? {
         guard let h = head else { return nil }
@@ -142,7 +147,7 @@ func _club<E>(
     let trieA = NgramTrie<E>(for: a, depth: trieDepth)
     let trieB = NgramTrie<E>(for: b, depth: trieDepth)
     
-    var workQ = WorkQueue()
+    var workQ = WorkQueue(maxEditLength: n+m)
     workQ.append(EditTreeNode(x: 0, y: 0, parent: nil))
 
     var solutionNode: EditTreeNode? = nil

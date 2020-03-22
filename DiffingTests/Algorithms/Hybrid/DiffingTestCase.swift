@@ -1,3 +1,10 @@
+/*
+ * The source in this file was written by Scott Perry <dev@numist.net>.
+ *
+ * The author has released it to the public domain.
+ * Attribution is appreciated but not necessary.
+ */
+
 import XCTest
 @testable import Diffing
 
@@ -29,7 +36,8 @@ class DiffingTestCase: XCTestCase {
         let d = difference(from: a, to: b)
         let hybrid = comparisons
         
-        let ratio = Double(hybrid)/Double(baseline) 
+        let ratio = Double(hybrid)/Double(baseline)
+        // TODO: log ratio of changes as well, to track accuracy compromises
         print("--==:: hybrid/myers = \(hybrid)/\(baseline) = \(String(format: "%.03f",ratio)) ::==--")
         XCTAssert(a.applying(d) == b)
         if a.count + b.count > 500 && d.count > 50 {
