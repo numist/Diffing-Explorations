@@ -10,6 +10,9 @@
 fileprivate class EditTreeNode {
     let x: Int
     let y: Int
+    
+    let inserts: Int
+    let removes: Int
 
     let parent: EditTreeNode?
 
@@ -17,6 +20,20 @@ fileprivate class EditTreeNode {
         x = px
         y = py
         parent = pparent
+        
+        if let p = parent {
+            if p.x - x > p.y - y {
+                // bigger delta in x: something was removed
+                removes = p.removes + 1
+                inserts = p.inserts
+            } else {
+                removes = p.removes
+                inserts = p.inserts + 1
+            }
+        } else {
+            inserts = 0
+            removes = 0
+        }
     }
 }
 
@@ -34,21 +51,21 @@ fileprivate extension Int {
 }
 
 fileprivate struct WorkQueue {
-    private class SinglyLinkedNode {
+    private class DoublyLinkedNode {
         let element: EditTreeNode
-        var next: SinglyLinkedNode?
+        var next: DoublyLinkedNode? = nil
+        weak var prev: DoublyLinkedNode? = nil
         
-        init(with pelement: EditTreeNode) {
+        init(with pelement: EditTreeNode, after prevNode: DoublyLinkedNode?) {
             element = pelement
+            prev = prevNode
             next = nil
         }
     }
     
-    private var head: SinglyLinkedNode? = nil
-    private var tail: SinglyLinkedNode? = nil
-    // vanguard: x and y of the largest x+y in the queue
-    private var vx = 0
-    private var vy = 0
+    private var head: DoublyLinkedNode? = nil
+    private var tail: DoublyLinkedNode? = nil
+    private var vanguard = Array<DoublyLinkedNode?>()
     
     mutating func popFirst() -> EditTreeNode? {
         guard let h = head else { return nil }
@@ -58,10 +75,33 @@ fileprivate struct WorkQueue {
     }
     
     mutating func append(_ element: EditTreeNode) {
-        // If the node falls within the envelope of the vanguard, it's repeating work
-        if element.x < vx && element.y < vy { return }
         
-        let newTail = SinglyLinkedNode(with: element)
+        // Vanguard management
+        let editCount = element.inserts + element.removes + 1
+        if vanguard.count < editCount {
+            vanguard = Array(repeating: nil, count: editCount)
+        }
+        if let collision = vanguard[element.removes] {
+            if collision.element.x + collision.element.y >= element.x + element.y {
+                return
+            } else {
+                if let prev = collision.prev {
+                    prev.next = collision.next
+                } else {
+                    head = collision.next
+                }
+                if let next = collision.next {
+                    next.prev = collision.prev
+                } else {
+                    tail = collision.prev
+                }
+            }
+        }
+
+        let newTail = DoublyLinkedNode(with: element, after: tail)
+        vanguard[element.removes] = newTail
+
+        // Add work unit to queue
         if head == nil {
             head = newTail
         }
@@ -69,12 +109,6 @@ fileprivate struct WorkQueue {
             oldTail.next = newTail
         }
         tail = newTail
-        if (element.x + element.y > vx + vy) ||
-            // Attempt to center the vanguard: vx should be as near vy as possible to maximize its effectiveness
-            element.x + element.y == vx + vy && abs(element.x - element.y) < abs(vx - vy) {
-            vx = element.x
-            vy = element.y
-        }
     }
 }
 
