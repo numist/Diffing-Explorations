@@ -12,6 +12,7 @@
 		BC390C032425B93C00E2E916 /* Correctness.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C022425B93C00E2E916 /* Correctness.swift */; };
 		BC390C052426A4CE00E2E916 /* Club.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C042426A4CE00E2E916 /* Club.swift */; };
 		BC390C0724270C1F00E2E916 /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C0624270C1F00E2E916 /* Queue.swift */; };
+		BC390C09242715FF00E2E916 /* NgramTrie.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C08242715FF00E2E916 /* NgramTrie.swift */; };
 		BCA2155022C471E500290D70 /* Diffing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCA2154622C471E500290D70 /* Diffing.framework */; };
 		BCA2155522C471E500290D70 /* PrngTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2155422C471E500290D70 /* PrngTests.swift */; };
 		BCA2155722C471E500290D70 /* Diffing.h in Headers */ = {isa = PBXBuildFile; fileRef = BCA2154922C471E500290D70 /* Diffing.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -20,7 +21,6 @@
 		BCA2156522C4764900290D70 /* MyersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156422C4764900290D70 /* MyersTests.swift */; };
 		BCA2156722C476D400290D70 /* Xoshiro.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156622C476D400290D70 /* Xoshiro.swift */; };
 		BCA2156B22C4772A00290D70 /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156A22C4772A00290D70 /* OrderedSet.swift */; };
-		BCA2156D22C47C2700290D70 /* Arrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156C22C47C2700290D70 /* Arrow.swift */; };
 		BCA2156F22C47C4900290D70 /* Difference.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156E22C47C4900290D70 /* Difference.swift */; };
 		BCA2157422C5695F00290D70 /* XoshiroTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157322C5695F00290D70 /* XoshiroTests.swift */; };
 		BCA2157622C56A6800290D70 /* Frequencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157522C56A6800290D70 /* Frequencies.swift */; };
@@ -71,6 +71,7 @@
 		BC390C022425B93C00E2E916 /* Correctness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Correctness.swift; path = DiffingTests/Correctness.swift; sourceTree = SOURCE_ROOT; };
 		BC390C042426A4CE00E2E916 /* Club.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Club.swift; sourceTree = "<group>"; };
 		BC390C0624270C1F00E2E916 /* Queue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
+		BC390C08242715FF00E2E916 /* NgramTrie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NgramTrie.swift; sourceTree = "<group>"; };
 		BCA2154622C471E500290D70 /* Diffing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Diffing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCA2154922C471E500290D70 /* Diffing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Diffing.h; sourceTree = "<group>"; };
 		BCA2154A22C471E500290D70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -82,7 +83,6 @@
 		BCA2156422C4764900290D70 /* MyersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyersTests.swift; sourceTree = "<group>"; };
 		BCA2156622C476D400290D70 /* Xoshiro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Xoshiro.swift; sourceTree = "<group>"; };
 		BCA2156A22C4772A00290D70 /* OrderedSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedSet.swift; sourceTree = "<group>"; };
-		BCA2156C22C47C2700290D70 /* Arrow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arrow.swift; sourceTree = "<group>"; };
 		BCA2156E22C47C4900290D70 /* Difference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Difference.swift; sourceTree = "<group>"; };
 		BCA2157322C5695F00290D70 /* XoshiroTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XoshiroTests.swift; sourceTree = "<group>"; };
 		BCA2157522C56A6800290D70 /* Frequencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frequencies.swift; sourceTree = "<group>"; };
@@ -195,6 +195,7 @@
 				BCA2156A22C4772A00290D70 /* OrderedSet.swift */,
 				BCA2157A22C5731000290D70 /* Alphabet.swift */,
 				BC390C0624270C1F00E2E916 /* Queue.swift */,
+				BC390C08242715FF00E2E916 /* NgramTrie.swift */,
 			);
 			path = "Data Structures";
 			sourceTree = "<group>";
@@ -214,7 +215,6 @@
 			isa = PBXGroup;
 			children = (
 				BCA2156E22C47C4900290D70 /* Difference.swift */,
-				BCA2156C22C47C2700290D70 /* Arrow.swift */,
 				BCA2156222C4722600290D70 /* Myers.swift */,
 				BC390C042426A4CE00E2E916 /* Club.swift */,
 			);
@@ -403,13 +403,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BC390C09242715FF00E2E916 /* NgramTrie.swift in Sources */,
 				BCA2156B22C4772A00290D70 /* OrderedSet.swift in Sources */,
 				BCA2156322C4722600290D70 /* Myers.swift in Sources */,
 				BCA2157B22C5731000290D70 /* Alphabet.swift in Sources */,
 				BCA2157622C56A6800290D70 /* Frequencies.swift in Sources */,
 				BCA2156722C476D400290D70 /* Xoshiro.swift in Sources */,
 				BC390C0724270C1F00E2E916 /* Queue.swift in Sources */,
-				BCA2156D22C47C2700290D70 /* Arrow.swift in Sources */,
 				BC390C052426A4CE00E2E916 /* Club.swift in Sources */,
 				BCA2156F22C47C4900290D70 /* Difference.swift in Sources */,
 				BCA2156122C471FA00290D70 /* Vose.swift in Sources */,

@@ -26,11 +26,14 @@ class DiffingTestCase: XCTestCase {
         let _ = _myers(from: a, to: b, using: ==)
         let baseline = comparisons
         comparisons = 0
-        let _ = difference(from: a, to: b)
+        let d = difference(from: a, to: b)
         let hybrid = comparisons
         
         let ratio = Double(hybrid)/Double(baseline) 
         print("--==:: hybrid/myers = \(hybrid)/\(baseline) = \(String(format: "%.03f",ratio)) ::==--")
-//        XCTAssert(hybrid < 10*(a.count+b.count) || ratio < 4)
+        XCTAssert(a.applying(d) == b)
+        if a.count + b.count > 500 && d.count > 50 {
+            XCTAssert(ratio < 4)
+        }
     }
 }

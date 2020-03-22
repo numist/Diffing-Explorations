@@ -30,5 +30,6 @@ func _bufferDifference<Element>(
 where
     Element : Hashable
 {
+    // TODO: switch from myers to club based on input size
     return _club(from: a, to: b)
 }

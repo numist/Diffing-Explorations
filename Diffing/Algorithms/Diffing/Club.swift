@@ -6,6 +6,13 @@
 //  Copyright © 2020 numist. All rights reserved.
 //
 
+import Foundation // for log()
+
+fileprivate func log(_ val: Int, forBase base: Int) -> Int {
+    if val <= 1 || base <= 1 { return 1 }
+    let result = log(Double(val))/log(Double(base))
+    return Int(result + 1.0) + 2
+}
 
 fileprivate class EditTreeNode {
     let x: Int
@@ -113,18 +120,28 @@ fileprivate struct WorkQueue {
 }
 
 func _club<E>(
-    from a: UnsafeBufferPointer<E>,
-    to b: UnsafeBufferPointer<E>
+    from abuf: UnsafeBufferPointer<E>,
+    to bbuf: UnsafeBufferPointer<E>
 ) -> CollectionDifference<E>
     where E : Hashable
 {
+    var suffixLength = 0
+    while suffixLength < min(abuf.count, bbuf.count) && abuf[abuf.count - (suffixLength+1)] == bbuf[bbuf.count - (suffixLength+1)] {
+        suffixLength += 1
+    }
+    let n = abuf.count - suffixLength
+    let m = bbuf.count - suffixLength
+    let a = abuf[0..<n]
+    let b = bbuf[0..<m]
+    
     let alphaA = _Alphabet(a)
     let alphaB = _Alphabet(b)
-    let n = a.count
-    let m = b.count
     
-    // EXPLORE: track the vangaurd x and y (based on max(x + y)?) and don't add to the workQ when x < vx && y < vy?
-    // maybe there's a relationship with # of matches?
+    let trieDepth = max(log(n, forBase: alphaA.count), log(m, forBase: alphaB.count))
+
+    let trieA = NgramTrie<E>(for: a, depth: trieDepth)
+    let trieB = NgramTrie<E>(for: b, depth: trieDepth)
+    
     var workQ = WorkQueue()
     workQ.append(EditTreeNode(x: 0, y: 0, parent: nil))
 
@@ -151,19 +168,13 @@ func _club<E>(
             // insert
             workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
         case (let x, let y):
-            // TODO: trie-backed n-gram search
-            // TODO: don't really need to do both of these if the first returns nil
-            // TODO: only check once the diff has made sufficient progress for uniques to be likely (see: trie search)
-            let isaxInb = alphaB.offset(of: a[x], after: y)
-            let isbyIna = alphaA.offset(of: b[y], after: x)
-            switch (isaxInb, isbyIna) {
-            case (.none, _):
+            if x < n-trieB.depth && !trieB.search(for: a[x..<(x+trieB.depth)], after: y) {
                 // remove
                 workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
-            case (_, .none):
+            } else if y < m-trieA.depth && !trieA.search(for: b[y..<(y+trieA.depth)], after: x) {
                 // insert
                 workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
-            case (.some(_), .some(_)):
+            } else {
                 // Try both
                 workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
                 workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
@@ -197,3 +208,40 @@ func _club<E>(
     return CollectionDifference<E>(changes)!
 }
 
+func _club<C,D>(
+    from old: C, to new: D
+) -> CollectionDifference<C.Element>
+where
+    C : BidirectionalCollection,
+    D : BidirectionalCollection,
+    C.Element == D.Element,
+    C.Element : Hashable
+{
+    /* Splatting the collections into contiguous storage has two advantages:
+     *
+     *   1) Subscript access is much faster
+     *   2) Subscript index becomes Int, matching the iterator types in the algorithm
+     *
+     * Combined, these effects dramatically improves performance when
+     * collections differ significantly, without unduly degrading runtime when
+     * the parameters are very similar.
+     *
+     * In terms of memory use, the linear cost of creating a ContiguousArray (when
+     * necessary) is significantly less than the worst-case n² memory use of the
+     * descent algorithm.
+     */
+    func _withContiguousStorage<C : Collection, R>(
+        for values: C,
+        _ body: (UnsafeBufferPointer<C.Element>) throws -> R
+        ) rethrows -> R {
+        if let result = try values.withContiguousStorageIfAvailable(body) { return result }
+        let array = ContiguousArray(values)
+        return try array.withUnsafeBufferPointer(body)
+    }
+    
+    return _withContiguousStorage(for: old) { a in
+        return _withContiguousStorage(for: new) { b in
+            return _club(from: a, to: b)
+        }
+    }
+}
