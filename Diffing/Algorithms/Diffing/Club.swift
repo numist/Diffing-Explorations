@@ -124,6 +124,7 @@ fileprivate struct WorkQueue {
     }
 }
 
+// TODO: take Slice<UnsafeBufferPoint<E>> and do the right thing with startIndex
 func _club<E>(
     from abuf: UnsafeBufferPointer<E>,
     to bbuf: UnsafeBufferPointer<E>
@@ -173,6 +174,8 @@ func _club<E>(
             // insert
             workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
         case (let x, let y):
+            // TODO: visualize the paths! with the incomplete filling of the vanguard compared to Myers', it's likely that there's unnecessary work being done that can be trimmed
+            // TODO: should we adopt some Arrow methodology here on ngrams?
             if x < n-trieB.depth && !trieB.search(for: a[x..<(x+trieB.depth)], after: y) {
                 // remove
                 workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
