@@ -5,7 +5,11 @@
  * Attribution is appreciated but not necessary.
  */
 
-// Making this type a struct is possible, but it feels disingenuous since its behaviour is dominated by reference semantics of the internal QuadNode type (which must be a class because it is self-referential)
+/* Making QuadTree a struct is possible, but it feels disingenuous since its
+ * behaviour is dominated by reference semantics of QuadNode.
+ * I could have tried making it an indirect enum but I really don't have the
+ * patience for that at the moment.
+ */
 class QuadTree {
     class QuadNode {
         let x: Int
