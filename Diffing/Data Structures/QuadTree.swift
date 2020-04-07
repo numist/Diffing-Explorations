@@ -61,12 +61,10 @@ class QuadTree<Element> where Element: TwoDimensional {
 
     func insert(_ e: Element) {
         let n = QuadNode(e)
-        
-        guard let r = _root else {
+        if let r = _root {
+            r.insert(n)
+        } else {
             _root = n
-            return
         }
-        
-        r.insert(n)
     }
 }
