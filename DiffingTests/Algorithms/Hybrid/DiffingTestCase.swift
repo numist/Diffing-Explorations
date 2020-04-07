@@ -8,7 +8,7 @@
 import XCTest
 @testable import Diffing
 
-// TODO: new test subclass diffing by character between various versions of some source code btree.c (or similar). test-flight against the `diff` cli to sanity-check if performance is reasonable
+// TODO: new test subclass diffing by character between various versions of some source code like btree.c (or similar). test-flight against the `diff` cli to sanity-check if performance is reasonable
 class DiffingTestCase: XCTestCase {
     
     override func setUp() {
@@ -39,7 +39,7 @@ class DiffingTestCase: XCTestCase {
         
         let ratio = Double(hybrid)/Double(baseline)
         // TODO: log ratio of changes as well, to track accuracy compromises
-        // TODO: simulate Myers when (a + b)*d of club algo is very very large?
+        // TODO: simulate Myers instead of actually running it when (a + b)*d is known to be very very large?
         print("--==:: hybrid/myers = \(hybrid)/\(baseline) = \(String(format: "%.03f",ratio)) changes: \(hd.count)/\(md.count) (\(String(format: "%.03f",hd.count==md.count ? 1.0 : Double(hd.count)/Double(md.count)))) ::==--")
         XCTAssert(a.applying(hd) == b)
         if a.count + b.count > 500 && md.count > 50 {

@@ -52,6 +52,10 @@ struct Queue<Element> {
         _count += 1
     }
     
+    func peekFirst() -> Element {
+        return peekFirst(1).first!
+    }
+    
     func peekFirst(_ n: Int) -> [Element] {
         precondition(n <= _count)
         precondition(n > 0)

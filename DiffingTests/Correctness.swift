@@ -21,7 +21,7 @@ class CorrectnessClub: Correctness {
         var rng = Xoshiro(seed: deterministicSeed)
         let a = OrderedSet(Array(0..<9000).shuffled(using: &rng))
         let b = OrderedSet(Array(1000..<10000).shuffled(using: &rng))
-        let diff = difference(from: a, to: b)
+        let diff = _club(from: a, to: b)
         XCTAssert(Array(b) == Array(a).applying(diff))
     }
 }
@@ -112,7 +112,7 @@ class Correctness: XCTestCase {
 
     }
     
-    func testClubVanguard() {
+    func testClubFrontier() {
         let a = [" ", "h", "i", "r", "h", "e", "s", "c", "d", "s"]
         let b = [" ", "i", "e", "s", "l", "c", "x", " ", "d", "d", " ", "l", " "]
         let d = diff(from: a, to: b)
