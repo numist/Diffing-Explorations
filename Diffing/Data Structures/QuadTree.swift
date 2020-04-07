@@ -13,8 +13,8 @@ protocol TwoDimensional {
 
 class QuadTree<Element> where Element: TwoDimensional {
     class QuadNode {
+        // Non-private property accessors are all read-only
         let e: Element
-
         var ne: QuadNode? { return _ne }
         var nw: QuadNode? { return _nw }
         var se: QuadNode? { return _se }
@@ -36,7 +36,6 @@ class QuadTree<Element> where Element: TwoDimensional {
             }
 
             let child: ReferenceWritableKeyPath<QuadNode, QuadNode?>
-            // TODO: Axis-aligned elements should be biased away from ne for ease of traversal during the frontier reduction step in club diff
             switch (n.e.x > e.x, n.e.y > e.y) {
                 case (false, false):
                     child = \._sw
@@ -55,9 +54,11 @@ class QuadTree<Element> where Element: TwoDimensional {
         }
     }
     
-    private var _root: QuadNode? = nil
+    // Non-private property accessors are all read-only
     var root: QuadNode? { return _root }
-    
+
+    private var _root: QuadNode? = nil
+
     func insert(_ e: Element) {
         let n = QuadNode(e)
         

@@ -13,6 +13,7 @@
 		BC390C052426A4CE00E2E916 /* Club.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C042426A4CE00E2E916 /* Club.swift */; };
 		BC390C0724270C1F00E2E916 /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C0624270C1F00E2E916 /* Queue.swift */; };
 		BC390C09242715FF00E2E916 /* NgramTrie.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C08242715FF00E2E916 /* NgramTrie.swift */; };
+		BC746260243C6346008C52B3 /* QuadTreeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC74625F243C6346008C52B3 /* QuadTreeTests.swift */; };
 		BC969AED243C207A00C0A5C9 /* QueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC969AEC243C207A00C0A5C9 /* QueueTests.swift */; };
 		BC969AF1243C2C5600C0A5C9 /* QuadTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC969AF0243C2C5600C0A5C9 /* QuadTree.swift */; };
 		BCA2155022C471E500290D70 /* Diffing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCA2154622C471E500290D70 /* Diffing.framework */; };
@@ -73,6 +74,7 @@
 		BC390C042426A4CE00E2E916 /* Club.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Club.swift; sourceTree = "<group>"; };
 		BC390C0624270C1F00E2E916 /* Queue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
 		BC390C08242715FF00E2E916 /* NgramTrie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NgramTrie.swift; sourceTree = "<group>"; };
+		BC74625F243C6346008C52B3 /* QuadTreeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuadTreeTests.swift; sourceTree = "<group>"; };
 		BC969AEC243C207A00C0A5C9 /* QueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueTests.swift; sourceTree = "<group>"; };
 		BC969AF0243C2C5600C0A5C9 /* QuadTree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuadTree.swift; sourceTree = "<group>"; };
 		BCA2154622C471E500290D70 /* Diffing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Diffing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -140,6 +142,7 @@
 		BC969AEB243C205800C0A5C9 /* Data Structures */ = {
 			isa = PBXGroup;
 			children = (
+				BC74625F243C6346008C52B3 /* QuadTreeTests.swift */,
 				BC969AEC243C207A00C0A5C9 /* QueueTests.swift */,
 			);
 			path = "Data Structures";
@@ -436,6 +439,7 @@
 				BCA2158222C5BBDA00290D70 /* DiffingTestCase.swift in Sources */,
 				BCA2155522C471E500290D70 /* PrngTests.swift in Sources */,
 				BCA2158422C5BC1C00290D70 /* LiteralTests.swift in Sources */,
+				BC746260243C6346008C52B3 /* QuadTreeTests.swift in Sources */,
 				BCA2157822C56A8D00290D70 /* VoseTests.swift in Sources */,
 				BC969AED243C207A00C0A5C9 /* QueueTests.swift in Sources */,
 				BC390C032425B93C00E2E916 /* Correctness.swift in Sources */,
