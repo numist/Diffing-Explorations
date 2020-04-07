@@ -5,15 +5,15 @@
  * Attribution is appreciated but not necessary.
  */
 
-/* Making QuadTree a struct is possible, but it feels disingenuous since its
- * behaviour is dominated by reference semantics of QuadNode.
- * I could have tried making it an indirect enum but I really don't have the
- * patience for that at the moment.
- */
-class QuadTree {
+protocol TwoDimensional {
+    associatedtype Scalar: Comparable
+    var x: Scalar { get }
+    var y: Scalar { get }
+}
+
+class QuadTree<Element> where Element: TwoDimensional {
     class QuadNode {
-        let x: Int
-        let y: Int
+        let e: Element
 
         var ne: QuadNode? { return _ne }
         var nw: QuadNode? { return _nw }
@@ -25,27 +25,32 @@ class QuadTree {
         private var _se: QuadNode? = nil
         private var _sw: QuadNode? = nil
 
-        init(_ px: Int, _ py: Int) {
-            x = px
-            y = py
+        init(_ pe: Element) {
+            e = pe
         }
-        
+
         func insert(_ n: QuadNode) {
-            let p: ReferenceWritableKeyPath<QuadNode, QuadNode?>
-            switch (n.x > x, n.y > y) {
-                case (false, false):
-                    p = \._sw
-                case (false, true):
-                    p = \._nw
-                case (true, false):
-                    p = \._se
-                case (true, true):
-                    p = \._ne
+            if n.e.x == e.x && n.e.y == e.y {
+                // Do nothing
+                return
             }
-            if let c = self[keyPath: p] {
+
+            let child: ReferenceWritableKeyPath<QuadNode, QuadNode?>
+            // TODO: Axis-aligned elements should be biased away from ne for ease of traversal during the frontier reduction step in club diff
+            switch (n.e.x > e.x, n.e.y > e.y) {
+                case (false, false):
+                    child = \._sw
+                case (false, true):
+                    child = \._nw
+                case (true, false):
+                    child = \._se
+                case (true, true):
+                    child = \._ne
+            }
+            if let c = self[keyPath: child] {
                 c.insert(n)
             } else {
-                self[keyPath: p] = n
+                self[keyPath: child] = n
             }
         }
     }
@@ -53,8 +58,8 @@ class QuadTree {
     private var _root: QuadNode? = nil
     var root: QuadNode? { return _root }
     
-    func insert(_ x: Int, _ y: Int) {
-        let n = QuadNode(x, y)
+    func insert(_ e: Element) {
+        let n = QuadNode(e)
         
         guard let r = _root else {
             _root = n
