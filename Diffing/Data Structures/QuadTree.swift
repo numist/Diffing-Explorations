@@ -38,6 +38,7 @@ class QuadTree<Element> where Element: TwoDimensional {
             let child: ReferenceWritableKeyPath<QuadNode, QuadNode?>
             switch (n.e.x > e.x, n.e.y > e.y) {
                 case (false, false):
+                    // TODO: for the purposes of frontier tracking in club diff, dropping elements in this case would reduce wasted effort
                     child = \._sw
                 case (false, true):
                     child = \._nw
