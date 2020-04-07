@@ -39,7 +39,9 @@ class QuadTree<Element> where Element: TwoDimensional {
             switch (n.e.x > e.x, n.e.y > e.y) {
                 case (false, false):
                     // TODO: for the purposes of frontier tracking in club diff, dropping elements in this case would reduce wasted effort
-                    child = \._sw
+                    // XXX: removed for easy frontier semantic testing, but it's about time to specialize
+//                    child = \._sw
+                    return
                 case (false, true):
                     child = \._nw
                 case (true, false):
