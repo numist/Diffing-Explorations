@@ -107,7 +107,7 @@ func _club<E>(
     // TODO: building the n-gram tries is expensive (50% of runtime in some tests, and costly in terms of comparisons as well); experiment with:
     // 1) add a `in: Range` parameter to build trie only for elements in range prefixLength..<n
     // 2) add a `against: [knownRemoves|knownInserts]` parameter to entirely omit ngrams containing disjoint elements since they can never match anyway
-    // 3) experiment with precomputing known matches like we're doing with knownRemoves and knownInserts
+    // 3) identify prefixes that are very common and short circuit them to lookups that are fewer levels deep (essentially applying the principles of entropy encoding to the problem of expected n-gram lookup frequency)
     // ultimately there's a problem here where the cost of the tries causes performance worse than Myers for some tests (like testLoremIpsums), despite the fact that they are very effective in degenerate tests with patterns like diff(a, a.reversed()) or diff(a, a.shuffled())
     let trieA = NgramTrie<E>(for: a, depth: trieDepth)
     let trieB = NgramTrie<E>(for: b, depth: trieDepth)
