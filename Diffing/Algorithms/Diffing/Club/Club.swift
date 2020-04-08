@@ -26,7 +26,6 @@ fileprivate extension Int {
     }
 }
 
-// TODO: greedy consumption of matching head/tail will reduce the size (and improve the effectiveness for a given n) of the n-gram trie. what's the better way to represent the regions being diffed after that greedy reduction step? (Slice<UnsafeBufferPoint<E>>, Slice<UnsafeBufferPoint<E>>) or (UnsafeBufferPointer<E>, Range, UnsafeBufferPointer<E>, Range)?
 func _club<E>(
     from a: UnsafeBufferPointer<E>,
     to b: UnsafeBufferPointer<E>

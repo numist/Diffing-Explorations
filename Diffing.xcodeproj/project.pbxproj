@@ -85,7 +85,7 @@
 /* Begin PBXFileReference section */
 		BC0A730723552B680037EAFD /* EditGraphGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EditGraphGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC0A730923552B680037EAFD /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		BC390C022425B93C00E2E916 /* Correctness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Correctness.swift; path = DiffingTests/Correctness.swift; sourceTree = SOURCE_ROOT; };
+		BC390C022425B93C00E2E916 /* Correctness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Correctness.swift; path = DiffingTests/Algorithms/Diffing/Correctness.swift; sourceTree = SOURCE_ROOT; };
 		BC390C042426A4CE00E2E916 /* Club.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Club.swift; sourceTree = "<group>"; };
 		BC390C0624270C1F00E2E916 /* Queue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
 		BC390C08242715FF00E2E916 /* NgramTrie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NgramTrie.swift; sourceTree = "<group>"; };
@@ -227,7 +227,6 @@
 				BCA2157222C4848100290D70 /* Algorithms */,
 				BC969AEB243C205800C0A5C9 /* Data Structures */,
 				BC746268243D8D8F008C52B3 /* Literals */,
-				BC390C022425B93C00E2E916 /* Correctness.swift */,
 				BCA2155622C471E500290D70 /* Info.plist */,
 			);
 			path = DiffingTests;
@@ -277,6 +276,7 @@
 		BCA2158022C5BBAC00290D70 /* Diffing */ = {
 			isa = PBXGroup;
 			children = (
+				BC390C022425B93C00E2E916 /* Correctness.swift */,
 				BCA2158122C5BBDA00290D70 /* DiffingTestCase.swift */,
 				BCA2158322C5BC1C00290D70 /* LiteralTests.swift */,
 				BCA2155422C471E500290D70 /* PrngTests.swift */,
