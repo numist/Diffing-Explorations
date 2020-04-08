@@ -13,9 +13,11 @@
 		BC390C052426A4CE00E2E916 /* Club.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C042426A4CE00E2E916 /* Club.swift */; };
 		BC390C0724270C1F00E2E916 /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C0624270C1F00E2E916 /* Queue.swift */; };
 		BC390C09242715FF00E2E916 /* NgramTrie.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C08242715FF00E2E916 /* NgramTrie.swift */; };
-		BC746260243C6346008C52B3 /* QuadTreeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC74625F243C6346008C52B3 /* QuadTreeTests.swift */; };
+		BC746263243D5B9E008C52B3 /* EditTreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC746262243D5B9E008C52B3 /* EditTreeNode.swift */; };
+		BC746265243D6009008C52B3 /* WorkQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC746264243D6009008C52B3 /* WorkQueue.swift */; };
+		BC746267243D7DC6008C52B3 /* WorkQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC746266243D7DC6008C52B3 /* WorkQueueTests.swift */; };
 		BC969AED243C207A00C0A5C9 /* QueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC969AEC243C207A00C0A5C9 /* QueueTests.swift */; };
-		BC969AF1243C2C5600C0A5C9 /* QuadTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC969AF0243C2C5600C0A5C9 /* QuadTree.swift */; };
+		BC969AF1243C2C5600C0A5C9 /* Frontier.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC969AF0243C2C5600C0A5C9 /* Frontier.swift */; };
 		BCA2155022C471E500290D70 /* Diffing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCA2154622C471E500290D70 /* Diffing.framework */; };
 		BCA2155522C471E500290D70 /* PrngTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2155422C471E500290D70 /* PrngTests.swift */; };
 		BCA2155722C471E500290D70 /* Diffing.h in Headers */ = {isa = PBXBuildFile; fileRef = BCA2154922C471E500290D70 /* Diffing.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -74,9 +76,11 @@
 		BC390C042426A4CE00E2E916 /* Club.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Club.swift; sourceTree = "<group>"; };
 		BC390C0624270C1F00E2E916 /* Queue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
 		BC390C08242715FF00E2E916 /* NgramTrie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NgramTrie.swift; sourceTree = "<group>"; };
-		BC74625F243C6346008C52B3 /* QuadTreeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuadTreeTests.swift; sourceTree = "<group>"; };
+		BC746262243D5B9E008C52B3 /* EditTreeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTreeNode.swift; sourceTree = "<group>"; };
+		BC746264243D6009008C52B3 /* WorkQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkQueue.swift; sourceTree = "<group>"; };
+		BC746266243D7DC6008C52B3 /* WorkQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkQueueTests.swift; sourceTree = "<group>"; };
 		BC969AEC243C207A00C0A5C9 /* QueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueTests.swift; sourceTree = "<group>"; };
-		BC969AF0243C2C5600C0A5C9 /* QuadTree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuadTree.swift; sourceTree = "<group>"; };
+		BC969AF0243C2C5600C0A5C9 /* Frontier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frontier.swift; sourceTree = "<group>"; };
 		BCA2154622C471E500290D70 /* Diffing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Diffing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCA2154922C471E500290D70 /* Diffing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Diffing.h; sourceTree = "<group>"; };
 		BCA2154A22C471E500290D70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -139,11 +143,22 @@
 			path = EditGraphGenerator;
 			sourceTree = "<group>";
 		};
+		BC746261243D5A7C008C52B3 /* Club */ = {
+			isa = PBXGroup;
+			children = (
+				BC390C042426A4CE00E2E916 /* Club.swift */,
+				BC746262243D5B9E008C52B3 /* EditTreeNode.swift */,
+				BC969AF0243C2C5600C0A5C9 /* Frontier.swift */,
+				BC746264243D6009008C52B3 /* WorkQueue.swift */,
+			);
+			path = Club;
+			sourceTree = "<group>";
+		};
 		BC969AEB243C205800C0A5C9 /* Data Structures */ = {
 			isa = PBXGroup;
 			children = (
-				BC74625F243C6346008C52B3 /* QuadTreeTests.swift */,
 				BC969AEC243C207A00C0A5C9 /* QueueTests.swift */,
+				BC746266243D7DC6008C52B3 /* WorkQueueTests.swift */,
 			);
 			path = "Data Structures";
 			sourceTree = "<group>";
@@ -209,7 +224,6 @@
 				BCA2157A22C5731000290D70 /* Alphabet.swift */,
 				BC390C08242715FF00E2E916 /* NgramTrie.swift */,
 				BCA2156A22C4772A00290D70 /* OrderedSet.swift */,
-				BC969AF0243C2C5600C0A5C9 /* QuadTree.swift */,
 				BC390C0624270C1F00E2E916 /* Queue.swift */,
 			);
 			path = "Data Structures";
@@ -228,7 +242,7 @@
 		BCA2157922C5717100290D70 /* Diffing */ = {
 			isa = PBXGroup;
 			children = (
-				BC390C042426A4CE00E2E916 /* Club.swift */,
+				BC746261243D5A7C008C52B3 /* Club */,
 				BCA2156E22C47C4900290D70 /* Difference.swift */,
 				BCA2156222C4722600290D70 /* Myers.swift */,
 			);
@@ -418,10 +432,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				BC390C09242715FF00E2E916 /* NgramTrie.swift in Sources */,
+				BC746263243D5B9E008C52B3 /* EditTreeNode.swift in Sources */,
 				BCA2156B22C4772A00290D70 /* OrderedSet.swift in Sources */,
 				BCA2156322C4722600290D70 /* Myers.swift in Sources */,
+				BC746265243D6009008C52B3 /* WorkQueue.swift in Sources */,
 				BCA2157B22C5731000290D70 /* Alphabet.swift in Sources */,
-				BC969AF1243C2C5600C0A5C9 /* QuadTree.swift in Sources */,
+				BC969AF1243C2C5600C0A5C9 /* Frontier.swift in Sources */,
 				BCA2157622C56A6800290D70 /* Frequencies.swift in Sources */,
 				BCA2156722C476D400290D70 /* Xoshiro.swift in Sources */,
 				BC390C0724270C1F00E2E916 /* Queue.swift in Sources */,
@@ -437,9 +453,9 @@
 			files = (
 				BCA2157422C5695F00290D70 /* XoshiroTests.swift in Sources */,
 				BCA2158222C5BBDA00290D70 /* DiffingTestCase.swift in Sources */,
+				BC746267243D7DC6008C52B3 /* WorkQueueTests.swift in Sources */,
 				BCA2155522C471E500290D70 /* PrngTests.swift in Sources */,
 				BCA2158422C5BC1C00290D70 /* LiteralTests.swift in Sources */,
-				BC746260243C6346008C52B3 /* QuadTreeTests.swift in Sources */,
 				BCA2157822C56A8D00290D70 /* VoseTests.swift in Sources */,
 				BC969AED243C207A00C0A5C9 /* QueueTests.swift in Sources */,
 				BC390C032425B93C00E2E916 /* Correctness.swift in Sources */,
