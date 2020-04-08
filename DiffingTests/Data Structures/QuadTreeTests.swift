@@ -25,7 +25,7 @@ class QuadTreeTests: XCTestCase {
         }
     }
 
-    // TODO: unit tests don't catch dropped insertions below the root
+    // TODO: unit tests don't catch dropped insertions to the southeast of root
     
     func validateNode(_ node: QuadTree<Point>.QuadNode) {
         // All comparisons here use *OrEqual to avoid testing insertion bias,
@@ -56,20 +56,20 @@ class QuadTreeTests: XCTestCase {
         validate(QuadTree<Point>())
     }
     
-//    func testAntiNEBias() {
-//        let tree = QuadTree<Point>()
-//        tree.insert(Point(0, 0))
-//
-//        tree.insert(Point(0, 1))
-//        XCTAssertNil(tree.root!.ne)
-//        XCTAssertEqual(0, tree.root!.nw!.e.x)
-//        XCTAssertEqual(1, tree.root!.nw!.e.y)
-//
-//        tree.insert(Point(1, 0))
-//        XCTAssertNil(tree.root!.ne)
-//        XCTAssertEqual(1, tree.root!.se!.e.x)
-//        XCTAssertEqual(0, tree.root!.se!.e.y)
-//    }
+    func testAntiNEBias() {
+        let tree = QuadTree<Point>()
+        tree.insert(Point(0, 0))
+
+        tree.insert(Point(0, 1))
+        XCTAssertNil(tree.root!.ne)
+        XCTAssertEqual(0, tree.root!.nw!.e.x)
+        XCTAssertEqual(1, tree.root!.nw!.e.y)
+
+        tree.insert(Point(1, 0))
+        XCTAssertNil(tree.root!.ne)
+        XCTAssertEqual(1, tree.root!.se!.e.x)
+        XCTAssertEqual(0, tree.root!.se!.e.y)
+    }
 
     func testIgnoreDuplicates() {
         let tree = QuadTree<Point>()
@@ -159,12 +159,11 @@ class ClubWorkQueueTests: XCTestCase {
                 let y = Int.random(in: -50...(50 - abs(x)))
                 arr.append(Point(x, y))
             }
+            // Good QuadTree balance depends on a random distribution of same-ranked points
             arr.sort { (p1, p2) -> Bool in
-                // Good QuadTree balance depends on a random distribution of same-ranked points
-                if (p1.x + p1.y) == (p2.x + p2.y) {
-                    return Bool.random()
-                }
-                return (p1.x + p1.y) > (p2.x + p2.y)
+                let l = p1.x + p1.y
+                let r = p2.x + p2.y
+                return l == r ? Bool.random() : l > r
             }
             let tree = QuadTree<Point>()
             for p in arr {
@@ -220,7 +219,7 @@ class ClubWorkQueueTests: XCTestCase {
 
    …so maybe membership testing is what allows this to work after all?
 
-   Hypothesis: In the absence of unique elements, the longest snake is always the greediest
+   In fact, I'm pretty sure it is definitionally true that in the absence of unique elements, the longest snake is always the greediest.
 
    BE CAREFUL: paths need to be tracked by comparing edit positions that are offset (discounted?) by the number of "freebie" edits granted by membership testing, essentially creating a view of the edit graph that omits unique elements:
 
