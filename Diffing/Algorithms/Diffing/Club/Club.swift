@@ -10,7 +10,7 @@ import Foundation // for log()
 fileprivate func log(_ val: Int, forBase base: Int) -> Int {
     if val <= 1 || base <= 1 { return 1 }
     let result = log(Double(val))/log(Double(base))
-    return Int(result + 1.0) + 2
+    return Int(result + 1.0)
 }
 
 fileprivate extension Int {
@@ -28,35 +28,75 @@ fileprivate extension Int {
 
 // TODO: greedy consumption of matching head/tail will reduce the size (and improve the effectiveness for a given n) of the n-gram trie. what's the better way to represent the regions being diffed after that greedy reduction step? (Slice<UnsafeBufferPoint<E>>, Slice<UnsafeBufferPoint<E>>) or (UnsafeBufferPointer<E>, Range, UnsafeBufferPointer<E>, Range)?
 func _club<E>(
-    from abuf: UnsafeBufferPointer<E>,
-    to bbuf: UnsafeBufferPointer<E>
+    from a: UnsafeBufferPointer<E>,
+    to b: UnsafeBufferPointer<E>
 ) -> CollectionDifference<E>
     where E : Hashable
 {
+    //
+    // Greedy shared-suffix consumption
+    //
     var suffixLength = 0
-    while suffixLength < min(abuf.count, bbuf.count) && abuf[abuf.count - (suffixLength+1)] == bbuf[bbuf.count - (suffixLength+1)] {
+    while suffixLength < min(a.count, b.count) && a[a.count - (suffixLength+1)] == b[b.count - (suffixLength+1)] {
         suffixLength += 1
     }
-    let n = abuf.count - suffixLength
-    let m = bbuf.count - suffixLength
-    let a = abuf[0..<n]
-    let b = bbuf[0..<m]
+    let n = a.count - suffixLength
+    let m = b.count - suffixLength
+    if n == 0 {
+        var changes = [CollectionDifference<E>.Change]()
+        for i in 0..<m {
+            changes.append(.insert(offset: i, element: b[i], associatedWith: nil))
+        }
+        return CollectionDifference<E>(changes)!
+    } else if m == 0 {
+        var changes = [CollectionDifference<E>.Change]()
+        for i in 0..<n {
+            changes.append(.remove(offset: i, element: a[i], associatedWith: nil))
+        }
+        return CollectionDifference<E>(changes)!
+    }
     
-    let alphaA = _Alphabet(a)
-    let alphaB = _Alphabet(b)
+    //
+    // Greedy prefix consumption
+    //
+    var prefixLength = 0
+    while prefixLength < min(n, m) && a[prefixLength] == b[prefixLength] {
+        prefixLength += 1
+    }
+    if prefixLength == n {
+        var changes = [CollectionDifference<E>.Change]()
+        for i in prefixLength..<m {
+            changes.append(.insert(offset: i, element: b[i], associatedWith: nil))
+        }
+        return CollectionDifference<E>(changes)!
+    } else if prefixLength == m {
+        var changes = [CollectionDifference<E>.Change]()
+        for i in prefixLength..<n {
+            changes.append(.remove(offset: i, element: a[i], associatedWith: nil))
+        }
+        return CollectionDifference<E>(changes)!
+    }
     
-    let trieDepth = max(log(n, forBase: alphaA.count), log(m, forBase: alphaB.count))
-
+    //
+    // Input characterization
+    //
+    let alphaA = _Alphabet(a, in: prefixLength..<n)
+    let alphaB = _Alphabet(b, in: prefixLength..<m)
+    let trieDepth = max(
+        log(n, forBase: a.count / alphaA.mostPopularCount),
+        log(m, forBase: b.count / alphaB.mostPopularCount)
+    )
     let trieA = NgramTrie<E>(for: a, depth: trieDepth)
     let trieB = NgramTrie<E>(for: b, depth: trieDepth)
     
+    //
+    // Diffing algorithm
+    //
     var workQ = WorkQueue()
-    workQ.append(EditTreeNode(x: 0, y: 0, parent: nil))
+    workQ.append(EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
 
     var solutionNode: EditTreeNode? = nil
-    
-    // workLoop iterates over the work queue of edit paths, enqueuing new paths formed by adding only one edit
-    workLoop: while var current = workQ.popFirst() {
+    while var current = workQ.popFirst(), solutionNode == nil {
         var x = current.x, y = current.y
 
         // Consume all available matches and ngrams not shared between the collections
@@ -79,7 +119,6 @@ func _club<E>(
         switch (x, y) {
         case (n, m):
             solutionNode = EditTreeNode(x: x, y: y, parent: current)
-            break workLoop
         case (_, m):
             // remove
             workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
@@ -122,7 +161,7 @@ func _club<E>(
         y = node.y
         solutionNode = node
     }
-    assert(x == 0 && y == 0)
+    assert(x == prefixLength && y == prefixLength)
     
     return CollectionDifference<E>(changes)!
 }

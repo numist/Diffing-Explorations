@@ -23,11 +23,11 @@ struct WorkQueue {
 
         if i >= active.count {
             return nil
-        } else {
-            let result = active[i]
-            i += 1
-            return result
         }
+
+        let result = active[i]
+        i += 1
+        return result
     }
     
     mutating func append(_ element: EditTreeNode) {
@@ -70,8 +70,6 @@ struct WorkQueue {
     private class FrontierBiNode {
         // Non-private property accessors are all read-only
         let e: EditTreeNode
-        var nw: FrontierBiNode? { return _nw }
-        var se: FrontierBiNode? { return _se }
 
         private var _nw: FrontierBiNode? = nil
         private var _se: FrontierBiNode? = nil
@@ -101,10 +99,9 @@ struct WorkQueue {
             }
             if let c = self[keyPath: child] {
                 return c.insert(n)
-            } else {
-                self[keyPath: child] = n
-                return true
             }
+            self[keyPath: child] = n
+            return true
         }
     }
 }

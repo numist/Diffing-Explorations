@@ -7,18 +7,18 @@
 
 struct _Alphabet<Element> where Element : Hashable {
     private let _f: [Element:Int]
+    let mostPopularCount: Int
     
-    init(_ c: Slice<UnsafeBufferPointer<Element>>) {
+    init(_ c: UnsafeBufferPointer<Element>, in range: Range<Int>) {
+        var mx = 0
         var f = [Element:Int]()
-        var offset = 0
-        for e in c {
-            f[e, default: 0] += 1
-            offset += 1
+        for i in range {
+            let e = c[i]
+            let count = (f[e] ?? 0) + 1
+            f[e] = count
+            mx = max(mx, count)
         }
         _f = f
-    }
-    
-    var count : Int {
-        return _f.count
+        mostPopularCount = mx
     }
 }
