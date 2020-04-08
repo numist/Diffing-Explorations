@@ -144,4 +144,12 @@ class PrngTests: DiffingTestCase {
             measureDiffs(from: a, to: b)
         }
     }
+    
+    func testShuffledUUID() {
+        var r = rng()
+        let size = maxN
+        let a = (0..<size).map({ _ in UUID() })
+        let b = a.shuffled(using: &r)
+        measureDiffs(from: a, to: b)
+    }
 }

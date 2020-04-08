@@ -21,4 +21,8 @@ struct _Alphabet<Element> where Element : Hashable {
         _f = f
         mostPopularCount = mx
     }
+    
+    func contains(_ e: Element) -> Bool {
+        return _f[e] != nil
+    }
 }

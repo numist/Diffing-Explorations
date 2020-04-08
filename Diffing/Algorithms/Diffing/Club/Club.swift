@@ -32,6 +32,8 @@ func _club<E>(
 ) -> CollectionDifference<E>
     where E : Hashable
 {
+    var changes = [CollectionDifference<E>.Change]()
+
     //
     // Greedy shared-suffix consumption
     //
@@ -42,13 +44,11 @@ func _club<E>(
     let n = a.count - suffixLength
     let m = b.count - suffixLength
     if n == 0 {
-        var changes = [CollectionDifference<E>.Change]()
         for i in 0..<m {
             changes.append(.insert(offset: i, element: b[i], associatedWith: nil))
         }
         return CollectionDifference<E>(changes)!
     } else if m == 0 {
-        var changes = [CollectionDifference<E>.Change]()
         for i in 0..<n {
             changes.append(.remove(offset: i, element: a[i], associatedWith: nil))
         }
@@ -63,13 +63,11 @@ func _club<E>(
         prefixLength += 1
     }
     if prefixLength == n {
-        var changes = [CollectionDifference<E>.Change]()
         for i in prefixLength..<m {
             changes.append(.insert(offset: i, element: b[i], associatedWith: nil))
         }
         return CollectionDifference<E>(changes)!
     } else if prefixLength == m {
-        var changes = [CollectionDifference<E>.Change]()
         for i in prefixLength..<n {
             changes.append(.remove(offset: i, element: a[i], associatedWith: nil))
         }
@@ -79,15 +77,41 @@ func _club<E>(
     //
     // Input characterization
     //
+    
+    // Determine the alphabet of each collection
     let alphaA = _Alphabet(a, in: prefixLength..<n)
     let alphaB = _Alphabet(b, in: prefixLength..<m)
+
+    // Precompute all known e∈a,e∉b and e∈b,e∉a
+    var knownRemoves = Array<Bool>(repeating: false, count: n)
+    for i in prefixLength..<n {
+        let e = a[i]
+        if !alphaB.contains(e) {
+            knownRemoves[i] = true
+        }
+    }
+    var knownInserts = Array<Bool>(repeating: false, count: m)
+    for i in prefixLength..<m {
+        let e = b[i]
+        if !alphaA.contains(e) {
+            knownInserts[i] = true
+        }
+    }
+
+    // Compute the ideal n-gram length based on the frequency of the most common element
     let trieDepth = max(
         log(n, forBase: a.count / alphaA.mostPopularCount),
         log(m, forBase: b.count / alphaB.mostPopularCount)
     )
+
+    // TODO: building the n-gram tries is expensive (50% of runtime in some tests, and costly in terms of comparisons as well); experiment with:
+    // 1) add a `in: Range` parameter to build trie only for elements in range prefixLength..<n
+    // 2) add a `against: [knownRemoves|knownInserts]` parameter to entirely omit ngrams containing disjoint elements since they can never match anyway
+    // 3) experiment with precomputing known matches like we're doing with knownRemoves and knownInserts
+    // ultimately there's a problem here where the cost of the tries causes performance worse than Myers for some tests (like testLoremIpsums), despite the fact that they are very effective in degenerate tests with patterns like diff(a, a.reversed()) or diff(a, a.shuffled())
     let trieA = NgramTrie<E>(for: a, depth: trieDepth)
     let trieB = NgramTrie<E>(for: b, depth: trieDepth)
-    
+
     //
     // Diffing algorithm
     //
@@ -103,46 +127,51 @@ func _club<E>(
             if x < n && y < m && a[x] == b[y] {
                 x += 1
                 y += 1
-            } else if x <= n-trieB.depth && !trieB.search(for: a[x..<(x+trieB.depth)]) {
-                    x += 1
-                    current = EditTreeNode(x: x, y: y, parent: current, free: true)
-            } else if y <= m-trieA.depth && !trieA.search(for: b[y..<(y+trieA.depth)]) {
-                    y += 1
-                    current = EditTreeNode(x: x, y: y, parent: current, free: true)
+            } else if x < n && knownRemoves[x] {
+                x += 1
+                current = EditTreeNode(x: x, y: y, parent: current, free: true)
+            } else if y < m && knownInserts[y] {
+                y += 1
+                current = EditTreeNode(x: x, y: y, parent: current, free: true)
+            } else if x <= n-trieB.depth && !trieB.search(for: a[x..<(x+trieB.depth)], after: y) {
+                x += 1
+                current = EditTreeNode(x: x, y: y, parent: current, free: true)
+            } else if y <= m-trieA.depth && !trieA.search(for: b[y..<(y+trieA.depth)], after: x) {
+                y += 1
+                current = EditTreeNode(x: x, y: y, parent: current, free: true)
             } else {
                 break
             }
         }
         assert(x <= n && y <= m)
-        
+
         switch (x, y) {
-        case (n, m):
-            solutionNode = EditTreeNode(x: x, y: y, parent: current)
-        case (_, m):
-            // remove
-            workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
-        case (n, _):
-            // insert
-            workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
-        case (let x, let y):
-            if x < n-trieB.depth && !trieB.search(for: a[x..<(x+trieB.depth)], after: y) {
+            case (n, m):
+                solutionNode = EditTreeNode(x: x, y: y, parent: current)
+            case (_, m):
                 // remove
                 workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
-            } else if y < m-trieA.depth && !trieA.search(for: b[y..<(y+trieA.depth)], after: x) {
+            case (n, _):
                 // insert
                 workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
-            } else {
-                // Try both
-                workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
-                workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
-            }
+            case (let x, let y):
+                if x < n-trieB.depth && !trieB.search(for: a[x..<(x+trieB.depth)], after: y) {
+                    // remove
+                    workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
+                } else if y < m-trieA.depth && !trieA.search(for: b[y..<(y+trieA.depth)], after: x) {
+                    // insert
+                    workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
+                } else {
+                    // Try both
+                    workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
+                    workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
+                }
         }
     }
     assert(solutionNode != nil)
     assert(solutionNode!.x == n && solutionNode!.y == m)
 
     // Solution forming
-    var changes = [CollectionDifference<E>.Change]()
     var x = n, y = m
     while let node = solutionNode?.parent {
         switch (x - node.x).compare(to: y - node.y) {
