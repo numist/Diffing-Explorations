@@ -23,11 +23,24 @@ struct NgramTrie<Element> where Element : Hashable {
             offsets: [Int]
      */
     
-    init(for buf: UnsafeBufferPointer<Element>, depth pdepth: Int) {
+    init(
+        for buf: UnsafeBufferPointer<Element>,
+        in range: Range<Int>,
+        avoiding knownUniques: Array<Bool>,
+        depth pdepth: Int
+    ) {
         depth = pdepth
         root = TrieNode()
-        guard depth <= buf.count else { return }
-        for i in 0..<(buf.count - depth) {
+        guard depth <= range.count else { return }
+        scanLoop: for i in range.lowerBound..<(range.upperBound - depth) {
+            // Avoid adding any n-grams containing elements that are known to
+            // not exist in the other collection being diffed
+            for j in i..<(i + depth) {
+                if knownUniques[j] {
+                    continue scanLoop
+                }
+            }
+            
             var node = root
 
             // WTB: Slice overhead slowed this loop by 30% compared to direct access
