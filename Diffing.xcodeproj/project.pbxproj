@@ -19,7 +19,6 @@
 		BC746271243D90F1008C52B3 /* btree.f55ea8f456.c in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC746269243D8D8F008C52B3 /* btree.f55ea8f456.c */; };
 		BC746272243D90F5008C52B3 /* btree.79ce96ab39.c in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC74626A243D8D8F008C52B3 /* btree.79ce96ab39.c */; };
 		BC969AED243C207A00C0A5C9 /* QueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC969AEC243C207A00C0A5C9 /* QueueTests.swift */; };
-		BC969AF1243C2C5600C0A5C9 /* Frontier.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC969AF0243C2C5600C0A5C9 /* Frontier.swift */; };
 		BCA2155022C471E500290D70 /* Diffing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCA2154622C471E500290D70 /* Diffing.framework */; };
 		BCA2155522C471E500290D70 /* PrngTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2155422C471E500290D70 /* PrngTests.swift */; };
 		BCA2155722C471E500290D70 /* Diffing.h in Headers */ = {isa = PBXBuildFile; fileRef = BCA2154922C471E500290D70 /* Diffing.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -95,7 +94,6 @@
 		BC746269243D8D8F008C52B3 /* btree.f55ea8f456.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = btree.f55ea8f456.c; sourceTree = "<group>"; };
 		BC74626A243D8D8F008C52B3 /* btree.79ce96ab39.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = btree.79ce96ab39.c; sourceTree = "<group>"; };
 		BC969AEC243C207A00C0A5C9 /* QueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueTests.swift; sourceTree = "<group>"; };
-		BC969AF0243C2C5600C0A5C9 /* Frontier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frontier.swift; sourceTree = "<group>"; };
 		BCA2154622C471E500290D70 /* Diffing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Diffing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCA2154922C471E500290D70 /* Diffing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Diffing.h; sourceTree = "<group>"; };
 		BCA2154A22C471E500290D70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -163,7 +161,6 @@
 			children = (
 				BC390C042426A4CE00E2E916 /* Club.swift */,
 				BC746262243D5B9E008C52B3 /* EditTreeNode.swift */,
-				BC969AF0243C2C5600C0A5C9 /* Frontier.swift */,
 				BC746264243D6009008C52B3 /* WorkQueue.swift */,
 			);
 			path = Club;
@@ -455,7 +452,6 @@
 				BCA2156322C4722600290D70 /* Myers.swift in Sources */,
 				BC746265243D6009008C52B3 /* WorkQueue.swift in Sources */,
 				BCA2157B22C5731000290D70 /* Alphabet.swift in Sources */,
-				BC969AF1243C2C5600C0A5C9 /* Frontier.swift in Sources */,
 				BCA2157622C56A6800290D70 /* Frequencies.swift in Sources */,
 				BCA2156722C476D400290D70 /* Xoshiro.swift in Sources */,
 				BC390C0724270C1F00E2E916 /* Queue.swift in Sources */,
