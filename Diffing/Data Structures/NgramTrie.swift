@@ -23,7 +23,7 @@ struct NgramTrie<Element> where Element : Hashable {
             offsets: [Int]
      */
     
-    init(for buf: Slice<UnsafeBufferPointer<Element>>, depth pdepth: Int) {
+    init(for buf: UnsafeBufferPointer<Element>, depth pdepth: Int) {
         depth = pdepth
         root = TrieNode()
         var q = Queue<Element>()
@@ -48,7 +48,8 @@ struct NgramTrie<Element> where Element : Hashable {
         }
     }
     
-    func search(for ngram: Slice<UnsafeBufferPointer<Element>>, after offset: Int) -> Bool {
+    // TODO: > 25% of _club's runtime is being spent paying for Slice overhead
+    func search(for ngram: Slice<UnsafeBufferPointer<Element>>, after offset: Int = 0) -> Bool {
         precondition(ngram.count == depth)
         var node = root
         for e in ngram {

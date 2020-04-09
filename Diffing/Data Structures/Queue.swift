@@ -60,6 +60,7 @@ struct Queue<Element> {
         precondition(n <= _count)
         precondition(n > 0)
         var result = Array<Element>()
+        result.reserveCapacity(n)
         var node = head!
         for _ in 0..<(n-1) {
             result.append(node.element)

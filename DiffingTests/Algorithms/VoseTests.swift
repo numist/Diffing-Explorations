@@ -25,8 +25,6 @@ class VoseTests: XCTestCase {
         let _ = (0..<100).map({_ in generator.next()})
     }
     
-    // TODO: collect real-world ngram statistics from more structured data like a database file (binary), English prose, and source code
-
     func printNgramStats<C>(for str: C, length n: Int) where C : Collection, C.Element : Hashable {
         var ngrams = Dictionary<[C.Element], Int>()
         var q = Queue<C.Element>()
@@ -51,7 +49,7 @@ class VoseTests: XCTestCase {
         print("string length: \(strlen) (\(alphabetFreq.count)**\(exp)), alphabet size: \(alphabetFreq.count)")
         let str = (0..<strlen).map({_ in generator.next()})
 
-        for n in 1..<(exp+3) {
+        for n in 1...(exp+1) {
             printNgramStats(for: str, length: n)
         }
     }

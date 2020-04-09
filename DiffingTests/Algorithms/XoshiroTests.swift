@@ -8,6 +8,7 @@
 import XCTest
 @testable import Diffing
 
+// It's not that other seeds aren't deterministic, just that this is the one we've settled on using
 let deterministicSeed : Xoshiro.StateType = (42, 42, 42, 42)
 
 class XoshiroTests: XCTestCase {

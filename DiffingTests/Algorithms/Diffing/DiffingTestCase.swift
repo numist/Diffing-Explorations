@@ -38,7 +38,6 @@ class DiffingTestCase: XCTestCase {
         let hybrid = comparisons
         
         let ratio = Double(hybrid)/Double(baseline)
-        // TODO: log ratio of changes as well, to track accuracy compromises
         // TODO: simulate Myers instead of actually running it when (a + b)*d is known to be very very large?
         print("--==:: hybrid/myers = \(hybrid)/\(baseline) = \(String(format: "%.03f",ratio)) changes: \(hd.count)/\(md.count) (\(String(format: "%.03f",hd.count==md.count ? 1.0 : Double(hd.count)/Double(md.count)))) ::==--")
         XCTAssert(a.applying(hd) == b)
