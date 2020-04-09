@@ -32,13 +32,18 @@ struct NgramTrie<Element> where Element : Hashable {
         depth = pdepth
         root = TrieNode()
         guard depth <= range.count else { return }
-        scanLoop: for i in range.lowerBound..<(range.upperBound - depth) {
+        
+        var skip = 0
+        for i in range.lowerBound..<(range.upperBound - depth) {
             // Avoid adding any n-grams containing elements that are known to
             // not exist in the other collection being diffed
-            for j in i..<(i + depth) {
-                if knownUniques[j] {
-                    continue scanLoop
-                }
+            if knownUniques[i + depth - 1] {
+                skip = depth
+            }
+            if skip > 0 {
+                skip -= 1
+                assert(knownUniques[i..<i+depth].contains(true))
+                continue
             }
             
             var node = root
