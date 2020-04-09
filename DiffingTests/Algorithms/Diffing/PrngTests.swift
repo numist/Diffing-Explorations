@@ -71,6 +71,31 @@ class PrngTests: DiffingTestCase {
         measureDiffs(from: a, to: a)
     }
     
+    func testBinaryByPercentageChanged() {
+        var r = rng()
+        var letterGenerator = VoseAliasMethod(binaryFrequencies, rng: r)
+        let size = maxN
+        let a = (0..<size).map({ _ in letterGenerator.next() })
+        
+        for percent in stride(from: 0, to: 100, by: 5) {
+            print("\(percent)%: ", terminator: "")
+            let numChanges = size * percent / 100
+            var b = a
+            for _ in 0..<numChanges {
+                switch Int.random(in: 0..<3, using: &r) {
+                    case 0:
+                        guard b.count > 0 else { break }
+                        b.remove(at: Int.random(in: 0..<b.count, using: &r))
+                    case 1:
+                        b.insert(letterGenerator.next(), at: Int.random(in: 0...b.count, using: &r))
+                    default:
+                        b.insert(b.remove(at: Int.random(in: 0..<b.count, using: &r)), at: Int.random(in: 0...b.count, using: &r))
+                }
+            }
+            measureDiffs(from: a, to: b)
+        }
+    }
+
     func testGenesByPercentageChanged() {
         var r = rng()
         var letterGenerator = VoseAliasMethod(geneticFrequencies, rng: r)

@@ -31,7 +31,7 @@ struct NgramTrie<Element> where Element : Hashable {
     ) {
         depth = pdepth
         root = TrieNode()
-        guard depth <= range.count else { return }
+        guard depth > 0 && depth <= range.count else { return }
         
         var skip = 0
         for i in range.lowerBound..<(range.upperBound - depth) {
@@ -47,7 +47,6 @@ struct NgramTrie<Element> where Element : Hashable {
             }
             
             var node = root
-
             // WTB: Slice overhead slowed this loop by 30% compared to direct access
          // for e in buf[i..<(i + depth)] {
             for j in i..<(i + depth) {

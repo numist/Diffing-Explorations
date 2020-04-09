@@ -10,16 +10,12 @@ struct _Alphabet<Element> where Element : Hashable {
     let mostPopularCount: Int
     
     init(_ c: UnsafeBufferPointer<Element>, in range: Range<Int>) {
-        var mx = 0
         var f = [Element:Int]()
         for i in range {
-            let e = c[i]
-            let count = (f[e] ?? 0) + 1
-            f[e] = count
-            mx = max(mx, count)
+            f[c[i], default: 0] += 1
         }
+        mostPopularCount = f.values.reduce(0, max)
         _f = f
-        mostPopularCount = mx
     }
     
     func contains(_ e: Element) -> Bool {

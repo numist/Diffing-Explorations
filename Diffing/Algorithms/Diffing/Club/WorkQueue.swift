@@ -12,9 +12,14 @@
  and made active by `activatePending`.
  */
 struct WorkQueue {
-    var i = 0
-    var active = Array<EditTreeNode>()
-    var pending = Array<EditTreeNode>()
+    var minX: Int { return _minX }
+    var minY: Int { return _minY }
+    
+    private var _minX = 0
+    private var _minY = 0
+    private var i = 0
+    private var active = Array<EditTreeNode>()
+    private var pending = Array<EditTreeNode>()
     
     mutating func popFirst() -> EditTreeNode? {
         if i >= active.count {
@@ -64,6 +69,8 @@ struct WorkQueue {
     private mutating func activatePending() {
         active = Array<EditTreeNode>()
         i = 0
+        _minX = 0
+        _minY = 0
 
         var root: FrontierBiNode? = nil
         for e in pending.sorted(by: { (p1, p2) -> Bool in
@@ -74,10 +81,14 @@ struct WorkQueue {
             if let r = root {
                 if r.insert(FrontierBiNode(e)) {
                     active.append(e)
+                    _minX = min(_minX, e.x)
+                    _minY = min(_minY, e.y)
                 }
             } else {
                 root = FrontierBiNode(e)
                 active.append(e)
+                _minX = e.x
+                _minY = e.y
             }
         }
         

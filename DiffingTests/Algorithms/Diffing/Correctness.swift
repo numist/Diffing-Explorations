@@ -118,4 +118,11 @@ class Correctness: XCTestCase {
         let d = diff(from: a, to: b)
         verify(from: a, to: b, produced: d)
     }
+    
+    func testClubOverEagerNgramConsumption() {
+        let a = ["t", "r", "e", "n", "e", " ", "o", "m", "c", "y"]
+        let b = ["t", "r", "o", "e", " ", "n", "e", "g", "n", "e", " ", "o", "m", "c", "y"]
+        let d = diff(from: a, to: b)
+        verify(from: a, to: b, produced: d)
+    }
 }
