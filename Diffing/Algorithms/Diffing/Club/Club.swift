@@ -35,7 +35,7 @@ func _club<E>(
     var changes = [CollectionDifference<E>.Change]()
 
     //
-    // Greedy shared-suffix consumption
+    // Greedy consumption of shared suffix and prefix elements
     //
     var suffixLength = 0
     while suffixLength < min(a.count, b.count) && a[a.count - (suffixLength+1)] == b[b.count - (suffixLength+1)] {
@@ -43,35 +43,10 @@ func _club<E>(
     }
     let n = a.count - suffixLength
     let m = b.count - suffixLength
-    if n == 0 {
-        for i in 0..<m {
-            changes.append(.insert(offset: i, element: b[i], associatedWith: nil))
-        }
-        return CollectionDifference<E>(changes)!
-    } else if m == 0 {
-        for i in 0..<n {
-            changes.append(.remove(offset: i, element: a[i], associatedWith: nil))
-        }
-        return CollectionDifference<E>(changes)!
-    }
-    
-    //
-    // Greedy prefix consumption
-    //
+
     var prefixLength = 0
     while prefixLength < min(n, m) && a[prefixLength] == b[prefixLength] {
         prefixLength += 1
-    }
-    if prefixLength == n {
-        for i in prefixLength..<m {
-            changes.append(.insert(offset: i, element: b[i], associatedWith: nil))
-        }
-        return CollectionDifference<E>(changes)!
-    } else if prefixLength == m {
-        for i in prefixLength..<n {
-            changes.append(.remove(offset: i, element: a[i], associatedWith: nil))
-        }
-        return CollectionDifference<E>(changes)!
     }
     
     //
@@ -99,7 +74,7 @@ func _club<E>(
     }
 
     // Compute the ideal n-gram length based on the frequency of the most common element
-    let trieDepth = max(
+    let trieDepth = (prefixLength == n || prefixLength == m) ? 0 : max(
         log(n, forBase: a.count / alphaA.mostPopularCount),
         log(m, forBase: b.count / alphaB.mostPopularCount)
     )

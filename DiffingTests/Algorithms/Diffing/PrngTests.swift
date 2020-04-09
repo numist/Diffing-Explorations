@@ -59,7 +59,7 @@ class PrngTests: DiffingTestCase {
         var r = rng()
         for n in [1, 5, 10, 50, 100, 500, 1000] {
             if n > maxN { break }
-            let a = Array(0..<n)
+            let a = OrderedSet(0..<n)
             print("n: \(n): ", terminator: "")
             let b = a.shuffled(using:&r)
             measureDiffs(from: a, to: b)
