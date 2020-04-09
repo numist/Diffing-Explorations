@@ -8,8 +8,8 @@
 /*
  To allow for frontier reduction this queue implementation double-buffers work
  units, draining from `active` and appending to `pending`. When `active` is
- exhausted and a work unit is requested, `pending` is filtered through
- `reduceFrontier` before being made active.
+ exhausted and a work unit is requested, `pending` is reduced using a quadtree
+ and made active by `activatePending`.
  */
 struct WorkQueue {
     var i = 0
@@ -34,6 +34,33 @@ struct WorkQueue {
         pending.append(element)
     }
 
+    /*
+     The edit paths in the work queue can be thought of as forming a "frontier",
+     in the edit graph. This function identifies all paths in `pending` at the
+     fore of that frontier and sets them to `active`, dropping the remainder.
+
+     Simplified, Myers' tracks its work by maintaining a list `v` with length
+     `d + 1` where an element at position `i` represents the edit path that has
+     made the most progress with `i` inserts and `d - i` removes.
+
+     When membership testing is added to the diffing algorithm, the slots in `v`
+     left empty by one path following an obvious edit is usually filled by
+     another path behind it that has made less progress. Because of this,
+     membership testing alone has a minimal effect on the algorithmic
+     complexity of the algorithm.
+
+     If obvious edits are consumed greedily (like matches), the higher level
+     problem being solved by the work queue can be described geometrically as
+     organizing a set of points such that none have an x and y less than any
+     other point.
+
+     This problem can be solved by sorting the points by descending `x + y`
+     and inserting them into a quadtree that drops all insertions to the
+     southwest. All nodes remaining in the structure represent the frontier and—
+     due to the insertion sort order—the resulting structure will also contain
+     no northeast children making it equivalent to a binary tree.
+     */
+    // TODO: which means it should be possible to make FrontierBiNode self-balancing like an AVL tree, eliminating the need for Bool.random() in the comparison function for distributing the nodes evenly.
     private mutating func activatePending() {
         active = Array<EditTreeNode>()
         i = 0
