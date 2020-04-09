@@ -108,13 +108,28 @@ func _club<E>(
     // 1) add a `in: Range` parameter to build trie only for elements in range prefixLength..<n
     // 2) add a `against: [knownRemoves|knownInserts]` parameter to entirely omit ngrams containing disjoint elements since they can never match anyway
     // 3) identify prefixes that are very common and short circuit them to lookups that are fewer levels deep (essentially applying the principles of entropy encoding to the problem of expected n-gram lookup frequency)
-    // ultimately there's a problem here where the cost of the tries causes performance worse than Myers for some tests (like testLoremIpsums), despite the fact that they are very effective in degenerate tests with patterns like diff(a, a.reversed()) or diff(a, a.shuffled())
+    // ultimately there's a problem here where the cost of the tries causes performance worse than Myers for some tests (like testLoremIpsums and low-edit randomized tests), despite the fact that they are extremely effective in degenerate tests with patterns like diff(a, a.reversed()) or diff(a, a.shuffled())
     let trieA = NgramTrie<E>(for: a, depth: trieDepth)
     let trieB = NgramTrie<E>(for: b, depth: trieDepth)
 
     //
     // Diffing algorithm
     //
+    /*
+     The base algorithm is a dynamic programming variant of Myers', with path
+     proliferation managed by a quadtree-backed WorkQueue. More aggressive path
+     culling is possible thanks to membership testing (hence "club" diff)
+     allowing for the greedy consumption of obvious matches.
+
+     Membership testing and path culling dramatically improve performance over
+     Myers' on common inputs, but cases like diff(from: a, to: a.reversed())
+     remain degenerate. To combat this, club diffing builds a trie of n-grams
+     for each input, with length log(n) based on the alphabetic frequency of the
+     most common element in each collection. n-gram lookup supports overall
+     membership testing (used in the greedy loop) as well as reducing path
+     proliferation when the diffing loop has progressed beyond the position of
+     the n-gram.
+     */
     var workQ = WorkQueue()
     workQ.append(EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
 
@@ -122,24 +137,47 @@ func _club<E>(
     while var current = workQ.popFirst(), solutionNode == nil {
         var x = current.x, y = current.y
 
-        // Consume all available matches and ngrams not shared between the collections
+        // Cached n-gram lookup results
+        var xGramInB: Int?
+        var yGramInA: Int?
+
+        // Greedy matching for:
         while x < n || y < m {
+            xGramInB = nil
+            yGramInA = nil
             if x < n && y < m && a[x] == b[y] {
+                // matches
                 x += 1
                 y += 1
             } else if x < n && knownRemoves[x] {
+                // obvious removes (a[x]∉b)
                 x += 1
                 current = EditTreeNode(x: x, y: y, parent: current, free: true)
             } else if y < m && knownInserts[y] {
-                y += 1
-                current = EditTreeNode(x: x, y: y, parent: current, free: true)
-            } else if x <= n-trieB.depth && !trieB.search(for: a[x..<(x+trieB.depth)], after: y) {
-                x += 1
-                current = EditTreeNode(x: x, y: y, parent: current, free: true)
-            } else if y <= m-trieA.depth && !trieA.search(for: b[y..<(y+trieA.depth)], after: x) {
+                // obvious inserts (b[y]∉a)
                 y += 1
                 current = EditTreeNode(x: x, y: y, parent: current, free: true)
             } else {
+                // obvious ngrams (a[x..<x+trieDepth]∉b)
+                if x <= n-trieB.depth {
+                    xGramInB = trieB.lastOffset(of: a[x..<(x+trieB.depth)])
+                    if xGramInB == nil {
+                        x += 1
+                        current = EditTreeNode(x: x, y: y, parent: current, free: true)
+                        continue
+                    }
+                }
+
+                // obvious ngrams (b[y..<y+trieDepth]∉a)
+                if y <= m-trieA.depth {
+                    yGramInA = trieA.lastOffset(of: b[y..<(y+trieA.depth)])
+                    if yGramInA == nil {
+                        y += 1
+                        current = EditTreeNode(x: x, y: y, parent: current, free: true)
+                        continue
+                    }
+                }
+                
                 break
             }
         }
@@ -155,11 +193,11 @@ func _club<E>(
                 // insert
                 workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
             case (let x, let y):
-                if x < n-trieB.depth && !trieB.search(for: a[x..<(x+trieB.depth)], after: y) {
-                    // remove
+                if let xgb = xGramInB, xgb < y {
+                    // Remove only: `current` is ahead of last instance of a[x..<x+trieDepth]) in b
                     workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
-                } else if y < m-trieA.depth && !trieA.search(for: b[y..<(y+trieA.depth)], after: x) {
-                    // insert
+                } else if let yga = yGramInA, yga < x {
+                    // Insert only: `current` is ahead of last instance of b[y..<y+trieDepth) in a
                     workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
                 } else {
                     // Try both

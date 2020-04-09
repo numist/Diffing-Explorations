@@ -25,16 +25,11 @@ class VoseTests: XCTestCase {
         let _ = (0..<100).map({_ in generator.next()})
     }
     
-    func printNgramStats<C>(for str: C, length n: Int) where C : Collection, C.Element : Hashable {
-        var ngrams = Dictionary<[C.Element], Int>()
-        var q = Queue<C.Element>()
-        for e in str {
-            q.append(e)
-            if q.count == n {
-                let substr = q.peekFirst(n)
-                ngrams[substr] = ngrams[substr, default: 0] + 1
-                q.dropFirst()
-            }
+    func printNgramStats<E>(for str: [E], length n: Int) where E : Hashable {
+        var ngrams = Dictionary<[E], Int>()
+        for i in 0..<(str.count - n) {
+            let substr = Array(str[i..<i+n])
+            ngrams[substr] = ngrams[substr, default: 0] + 1
         }
         var uniq = 0
         for (_, count) in ngrams {

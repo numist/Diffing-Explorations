@@ -26,44 +26,36 @@ struct NgramTrie<Element> where Element : Hashable {
     init(for buf: UnsafeBufferPointer<Element>, depth pdepth: Int) {
         depth = pdepth
         root = TrieNode()
-        var q = Queue<Element>()
-        for i in 0..<buf.count {
-            let element = buf[i]
-            q.append(element)
-            if q.count == depth {
-                let ngram = q.peekFirst(depth)
-                var node = root
-                for e in ngram {
-                    if let child = node.children[e] {
-                        node = child
-                    } else {
-                        let newNode = TrieNode()
-                        node.children[e] = newNode
-                        node = newNode
-                    }
+        guard depth <= buf.count else { return }
+        for i in 0..<(buf.count - depth) {
+            var node = root
+
+            // WTB: Slice overhead slowed this loop by 30% compared to direct access
+         // for e in buf[i..<(i + depth)] {
+            for j in i..<(i + depth) {
+                let e = buf[j]
+                if let child = node.children[e] {
+                    node = child
+                } else {
+                    let newNode = TrieNode()
+                    node.children[e] = newNode
+                    node = newNode
                 }
-                node.locations.append(i)
-                q.dropFirst()
             }
+            node.locations.append(i)
         }
     }
     
-    // TODO: > 25% of _club's runtime is being spent paying for Slice overhead
-    func search(for ngram: Slice<UnsafeBufferPointer<Element>>, after offset: Int = 0) -> Bool {
+    func lastOffset(of ngram: Slice<UnsafeBufferPointer<Element>>) -> Int? {
         precondition(ngram.count == depth)
         var node = root
         for e in ngram {
             if let child = node.children[e] {
                 node = child
             } else {
-                return false
+                return nil
             }
         }
-        for l in node.locations {
-            if l > offset {
-                return true
-            }
-        }
-        return false
+        return node.locations.last
     }
 }
