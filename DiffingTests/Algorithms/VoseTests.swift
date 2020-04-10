@@ -35,13 +35,13 @@ class VoseTests: XCTestCase {
         for (_, count) in ngrams {
             if count == 1 { uniq += 1 }
         }
-        print("\ttotal \(n)-grams: \(ngrams.count) (\(uniq) unique)")
+        if printStats { print("\ttotal \(n)-grams: \(ngrams.count) (\(uniq) unique)") }
     }
 
     func printNgramStatistics(alphabet alphabetFreq: [(String,Double)], exp: Int) {
         var generator = VoseAliasMethod(alphabetFreq, rng: Xoshiro(seed: deterministicSeed))
         let strlen = Int(pow(Double(alphabetFreq.count), Double(exp)))
-        print("string length: \(strlen) (\(alphabetFreq.count)**\(exp)), alphabet size: \(alphabetFreq.count)")
+        if printStats { print("string length: \(strlen) (\(alphabetFreq.count)**\(exp)), alphabet size: \(alphabetFreq.count)") }
         let str = (0..<strlen).map({_ in generator.next()})
 
         for n in 1...(exp+1) {
@@ -51,7 +51,7 @@ class VoseTests: XCTestCase {
 
     func testNgramsLorem() {
         let lorem = Array("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-        print("string length: \(lorem.count)")
+        if printStats { print("string length: \(lorem.count)") }
         for n in 1..<5 {
             printNgramStats(for: lorem, length: n)
         }
