@@ -11,17 +11,17 @@
  exhausted and a work unit is requested, `pending` is reduced using a quadtree
  and made active by `activatePending`.
  */
-struct WorkQueue {
+class WorkQueue {
     var minX: Int { return _minX }
     var minY: Int { return _minY }
-    
+    var count: Int { return active.count }
     private var _minX = 0
     private var _minY = 0
     private var i = 0
     private var active = Array<EditTreeNode>()
     private var pending = Array<EditTreeNode>()
     
-    mutating func popFirst() -> EditTreeNode? {
+    func popFirst() -> EditTreeNode? {
         if i >= active.count {
             activatePending()
         }
@@ -35,7 +35,7 @@ struct WorkQueue {
         return result
     }
     
-    mutating func append(_ element: EditTreeNode) {
+    func append(_ element: EditTreeNode) {
         pending.append(element)
     }
 
@@ -85,7 +85,10 @@ struct WorkQueue {
      6.00 ms     3.0%    1 ms                       WorkQueue.FrontierBiNode.insert(_:)
      4.00 ms     2.0%    0 s                         WorkQueue.FrontierBiNode.insert(_:)
      */
-    private mutating func activatePending() {
+    // Back pocket nuclear optimization
+    var turnoverCallback: (()->Void)?
+    private var maxRoundSize = 50
+    private func activatePending() {
         active = Array<EditTreeNode>()
         i = 0
         _minX = 0
@@ -109,9 +112,17 @@ struct WorkQueue {
                 _minX = e.x
                 _minY = e.y
             }
+            if active.count == maxRoundSize {
+                print("WARNING: truncating work queue")
+                break
+            }
         }
         
         pending = Array<EditTreeNode>()
+        
+        if let c = turnoverCallback {
+            c()
+        }
     }
 
     /*

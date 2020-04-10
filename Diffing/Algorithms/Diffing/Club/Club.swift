@@ -32,10 +32,6 @@ func _club<E>(
 ) -> CollectionDifference<E>
     where E : Hashable
 {
-    var wins = 0
-    var losses = 0
-    var changes = [CollectionDifference<E>.Change]()
-
     //
     // Greedy consumption of shared suffix and prefix elements
     //
@@ -109,23 +105,20 @@ func _club<E>(
      proliferation when the diffing loop has progressed beyond the position of
      the n-gram.
      */
-    var workQ = WorkQueue()
-    workQ.append(EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
-
-    var solutionNode: EditTreeNode? = nil
-    while var current = workQ.popFirst(), solutionNode == nil {
-        
-        // TODO: On-demand trie generation is an improvement overall, but still needs work
-        // Most notable regression is that testLargeDiffPerf no longer finishes in the allowed time
-        if losses >= 100 {
-            if wins == 0 && trieA == nil {
+    let workQ = WorkQueue()
+    workQ.turnoverCallback = {
+        // The cost of building tries is often not paid back unless there are at least 100 elements left to diff in each sequence.
+        if workQ.count > 15 && trieA == nil {
+            if (n - workQ.minX) >= 70 && (m - workQ.minY) >= 70 {
                 trieA = .init(for: a, in: workQ.minX..<n, avoiding: knownRemoves, depth: trieDepth)
                 trieB = .init(for: b, in: workQ.minY..<m, avoiding: knownInserts, depth: trieDepth)
             }
-            losses = 0
-            wins = 0
         }
-        
+    }
+    
+    var solutionNode: EditTreeNode? = nil
+    workQ.append(EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
+    while var current = workQ.popFirst(), solutionNode == nil {
         var x = current.x, y = current.y
 
         // Cached n-gram lookup results
@@ -155,7 +148,6 @@ func _club<E>(
                     if xGramInB == nil {
                         x += 1
                         current = EditTreeNode(x: x, y: y, parent: current, free: true)
-                        wins += 1
                         continue
                     }
                 }
@@ -166,14 +158,12 @@ func _club<E>(
                     if yGramInA == nil {
                         y += 1
                         current = EditTreeNode(x: x, y: y, parent: current, free: true)
-                        wins += 1
                         continue
                     }
                 }
                 
                 break
             }
-            wins += 1
         }
         assert(x <= n && y <= m)
 
@@ -187,7 +177,6 @@ func _club<E>(
                 // insert
                 workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
             case (let x, let y):
-                losses += 1
                 if let xgb = xGramInB, xgb < y {
                     // Remove only: `current` is ahead of last instance of a[x..<x+trieDepth]) in b
                     workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
@@ -206,6 +195,7 @@ func _club<E>(
 
     // Solution forming
     var x = n, y = m
+    var changes = [CollectionDifference<E>.Change]()
     while let node = solutionNode?.parent {
         switch (x - node.x).compare(to: y - node.y) {
         case .lessThan:
