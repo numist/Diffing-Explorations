@@ -112,7 +112,7 @@ func _club<E>(
 
     workQ.turnoverCallback = {
         var builtTries = false
-        // The cost of building tries is often not paid back unless there are at least 100 elements left to diff in each sequence.
+        // TODO: improve heuristics for trie creation over the ratio of alphabet size vs diff range
         if workQ.count > 25 && alphaA.count > (n - prefixLength) / 2 && trieA == nil {
             trieA = .init(for: a, in: workQ.minX..<n, avoiding: knownRemoves, depth: trieDepth)
             builtTries = true
