@@ -191,8 +191,9 @@ func _club<E>(
             case (let x, let y):
                 let nextYInA = alphaA.offset(of: b[y], after: x)
                 let nextXInB = alphaB.offset(of: a[x], after: y)
-                if let nYIA = nextYInA, let nXIB = nextXInB, nYIA > 3*nXIB || nXIB > 3*nYIA {
+                if let nYIA = nextYInA, let nXIB = nextXInB, (nYIA-x) > 3*(nXIB-y) || (nXIB-y) > 3*(nYIA-x) {
                     // Lossy optimization: always chase the nearest match of the two possibilities when there is a large disparity
+                    // TODO: `(nYIA-x) > 3*(nXIB-y) || (nXIB-y) > 3*(nYIA-x)` is confusing/clever. explain it a bit more.
                     if nYIA - x < nXIB - y {
                         // Remove
                         workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
