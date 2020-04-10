@@ -114,11 +114,11 @@ func _club<E>(
         var builtTries = false
         // TODO: improve heuristics for trie creation over the ratio of alphabet size vs diff range
         if workQ.count > 25 && alphaA.count > (n - prefixLength) / 2 && trieA == nil {
-            trieA = .init(for: a, in: workQ.minX..<n, avoiding: knownRemoves, depth: trieDepth)
+            trieA = .init(for: a, in: prefixLength..<n, avoiding: knownRemoves, depth: trieDepth)
             builtTries = true
         }
         if workQ.count > 25 && alphaB.count > (m - prefixLength) / 2 && trieB == nil {
-            trieB = .init(for: b, in: workQ.minY..<m, avoiding: knownInserts, depth: trieDepth)
+            trieB = .init(for: b, in: prefixLength..<m, avoiding: knownInserts, depth: trieDepth)
             builtTries = true
         }
         if builtTries {
