@@ -9,17 +9,33 @@ import XCTest
 @testable import Diffing
 
 class AlphabetTests: XCTestCase {
-
-    func testComparisons() {
-        for _ in 0..<10 {
-            let a = Array("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.").map({ MeasurementElement($0) })
+    func testOffsetAfter() {
+        let b = [0, 1, 2, 3, 4, 0, 1, 2, 3, 4]
+        
+        _withContiguousStorage(for: b) { a -> Void in
+            let alpha = _Alphabet(a, in: 0..<a.count)
             
-            _withContiguousStorage(for: a) { b -> Void in
-                comparisons = 0
-                let _ = _Alphabet(b, in: 0..<b.count)
-                XCTAssertLessThan(comparisons, 800) // expected: ~650. Dictionary is *way* nondeterministic though
-            }
+            XCTAssertEqual(0, alpha.offset(of: 0, after: -10000))
+
+            XCTAssertEqual(0, alpha.offset(of: 0, after: -1))
+            XCTAssertEqual(1, alpha.offset(of: 1, after: 0))
+            XCTAssertEqual(2, alpha.offset(of: 2, after: 0))
+            XCTAssertEqual(3, alpha.offset(of: 3, after: 0))
+            XCTAssertEqual(4, alpha.offset(of: 4, after: 0))
+
+            XCTAssertEqual(5, alpha.offset(of: 0, after: 4))
+            XCTAssertEqual(6, alpha.offset(of: 1, after: 4))
+            XCTAssertEqual(7, alpha.offset(of: 2, after: 4))
+            XCTAssertEqual(8, alpha.offset(of: 3, after: 4))
+            XCTAssertEqual(9, alpha.offset(of: 4, after: 4))
+
+            XCTAssertEqual(nil, alpha.offset(of: 0, after: 9))
+            XCTAssertEqual(nil, alpha.offset(of: 1, after: 9))
+            XCTAssertEqual(nil, alpha.offset(of: 2, after: 9))
+            XCTAssertEqual(nil, alpha.offset(of: 3, after: 9))
+            XCTAssertEqual(nil, alpha.offset(of: 4, after: 9))
+            
+            XCTAssertEqual(nil, alpha.offset(of: 0, after: 9000))
         }
     }
-
 }

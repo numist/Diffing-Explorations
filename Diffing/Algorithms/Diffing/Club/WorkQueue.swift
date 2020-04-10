@@ -22,7 +22,7 @@ class WorkQueue {
     private var pending = Array<EditTreeNode>()
     
     func popFirst() -> EditTreeNode? {
-        if i >= active.count {
+        while i >= active.count && pending.count > 0 {
             activatePending()
         }
 
@@ -33,6 +33,12 @@ class WorkQueue {
         let result = active[i]
         i += 1
         return result
+    }
+    
+    func purge() {
+        i = 0
+        active = Array<EditTreeNode>()
+        pending = Array<EditTreeNode>()
     }
     
     func append(_ element: EditTreeNode) {
@@ -85,9 +91,8 @@ class WorkQueue {
      6.00 ms     3.0%    1 ms                       WorkQueue.FrontierBiNode.insert(_:)
      4.00 ms     2.0%    0 s                         WorkQueue.FrontierBiNode.insert(_:)
      */
-    // Back pocket nuclear optimization
+    var maxRoundSize = Int.max // Back pocket nuclear optimization
     var turnoverCallback: (()->Void)?
-    private var maxRoundSize = 50
     private func activatePending() {
         active = Array<EditTreeNode>()
         i = 0
@@ -113,7 +118,7 @@ class WorkQueue {
                 _minY = e.y
             }
             if active.count == maxRoundSize {
-                print("WARNING: truncating work queue")
+                // Truncating work queue at maxRoundSize
                 break
             }
         }

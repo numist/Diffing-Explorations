@@ -106,13 +106,25 @@ func _club<E>(
      the n-gram.
      */
     let workQ = WorkQueue()
+    
+    // Every round of evaluation should limit itself to the 50 paths that have made the most progress
+    workQ.maxRoundSize = 50
+
     workQ.turnoverCallback = {
+        var builtTries = false
         // The cost of building tries is often not paid back unless there are at least 100 elements left to diff in each sequence.
-        if workQ.count > 15 && trieA == nil {
-            if (n - workQ.minX) >= 70 && (m - workQ.minY) >= 70 {
-                trieA = .init(for: a, in: workQ.minX..<n, avoiding: knownRemoves, depth: trieDepth)
-                trieB = .init(for: b, in: workQ.minY..<m, avoiding: knownInserts, depth: trieDepth)
-            }
+        if workQ.count > 25 && alphaA.count > (n - prefixLength) / 2 && trieA == nil {
+            trieA = .init(for: a, in: workQ.minX..<n, avoiding: knownRemoves, depth: trieDepth)
+            builtTries = true
+        }
+        if workQ.count > 25 && alphaB.count > (m - prefixLength) / 2 && trieB == nil {
+            trieB = .init(for: b, in: workQ.minY..<m, avoiding: knownInserts, depth: trieDepth)
+            builtTries = true
+        }
+        if builtTries {
+//            print("built tries (depth: \(trieDepth)), starting over")
+            workQ.purge()
+            workQ.append(EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
         }
     }
     
@@ -177,7 +189,24 @@ func _club<E>(
                 // insert
                 workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
             case (let x, let y):
-                if let xgb = xGramInB, xgb < y {
+                let nextYInA = alphaA.offset(of: b[y], after: x)
+                let nextXInB = alphaB.offset(of: a[x], after: y)
+                if let nYIA = nextYInA, let nXIB = nextXInB, nYIA > 3*nXIB || nXIB > 3*nYIA {
+                    // Lossy optimization: always chase the nearest match of the two possibilities when there is a large disparity
+                    if nYIA - x < nXIB - y {
+                        // Remove
+                        workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
+                    } else {
+                        // Insert
+                        workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
+                    }
+                } else if nextXInB == nil {
+                    // a[x] does not exist after y in b do this must be a remove
+                     workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
+                } else if nextYInA == nil {
+                    // b[y] does not exist after x in a so this must be an insert
+                    workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
+                } else if let xgb = xGramInB, xgb < y {
                     // Remove only: `current` is ahead of last instance of a[x..<x+trieDepth]) in b
                     workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
                 } else if let yga = yGramInA, yga < x {
