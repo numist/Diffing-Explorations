@@ -17,7 +17,7 @@ class EditTreeNode {
 
     let parent: EditTreeNode?
 
-    public init(x px: Int, y py: Int, parent pparent: EditTreeNode?, free: Bool = false) {
+    init(x px: Int, y py: Int, parent pparent: EditTreeNode?, free: Bool = false) {
         x = px
         y = py
         parent = pparent
