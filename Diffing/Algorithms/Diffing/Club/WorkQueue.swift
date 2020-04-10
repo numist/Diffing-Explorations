@@ -70,27 +70,12 @@ class WorkQueue {
      southwest. All nodes remaining in the structure represent the frontier and—
      due to the insertion sort order—the resulting structure will also contain
      no northeast children making it equivalent to a binary tree.
+     
+     However, unlike a binary tree it is not possible to implement
+     full self-balancing during insertion as the geometric guarantees above are
+     broken when a parent node has a smaller (x + y) than any of its children.
      */
-    // TODO: which means it should be possible to make FrontierBiNode self-balancing like an AVL tree, eliminating the need for Bool.random() in the comparison function for distributing the nodes evenly.
-    // Might be useful, btree.c diffing shows a surprising recursion depth for a max of 148 elements in the pending queue:
-    /*
-     97.00 ms   48.7%    0 s          WorkQueue.activatePending()
-     85.00 ms   42.7%    0 s           WorkQueue.FrontierBiNode.insert(_:)
-     63.00 ms   31.6%    0 s            WorkQueue.FrontierBiNode.insert(_:)
-     59.00 ms   29.6%    0 s             WorkQueue.FrontierBiNode.insert(_:)
-     53.00 ms   26.6%    0 s              WorkQueue.FrontierBiNode.insert(_:)
-     44.00 ms   22.1%    0 s               WorkQueue.FrontierBiNode.insert(_:)
-     36.00 ms   18.0%    0 s                WorkQueue.FrontierBiNode.insert(_:)
-     32.00 ms   16.0%    0 s                 WorkQueue.FrontierBiNode.insert(_:)
-     25.00 ms   12.5%    0 s                  WorkQueue.FrontierBiNode.insert(_:)
-     17.00 ms    8.5%    0 s                   WorkQueue.FrontierBiNode.insert(_:)
-     14.00 ms    7.0%    0 s                    WorkQueue.FrontierBiNode.insert(_:)
-     12.00 ms    6.0%    0 s                     WorkQueue.FrontierBiNode.insert(_:)
-     10.00 ms    5.0%    0 s                      WorkQueue.FrontierBiNode.insert(_:)
-     9.00 ms     4.5%    0 s                       WorkQueue.FrontierBiNode.insert(_:)
-     6.00 ms     3.0%    1 ms                       WorkQueue.FrontierBiNode.insert(_:)
-     4.00 ms     2.0%    0 s                         WorkQueue.FrontierBiNode.insert(_:)
-     */
+    // TODO: It would still be nice to find some efficiencies here though as the workqueue represents a significant amount of the runtime in the test suite. maybe rotations could be allowed when cardinality is not violated?
     var maxRoundSize = Int.max // Back pocket nuclear optimization
     var turnoverCallback: (()->Void)?
     private func activatePending() {
