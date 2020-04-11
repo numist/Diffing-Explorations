@@ -12,11 +12,7 @@
  and made active by `activatePending`.
  */
 class _WorkQueue {
-    var minX: Int { return _minX }
-    var minY: Int { return _minY }
     var count: Int { return active.count }
-    private var _minX = 0
-    private var _minY = 0
     private var i = 0
     private var active = Array<_EditTreeNode>()
     private var pending = Array<_EditTreeNode>()
@@ -81,8 +77,6 @@ class _WorkQueue {
     private func activatePending() {
         active = Array<_EditTreeNode>()
         i = 0
-        _minX = 0
-        _minY = 0
 
         var root: FrontierBiNode? = nil
         for e in pending.sorted(by: { (p1, p2) -> Bool in
@@ -93,14 +87,10 @@ class _WorkQueue {
             if let r = root {
                 if r.insert(FrontierBiNode(e)) {
                     active.append(e)
-                    _minX = min(_minX, e.x)
-                    _minY = min(_minY, e.y)
                 }
             } else {
                 root = FrontierBiNode(e)
                 active.append(e)
-                _minX = e.x
-                _minY = e.y
             }
             if active.count == maxRoundSize {
                 // Truncating work queue at maxRoundSize
