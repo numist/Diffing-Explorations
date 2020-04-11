@@ -8,14 +8,13 @@
 struct _Alphabet<Element> where Element : Hashable {
     private let _f: [Element:[Int]]
     let mostPopularCount: Int
-    var count: Int { return _f.count }
     
     init(_ c: UnsafeBufferPointer<Element>, in range: Range<Int>) {
         var f = [Element:[Int]]()
         for i in range {
             f[c[i], default: []] += [i]
         }
-        mostPopularCount = f.values.map({ $0.count }).reduce(0, max)
+        mostPopularCount = f.values.map({ $0.count }).reduce(0, Swift.max)
         _f = f
     }
     
@@ -35,7 +34,19 @@ struct _Alphabet<Element> where Element : Hashable {
         return min < locations.count ? locations[min] : nil
     }
     
+    func offsets(for e: Element) -> [Int] {
+        return _f[e] ?? []
+    }
+    
     func contains(_ e: Element) -> Bool {
         return _f[e] != nil
+    }
+}
+
+extension _Alphabet : Sequence {
+    var count: Int { return _f.count }
+
+    func makeIterator() -> Dictionary<Element,[Int]>.Keys.Iterator {
+        return _f.keys.makeIterator()
     }
 }

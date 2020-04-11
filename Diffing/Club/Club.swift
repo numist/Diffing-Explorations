@@ -66,17 +66,19 @@ where
 
     // Precompute all known e∈a,e∉b and e∈b,e∉a
     var knownRemoves = Array<Bool>(repeating: false, count: n)
-    for i in prefixLength..<n {
-        let e = a[i]
+    for e in alphaA {
         if !alphaB.contains(e) {
-            knownRemoves[i] = true
+            for i in alphaA.offsets(for: e) {
+                knownRemoves[i] = true
+            }
         }
     }
     var knownInserts = Array<Bool>(repeating: false, count: m)
-    for i in prefixLength..<m {
-        let e = b[i]
+    for e in alphaB {
         if !alphaA.contains(e) {
-            knownInserts[i] = true
+            for i in alphaB.offsets(for: e) {
+                knownInserts[i] = true
+            }
         }
     }
 
