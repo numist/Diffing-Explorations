@@ -55,10 +55,6 @@ where
     //
     
     // Determine the alphabet of each collection
-    // TODO: store offsets in _Alphabet and use set arithmetic and cross-alphabet search to fill out knownRemoves and knownInserts faster (and probably fewer comparisons)
-    // Tests to watch for improvements from this include:
-    // 1.549 regression testBinaryByPercentageChanged@5% — there's no avoiding a regression, but it could be smaller.
-    // 5.000 regression on testDisparateLetterVsNumberStrings@n=1, 1.800 regression …@n=5, 0.630 speedup …@n=10
     // TODO: alphabet intersection could also be used to inform when the algorithm generates the tries (more overlap: more eager)
     // TODO: the expected diff size could probably be estimated by taking shared elements and comparing the offset sums of each alphabet, which would also help inform trie generation
     let alphaA = _Alphabet(a, in: prefixLength..<n)
