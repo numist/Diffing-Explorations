@@ -218,16 +218,18 @@ where
                             if average / 2 > 100 {
                                 // then build the tries
                                 trieA = .init(
+                                    depth: log((n - prefixLength), forBase: max(2, alphaA.count)),
                                     for: a,
                                     in: prefixLength..<n,
-                                    avoiding: knownRemoves,
-                                    depth: log((n - prefixLength), forBase: max(2, alphaA.count))
+                                    alphabet: alphaA,
+                                    avoiding: knownRemoves
                                 )
                                 trieB = .init(
+                                    depth: log((m - prefixLength), forBase: max(2, alphaB.count)),
                                     for: b,
                                     in: prefixLength..<m,
-                                    avoiding: knownInserts,
-                                    depth: log((m - prefixLength), forBase: max(2, alphaB.count))
+                                    alphabet: alphaB,
+                                    avoiding: knownInserts
                                 )
                                 // and start over.
                                 print("trie again!")

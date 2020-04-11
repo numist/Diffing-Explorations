@@ -24,13 +24,15 @@ struct _NgramTrie<Element> where Element : Hashable {
      */
     
     init(
+        depth pdepth: Int,
         for buf: UnsafeBufferPointer<Element>,
         in range: Range<Int>,
-        avoiding knownUniques: Array<Bool>,
-        depth pdepth: Int
+        alphabet: _Alphabet<Element>,
+        avoiding knownUniques: Array<Bool>
     ) {
         depth = pdepth
         root = _TrieNode()
+        root.children.reserveCapacity(alphabet.count)
         guard depth > 0 && depth <= range.count else { return }
         
         var skip = 0
