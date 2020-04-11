@@ -12,7 +12,9 @@
  and made active by `activatePending`.
  */
 class _WorkQueue {
-    var count: Int { return active.count }
+    // Last ditch/worst case optimization: only pursue the paths that are making the most progress
+    var maxRoundSize = Int.max
+
     private var i = 0
     private var active = Array<_EditTreeNode>()
     private var pending = Array<_EditTreeNode>()
@@ -71,9 +73,6 @@ class _WorkQueue {
      full self-balancing during insertion as the geometric guarantees above are
      broken when a parent node has a smaller (x + y) than any of its children.
      */
-    // TODO: It would still be nice to find some efficiencies here though as the _WorkQueue represents a significant amount of the runtime in the test suite. maybe rotations could be allowed when cardinality is not violated?
-    var maxRoundSize = Int.max // Back pocket nuclear optimization
-    var turnoverCallback: (()->Void)?
     private func activatePending() {
         active = Array<_EditTreeNode>()
         i = 0
@@ -99,10 +98,6 @@ class _WorkQueue {
         }
         
         pending = Array<_EditTreeNode>()
-        
-        if let c = turnoverCallback {
-            c()
-        }
     }
 
     /*

@@ -22,10 +22,10 @@ import XCTest
 
 class AlphabetTests: XCTestCase {
     func testOffsetAfter() {
-        let b = [0, 1, 2, 3, 4, 0, 1, 2, 3, 4]
+        let a = [0, 1, 2, 3, 4, 0, 1, 2, 3, 4]
         
-        _withContiguousStorage(for: b) { a -> Void in
-            let alpha = _Alphabet(a, in: 0..<a.count)
+        _withContiguousStorage(for: a) { b -> Void in
+            let alpha = _Alphabet(b, in: 0..<b.count)
             
             XCTAssertEqual(0, alpha.offset(of: 0, after: -10000))
 
@@ -48,6 +48,18 @@ class AlphabetTests: XCTestCase {
             XCTAssertEqual(nil, alpha.offset(of: 4, after: 9))
             
             XCTAssertEqual(nil, alpha.offset(of: 0, after: 9000))
+        }
+    }
+    
+    func testElementDoesntExist() {
+        let a = [0, 1, 2, 3, 4, 0, 1, 2, 3, 4]
+        
+        _withContiguousStorage(for: a) { b -> Void in
+            let alpha = _Alphabet(b, in: 0..<b.count)
+            
+            XCTAssertEqual([], alpha.offsets(for:1234))
+            
+            XCTAssertEqual(nil, alpha.offset(of: 1234, after: -1))
         }
     }
 }

@@ -77,13 +77,15 @@ where
             }
         }
     }
+    
+    // Ringbuffer tracking match distances for on-demand trie creation
+    var averageMatchDistance = Array<Int>(repeating: 0, count: 100)
+    var aMDi = 0
 
-    // Compute the ideal n-gram length based on the frequency of the most common element
-    let trieDepth = (prefixLength >= n-1 || prefixLength >= m-1) ? 0 : max(
-        log((n - prefixLength), forBase: max(2, (n - prefixLength) / alphaA.mostPopularCount)),
-        log((m - prefixLength), forBase: max(2, (m - prefixLength) / alphaB.mostPopularCount))
-    )
-    assert(trieDepth == 0 || trieDepth >= 2)
+    let workQ = _WorkQueue()
+    // Every round of evaluation should limit itself to the 50 paths that have made the most progress
+    workQ.maxRoundSize = 50
+
     // n-gram tries are built on-demand when the algorithm determines they would be useful
     var trieA: _NgramTrie<E>? = nil
     var trieB: _NgramTrie<E>? = nil
@@ -106,30 +108,6 @@ where
      proliferation when the diffing loop has progressed beyond the position of
      the n-gram.
      */
-    let workQ = _WorkQueue()
-    
-    // Every round of evaluation should limit itself to the 50 paths that have made the most progress
-    workQ.maxRoundSize = 50
-
-    workQ.turnoverCallback = {
-        var builtTries = false
-        // TODO: improve heuristics for trie creation over the ratio of alphabet size vs diff range
-        // Maybe when (n - prefixLength) / alphaA.mostPopularCount > workQ.maxRoundSize?
-        if workQ.count > 25 && alphaA.count > (n - prefixLength) / 2 && trieA == nil {
-            trieA = .init(for: a, in: prefixLength..<n, avoiding: knownRemoves, depth: trieDepth)
-            builtTries = true
-        }
-        if workQ.count > 25 && alphaB.count > (m - prefixLength) / 2 && trieB == nil {
-            trieB = .init(for: b, in: prefixLength..<m, avoiding: knownInserts, depth: trieDepth)
-            builtTries = true
-        }
-        if builtTries {
-//            print("built tries (depth: \(trieDepth)), starting over")
-            workQ.purge()
-            workQ.append(_EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
-        }
-    }
-    
     var solutionNode: _EditTreeNode? = nil
     workQ.append(_EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
     while var current = workQ.popFirst(), solutionNode == nil {
@@ -181,6 +159,7 @@ where
         }
         assert(x <= n && y <= m)
 
+        // Every edit path makes progress by enqueuing one (or two) new edit paths back onto the work queue
         switch (x, y) {
             case (n, m):
                 solutionNode = _EditTreeNode(x: x, y: y, parent: current)
@@ -193,22 +172,28 @@ where
             case (let x, let y):
                 let nextYInA = alphaA.offset(of: b[y], after: x)
                 let nextXInB = alphaB.offset(of: a[x], after: y)
-                if let nYIA = nextYInA, let nXIB = nextXInB, (nYIA-x) > 3*(nXIB-y) || (nXIB-y) > 3*(nYIA-x) {
-                    // Lossy optimization: always chase the nearest match of the two possibilities when there is a large disparity
-                    // TODO: `(nYIA-x) > 3*(nXIB-y) || (nXIB-y) > 3*(nYIA-x)` is confusing/clever. explain it a bit more.
-                    if nYIA - x < nXIB - y {
+                if nextXInB == nil {
+                    // a[x] does not exist after y in b do this must be a remove
+                     workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
+                } else if nextYInA == nil {
+                    // b[y] does not exist after x in a so this must be an insert
+                    workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
+                } else
+                // WTB: nextYInA and nextXInB are guaranteed non-nil by the previous conditionals.
+                // The compiler really ought to allow omitting the !s past this point.
+                if (nextYInA!-x) > 2*(nextXInB!-y) || (nextXInB!-y) > 2*(nextYInA!-x) {
+                    // nextXInB-y is the distance between y and the location of a[x] in b
+                    // nextYInA-x is the distance between x and the location of b[y] in a
+                    // If one of those distances is less than half of the other,
+                    // we assume that we'll still get a sufficiently minimal diff if we
+                    // greedily edit the element with the further match distance.
+                    if nextYInA! - x < nextXInB! - y {
                         // Remove
                         workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
                     } else {
                         // Insert
                         workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
                     }
-                } else if nextXInB == nil {
-                    // a[x] does not exist after y in b do this must be a remove
-                     workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
-                } else if nextYInA == nil {
-                    // b[y] does not exist after x in a so this must be an insert
-                    workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
                 } else if let xgb = xGramInB, xgb < y {
                     // Remove only: `current` is ahead of last instance of a[x..<x+trieDepth]) in b
                     workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
@@ -219,6 +204,40 @@ where
                     // Try both
                     workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
                     workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
+
+                    // If tries haven't been set up yet,
+                    if trieA == nil || trieB == nil {
+                        // record the distances between the matches for a[x] in b and b[y] in a
+                        averageMatchDistance[aMDi] = (nextYInA!-x) + (nextXInB!-y)
+                        aMDi += 1
+                        // and when the ringbuffer finishes a lap,
+                        if aMDi == averageMatchDistance.count {
+                            // if the average distance...
+                            let average = averageMatchDistance.reduce(0, +) / aMDi
+                            // ...is more than 100 (magic number chosen somewhat randomly)
+                            if average / 2 > 100 {
+                                // then build the tries
+                                trieA = .init(
+                                    for: a,
+                                    in: prefixLength..<n,
+                                    avoiding: knownRemoves,
+                                    depth: log((n - prefixLength), forBase: max(2, alphaA.count))
+                                )
+                                trieB = .init(
+                                    for: b,
+                                    in: prefixLength..<m,
+                                    avoiding: knownInserts,
+                                    depth: log((m - prefixLength), forBase: max(2, alphaB.count))
+                                )
+                                // and start over.
+                                print("trie again!")
+                                workQ.purge()
+                                workQ.append(_EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
+                            }
+                            // (and reset the write position of the ringbuffer)
+                            aMDi = 0
+                        }
+                    }
                 }
         }
     }
