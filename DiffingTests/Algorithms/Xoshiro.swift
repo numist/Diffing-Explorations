@@ -14,24 +14,29 @@
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ * This file was modified in 2020 by Scott Perry ( dev@numist.net )
  */
 
-public struct Xoshiro: RandomNumberGenerator {
-    public typealias StateType = (UInt64, UInt64, UInt64, UInt64)
+// It's not that other seeds aren't deterministic, just that this is the one we've settled on using
+let deterministicSeed : Xoshiro.StateType = (42, 42, 42, 42)
+
+struct Xoshiro: RandomNumberGenerator {
+    typealias StateType = (UInt64, UInt64, UInt64, UInt64)
     
     private var state: StateType
     
-    public init() {
+    init() {
         var rng = SystemRandomNumberGenerator()
         self.init(seed: (rng.next(), rng.next(), rng.next(), rng.next()))
     }
     
-    public init(seed: StateType) {
+    init(seed: StateType) {
         precondition(seed != (0, 0, 0, 0))
         state = seed
     }
     
-    public mutating func next() -> UInt64 {
+    mutating func next() -> UInt64 {
         // Derived from public domain implementation of xoshiro256** here:
         // http://xoshiro.di.unimi.it
         // by David Blackman and Sebastiano Vigna

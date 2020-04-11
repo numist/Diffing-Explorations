@@ -6,9 +6,9 @@
  */
 
 import XCTest
-@testable import Diffing
+import Diffing
 
-let printStats = false
+let printStats = true
 
 class DiffingTestCase: XCTestCase {
     

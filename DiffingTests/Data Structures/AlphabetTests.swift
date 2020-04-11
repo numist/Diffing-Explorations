@@ -6,6 +6,18 @@
  */
 
 import XCTest
+
+/*
+ Normally I'm not a fan of white box testing, but it's possible for
+ incorrectness in Alphabet to not affect the correctness of the diffing
+ algorithm's output while severely impacting performance.
+
+ Unfortunately, since Dictionary's behaviour is so nondeterministic, it isn't
+ possible to validate that the Alphabet type is behaving properly by calling
+ the diffing algorithm and analyzing the number of calls to `Element.==`.
+
+ So here we are.
+ */
 @testable import Diffing
 
 class AlphabetTests: XCTestCase {

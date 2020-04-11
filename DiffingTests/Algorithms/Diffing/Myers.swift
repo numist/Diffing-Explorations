@@ -5,6 +5,9 @@
  * Attribution is appreciated but not necessary.
  */
 
+// For _withContiguousStorage, to avoid duplication
+@testable import Diffing
+
 func _myers<C,D>(
     from old: C, to new: D,
     using cmp: (C.Element, D.Element) -> Bool

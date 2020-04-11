@@ -5,11 +5,11 @@
  * Attribution is appreciated but not necessary.
  */
 
-public struct VoseAliasMethod<Element> {
+struct VoseAliasMethod<Element> {
     /* It's expected that the vast majority of people won't care about
      * customizing the specific rng used by this type, so an existential is
      * preferable to another generic parameter. */
-    private struct _AnyRandomNumberGenerator : RandomNumberGenerator {
+    struct _AnyRandomNumberGenerator : RandomNumberGenerator {
         var n: () -> UInt64
         init(_ rng: RandomNumberGenerator) {
             var r = rng
@@ -26,7 +26,7 @@ public struct VoseAliasMethod<Element> {
     // rng for producing elements
     private var r: _AnyRandomNumberGenerator
     
-    public init(
+    init(
         _ probs: [(Element, Double)],
         rng: RandomNumberGenerator = SystemRandomNumberGenerator()
         ) {
@@ -85,7 +85,7 @@ public struct VoseAliasMethod<Element> {
         r = _AnyRandomNumberGenerator(rng)
     }
     
-    public mutating func next() -> Element {
+    mutating func next() -> Element {
         let (choice, pToKeep, alt) = a.randomElement(using: &r)!
         return Double.random(in: 0.0..<1.0, using: &r) < pToKeep ? choice : alt
     }

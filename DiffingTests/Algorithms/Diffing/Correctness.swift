@@ -6,14 +6,14 @@
  */
 
 import XCTest
-@testable import Diffing
+import Diffing
 
-class CorrectnessClub: Correctness {
+class CorrectnessDifference: CorrectnessMyers {
     override func diff<C, D>(from old: C, to new: D) -> CollectionDifference<C.Element>
         where C : BidirectionalCollection, D : BidirectionalCollection,
         C.Element == D.Element, C.Element : Hashable
     {
-        return _club(from: old, to: new)
+        return difference(from: old, to: new)
     }
     
     func testLargeDiffPerf() {
@@ -39,23 +39,14 @@ class CorrectnessClub: Correctness {
     }
 }
 
-class CorrectnessMyers: Correctness {
-    override func diff<C, D>(from old: C, to new: D) -> CollectionDifference<C.Element>
-        where C : BidirectionalCollection, D : BidirectionalCollection,
-        C.Element == D.Element, C.Element : Hashable
-    {
-        return _myers(from: old, to: new, using: ==)
-    }
-}
-
-class Correctness: XCTestCase {
+class CorrectnessMyers: XCTestCase {
     func rng() -> Xoshiro { Xoshiro(seed: deterministicSeed) }
     
     func diff<C, D>(from old: C, to new: D) -> CollectionDifference<C.Element>
         where C : BidirectionalCollection, D : BidirectionalCollection,
         C.Element == D.Element, C.Element : Hashable
     {
-        return difference(from: old, to: new)
+        return _myers(from: old, to: new, using: ==)
     }
     
     func verify<C, E>(from a: C, to b: C, produced d: CollectionDifference<E>, mutationCount c: Int = Int.max)

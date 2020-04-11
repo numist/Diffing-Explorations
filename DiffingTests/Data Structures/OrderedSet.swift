@@ -5,7 +5,7 @@
  * Attribution is appreciated but not necessary.
  */
 
-public struct OrderedSet<Element : Hashable> {
+struct OrderedSet<Element : Hashable> {
     private var elements: [Element] = []
     private var indexOfElement: [Element:Int] = [:]
     
@@ -31,23 +31,23 @@ public struct OrderedSet<Element : Hashable> {
 }
 
 extension OrderedSet : RandomAccessCollection {
-    public typealias Index = Int
+    typealias Index = Int
 
-    public subscript(position: Int) -> Element {
+    subscript(position: Int) -> Element {
         get {
             return elements[position]
         }
     }
         
-    public var startIndex: OrderedSet<Element>.Index {
+    var startIndex: OrderedSet<Element>.Index {
         return elements.startIndex
     }
     
-    public var endIndex: OrderedSet<Element>.Index {
+    var endIndex: OrderedSet<Element>.Index {
         return elements.endIndex
     }
     
-    public func index(after i: Int) -> Int {
+    func index(after i: Int) -> Int {
         return i + 1
     }
 }

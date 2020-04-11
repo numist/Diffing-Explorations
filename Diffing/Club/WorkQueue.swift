@@ -11,17 +11,17 @@
  exhausted and a work unit is requested, `pending` is reduced using a quadtree
  and made active by `activatePending`.
  */
-class WorkQueue {
+class _WorkQueue {
     var minX: Int { return _minX }
     var minY: Int { return _minY }
     var count: Int { return active.count }
     private var _minX = 0
     private var _minY = 0
     private var i = 0
-    private var active = Array<EditTreeNode>()
-    private var pending = Array<EditTreeNode>()
+    private var active = Array<_EditTreeNode>()
+    private var pending = Array<_EditTreeNode>()
     
-    func popFirst() -> EditTreeNode? {
+    func popFirst() -> _EditTreeNode? {
         while i >= active.count && pending.count > 0 {
             activatePending()
         }
@@ -37,11 +37,11 @@ class WorkQueue {
     
     func purge() {
         i = 0
-        active = Array<EditTreeNode>()
-        pending = Array<EditTreeNode>()
+        active = Array<_EditTreeNode>()
+        pending = Array<_EditTreeNode>()
     }
     
-    func append(_ element: EditTreeNode) {
+    func append(_ element: _EditTreeNode) {
         pending.append(element)
     }
 
@@ -75,11 +75,11 @@ class WorkQueue {
      full self-balancing during insertion as the geometric guarantees above are
      broken when a parent node has a smaller (x + y) than any of its children.
      */
-    // TODO: It would still be nice to find some efficiencies here though as the workqueue represents a significant amount of the runtime in the test suite. maybe rotations could be allowed when cardinality is not violated?
+    // TODO: It would still be nice to find some efficiencies here though as the _WorkQueue represents a significant amount of the runtime in the test suite. maybe rotations could be allowed when cardinality is not violated?
     var maxRoundSize = Int.max // Back pocket nuclear optimization
     var turnoverCallback: (()->Void)?
     private func activatePending() {
-        active = Array<EditTreeNode>()
+        active = Array<_EditTreeNode>()
         i = 0
         _minX = 0
         _minY = 0
@@ -108,7 +108,7 @@ class WorkQueue {
             }
         }
         
-        pending = Array<EditTreeNode>()
+        pending = Array<_EditTreeNode>()
         
         if let c = turnoverCallback {
             c()
@@ -127,12 +127,12 @@ class WorkQueue {
      */
     private class FrontierBiNode {
         // Non-private property accessors are all read-only
-        let e: EditTreeNode
+        let e: _EditTreeNode
 
         private var _nw: FrontierBiNode? = nil
         private var _se: FrontierBiNode? = nil
 
-        init(_ pe: EditTreeNode) {
+        init(_ pe: _EditTreeNode) {
             e = pe
         }
 

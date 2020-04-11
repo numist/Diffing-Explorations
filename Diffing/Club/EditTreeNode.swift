@@ -5,7 +5,7 @@
  * Attribution is appreciated but not necessary.
  */
 
-class EditTreeNode {
+class _EditTreeNode {
     let x: Int
     let y: Int
     
@@ -15,9 +15,9 @@ class EditTreeNode {
     var discountedX: Int { return x - freeRemoves }
     var discountedY: Int { return y - freeInserts }
 
-    let parent: EditTreeNode?
+    let parent: _EditTreeNode?
 
-    init(x px: Int, y py: Int, parent pparent: EditTreeNode?, free: Bool = false) {
+    init(x px: Int, y py: Int, parent pparent: _EditTreeNode?, free: Bool = false) {
         x = px
         y = py
         parent = pparent

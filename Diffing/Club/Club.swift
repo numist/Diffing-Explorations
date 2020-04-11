@@ -7,12 +7,14 @@
 
 import Foundation // for log()
 
+// TODO: eliminate dependency on Foundation
 fileprivate func log(_ val: Int, forBase base: Int) -> Int {
     if val <= 1 || base <= 1 { return 1 }
     let result = log(Double(val))/log(Double(base))
     return Int(result + 1.0)
 }
 
+// TODO: code will be messier, but this `extention Int` probably needs to go away before this becomes a swift PR
 fileprivate extension Int {
     enum ComparisonResult {
         case same
@@ -30,7 +32,8 @@ func _club<E>(
     from a: UnsafeBufferPointer<E>,
     to b: UnsafeBufferPointer<E>
 ) -> CollectionDifference<E>
-    where E : Hashable
+where
+    E : Hashable
 {
     //
     // Greedy consumption of shared suffix and prefix elements
@@ -84,15 +87,15 @@ func _club<E>(
     )
     assert(trieDepth == 0 || trieDepth >= 2)
     // n-gram tries are built on-demand when the algorithm determines they would be useful
-    var trieA: NgramTrie<E>? = nil
-    var trieB: NgramTrie<E>? = nil
+    var trieA: _NgramTrie<E>? = nil
+    var trieB: _NgramTrie<E>? = nil
 
     //
     // Diffing algorithm
     //
     /*
      The base algorithm is a dynamic programming variant of Myers', with path
-     proliferation managed by a quadtree-backed WorkQueue. More aggressive path
+     proliferation managed by a quadtree-backed _WorkQueue. More aggressive path
      culling is possible thanks to membership testing (hence "club" diff)
      allowing for the greedy consumption of obvious matches.
 
@@ -105,7 +108,7 @@ func _club<E>(
      proliferation when the diffing loop has progressed beyond the position of
      the n-gram.
      */
-    let workQ = WorkQueue()
+    let workQ = _WorkQueue()
     
     // Every round of evaluation should limit itself to the 50 paths that have made the most progress
     workQ.maxRoundSize = 50
@@ -113,6 +116,7 @@ func _club<E>(
     workQ.turnoverCallback = {
         var builtTries = false
         // TODO: improve heuristics for trie creation over the ratio of alphabet size vs diff range
+        // Maybe when (n - prefixLength) / alphaA.mostPopularCount > workQ.maxRoundSize?
         if workQ.count > 25 && alphaA.count > (n - prefixLength) / 2 && trieA == nil {
             trieA = .init(for: a, in: prefixLength..<n, avoiding: knownRemoves, depth: trieDepth)
             builtTries = true
@@ -124,12 +128,12 @@ func _club<E>(
         if builtTries {
 //            print("built tries (depth: \(trieDepth)), starting over")
             workQ.purge()
-            workQ.append(EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
+            workQ.append(_EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
         }
     }
     
-    var solutionNode: EditTreeNode? = nil
-    workQ.append(EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
+    var solutionNode: _EditTreeNode? = nil
+    workQ.append(_EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
     while var current = workQ.popFirst(), solutionNode == nil {
         var x = current.x, y = current.y
 
@@ -148,18 +152,18 @@ func _club<E>(
             } else if x < n && knownRemoves[x] {
                 // obvious removes (a[x]∉b)
                 x += 1
-                current = EditTreeNode(x: x, y: y, parent: current, free: true)
+                current = _EditTreeNode(x: x, y: y, parent: current, free: true)
             } else if y < m && knownInserts[y] {
                 // obvious inserts (b[y]∉a)
                 y += 1
-                current = EditTreeNode(x: x, y: y, parent: current, free: true)
+                current = _EditTreeNode(x: x, y: y, parent: current, free: true)
             } else {
                 // obvious ngrams (a[x..<x+trieDepth]∉b)
                 if let t = trieB, x < n-t.depth {
                     xGramInB = t.lastOffset(of: a[x..<(x+t.depth)])
                     if xGramInB == nil {
                         x += 1
-                        current = EditTreeNode(x: x, y: y, parent: current, free: true)
+                        current = _EditTreeNode(x: x, y: y, parent: current, free: true)
                         continue
                     }
                 }
@@ -169,7 +173,7 @@ func _club<E>(
                     yGramInA = t.lastOffset(of: b[y..<(y+t.depth)])
                     if yGramInA == nil {
                         y += 1
-                        current = EditTreeNode(x: x, y: y, parent: current, free: true)
+                        current = _EditTreeNode(x: x, y: y, parent: current, free: true)
                         continue
                     }
                 }
@@ -181,13 +185,13 @@ func _club<E>(
 
         switch (x, y) {
             case (n, m):
-                solutionNode = EditTreeNode(x: x, y: y, parent: current)
+                solutionNode = _EditTreeNode(x: x, y: y, parent: current)
             case (_, m):
                 // remove
-                workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
+                workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
             case (n, _):
                 // insert
-                workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
+                workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
             case (let x, let y):
                 let nextYInA = alphaA.offset(of: b[y], after: x)
                 let nextXInB = alphaB.offset(of: a[x], after: y)
@@ -196,34 +200,36 @@ func _club<E>(
                     // TODO: `(nYIA-x) > 3*(nXIB-y) || (nXIB-y) > 3*(nYIA-x)` is confusing/clever. explain it a bit more.
                     if nYIA - x < nXIB - y {
                         // Remove
-                        workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
+                        workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
                     } else {
                         // Insert
-                        workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
+                        workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
                     }
                 } else if nextXInB == nil {
                     // a[x] does not exist after y in b do this must be a remove
-                     workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
+                     workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
                 } else if nextYInA == nil {
                     // b[y] does not exist after x in a so this must be an insert
-                    workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
+                    workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
                 } else if let xgb = xGramInB, xgb < y {
                     // Remove only: `current` is ahead of last instance of a[x..<x+trieDepth]) in b
-                    workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
+                    workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
                 } else if let yga = yGramInA, yga < x {
                     // Insert only: `current` is ahead of last instance of b[y..<y+trieDepth) in a
-                    workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
+                    workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
                 } else {
                     // Try both
-                    workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
-                    workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
+                    workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
+                    workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
                 }
         }
     }
     assert(solutionNode != nil)
     assert(solutionNode!.x == n && solutionNode!.y == m)
 
+    //
     // Solution forming
+    //
     var x = n, y = m
     var changes = [CollectionDifference<E>.Change]()
     while let node = solutionNode?.parent {
@@ -245,20 +251,4 @@ func _club<E>(
     assert(x == prefixLength && y == prefixLength)
     
     return CollectionDifference<E>(changes)!
-}
-
-func _club<C,D>(
-    from old: C, to new: D
-) -> CollectionDifference<C.Element>
-where
-    C : BidirectionalCollection,
-    D : BidirectionalCollection,
-    C.Element == D.Element,
-    C.Element : Hashable
-{
-    return _withContiguousStorage(for: old) { a in
-        return _withContiguousStorage(for: new) { b in
-            return _club(from: a, to: b)
-        }
-    }
 }

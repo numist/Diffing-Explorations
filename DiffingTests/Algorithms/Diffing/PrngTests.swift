@@ -6,7 +6,7 @@
  */
 
 import XCTest
-@testable import Diffing
+import Diffing
 
 var comparisons = 0
 struct MeasurementElement<E: Hashable>: Hashable {

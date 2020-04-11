@@ -5,12 +5,12 @@
  * Attribution is appreciated but not necessary.
  */
 
-struct NgramTrie<Element> where Element : Hashable {
-    fileprivate class TrieNode {
-        var children = Dictionary<Element, TrieNode>()
+struct _NgramTrie<Element> where Element : Hashable {
+    fileprivate class _TrieNode {
+        var children = Dictionary<Element, _TrieNode>()
         var locations = Array<Int>()
     }
-    private let root: TrieNode
+    private let root: _TrieNode
     let depth: Int
 
     /* desired shape of structure (pretending binary and depth = 2):
@@ -30,7 +30,7 @@ struct NgramTrie<Element> where Element : Hashable {
         depth pdepth: Int
     ) {
         depth = pdepth
-        root = TrieNode()
+        root = _TrieNode()
         guard depth > 0 && depth <= range.count else { return }
         
         var skip = 0
@@ -58,14 +58,14 @@ struct NgramTrie<Element> where Element : Hashable {
                  parameter isn't necessary!
                  */
                 func get<N>(_ n: inout N) -> N { n }
-                node = get(&node.children[buf[j], default: TrieNode()])
+                node = get(&node.children[buf[j], default: _TrieNode()])
                 /*
                  Functionally, the this is the same as:
                  
                     if let child = node.children[buf[j]] {
                         node = child
                     } else {
-                        let newNode = TrieNode()
+                        let newNode = _TrieNode()
                         node.children[buf[j]] = newNode
                         node = newNode
                     }
