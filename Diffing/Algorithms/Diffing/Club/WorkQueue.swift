@@ -11,13 +11,18 @@
  exhausted and a work unit is requested, `pending` is reduced using a quadtree
  and made active by `activatePending`.
  */
-struct WorkQueue {
-    var i = 0
-    var active = Array<EditTreeNode>()
-    var pending = Array<EditTreeNode>()
+class WorkQueue {
+    var minX: Int { return _minX }
+    var minY: Int { return _minY }
+    var count: Int { return active.count }
+    private var _minX = 0
+    private var _minY = 0
+    private var i = 0
+    private var active = Array<EditTreeNode>()
+    private var pending = Array<EditTreeNode>()
     
-    mutating func popFirst() -> EditTreeNode? {
-        if i >= active.count {
+    func popFirst() -> EditTreeNode? {
+        while i >= active.count && pending.count > 0 {
             activatePending()
         }
 
@@ -30,7 +35,13 @@ struct WorkQueue {
         return result
     }
     
-    mutating func append(_ element: EditTreeNode) {
+    func purge() {
+        i = 0
+        active = Array<EditTreeNode>()
+        pending = Array<EditTreeNode>()
+    }
+    
+    func append(_ element: EditTreeNode) {
         pending.append(element)
     }
 
@@ -59,11 +70,19 @@ struct WorkQueue {
      southwest. All nodes remaining in the structure represent the frontier and—
      due to the insertion sort order—the resulting structure will also contain
      no northeast children making it equivalent to a binary tree.
+     
+     However, unlike a binary tree it is not possible to implement
+     full self-balancing during insertion as the geometric guarantees above are
+     broken when a parent node has a smaller (x + y) than any of its children.
      */
-    // TODO: which means it should be possible to make FrontierBiNode self-balancing like an AVL tree, eliminating the need for Bool.random() in the comparison function for distributing the nodes evenly.
-    private mutating func activatePending() {
+    // TODO: It would still be nice to find some efficiencies here though as the workqueue represents a significant amount of the runtime in the test suite. maybe rotations could be allowed when cardinality is not violated?
+    var maxRoundSize = Int.max // Back pocket nuclear optimization
+    var turnoverCallback: (()->Void)?
+    private func activatePending() {
         active = Array<EditTreeNode>()
         i = 0
+        _minX = 0
+        _minY = 0
 
         var root: FrontierBiNode? = nil
         for e in pending.sorted(by: { (p1, p2) -> Bool in
@@ -74,14 +93,26 @@ struct WorkQueue {
             if let r = root {
                 if r.insert(FrontierBiNode(e)) {
                     active.append(e)
+                    _minX = min(_minX, e.x)
+                    _minY = min(_minY, e.y)
                 }
             } else {
                 root = FrontierBiNode(e)
                 active.append(e)
+                _minX = e.x
+                _minY = e.y
+            }
+            if active.count == maxRoundSize {
+                // Truncating work queue at maxRoundSize
+                break
             }
         }
         
         pending = Array<EditTreeNode>()
+        
+        if let c = turnoverCallback {
+            c()
+        }
     }
 
     /*

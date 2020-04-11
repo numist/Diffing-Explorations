@@ -17,12 +17,25 @@ class CorrectnessClub: Correctness {
     }
     
     func testLargeDiffPerf() {
-        print("This test is considered passed if it finishes within a few seconds (as opposed to a few hours, or longer)")
+        print("This test is considered passed if it finishes before you can read the rest of this log message (as opposed to a few hours, or longer)")
         var rng = Xoshiro(seed: deterministicSeed)
-        let a = OrderedSet(Array(0..<9000).shuffled(using: &rng))
-        let b = OrderedSet(Array(1000..<10000).shuffled(using: &rng))
-        let diff = _club(from: a, to: b)
-        XCTAssert(Array(b) == Array(a).applying(diff))
+        let a = Array(0..<9000).shuffled(using: &rng)
+        let b = Array(1000..<10000).shuffled(using: &rng)
+        let d = diff(from: a, to: b)
+        verify(from: a, to: b, produced: d)
+    }
+    
+    func testBtree79ce96ab39To93ba69ec97ByLine() {
+        print("This test is considered passed if it finishes before you can read the rest of this log message (as opposed to a few hours, or longer)")
+
+        let testBundle = Bundle(for: LiteralTests.self)
+        let url79ce96ab39 = testBundle.url(forResource: "btree.79ce96ab39", withExtension: "c")!
+        let btree79ce96ab39 = try! String(contentsOf: url79ce96ab39, encoding: .utf8).split(separator: "\n", omittingEmptySubsequences: false)
+        verify(
+            from: btree79ce96ab39,
+            to: btree79ce96ab39.reversed(),
+            produced: diff(from: btree79ce96ab39, to: btree79ce96ab39.reversed())
+        )
     }
 }
 
@@ -50,7 +63,6 @@ class Correctness: XCTestCase {
         C.Element : Equatable, E == C.Element
     {
         XCTAssertEqual(b, a.applying(d)!, "incorrect diff produced between \(a) and \(b)!")
-//        XCTAssertLessThanOrEqual(d.count, c, "diff is not minimal!")
     }
     
     func testFuzz() {
@@ -115,6 +127,13 @@ class Correctness: XCTestCase {
     func testClubFrontier() {
         let a = [" ", "h", "i", "r", "h", "e", "s", "c", "d", "s"]
         let b = [" ", "i", "e", "s", "l", "c", "x", " ", "d", "d", " ", "l", " "]
+        let d = diff(from: a, to: b)
+        verify(from: a, to: b, produced: d)
+    }
+    
+    func testClubOverEagerNgramConsumption() {
+        let a = ["t", "r", "e", "n", "e", " ", "o", "m", "c", "y"]
+        let b = ["t", "r", "o", "e", " ", "n", "e", "g", "n", "e", " ", "o", "m", "c", "y"]
         let d = diff(from: a, to: b)
         verify(from: a, to: b, produced: d)
     }

@@ -32,8 +32,6 @@ func _club<E>(
 ) -> CollectionDifference<E>
     where E : Hashable
 {
-    var changes = [CollectionDifference<E>.Change]()
-
     //
     // Greedy consumption of shared suffix and prefix elements
     //
@@ -54,6 +52,12 @@ func _club<E>(
     //
     
     // Determine the alphabet of each collection
+    // TODO: store offsets in _Alphabet and use set arithmetic and cross-alphabet search to fill out knownRemoves and knownInserts faster (and probably fewer comparisons)
+    // Tests to watch for improvements from this include:
+    // 1.549 regression testBinaryByPercentageChanged@5% — there's no avoiding a regression, but it could be smaller.
+    // 5.000 regression on testDisparateLetterVsNumberStrings@n=1, 1.800 regression …@n=5, 0.630 speedup …@n=10
+    // TODO: alphabet intersection could also be used to inform when the algorithm generates the tries (more overlap: more eager)
+    // TODO: the expected diff size could probably be estimated by taking shared elements and comparing the offset sums of each alphabet, which would also help inform trie generation
     let alphaA = _Alphabet(a, in: prefixLength..<n)
     let alphaB = _Alphabet(b, in: prefixLength..<m)
 
@@ -74,18 +78,14 @@ func _club<E>(
     }
 
     // Compute the ideal n-gram length based on the frequency of the most common element
-    let trieDepth = (prefixLength == n || prefixLength == m) ? 0 : max(
-        log(n, forBase: a.count / alphaA.mostPopularCount),
-        log(m, forBase: b.count / alphaB.mostPopularCount)
+    let trieDepth = (prefixLength >= n-1 || prefixLength >= m-1) ? 0 : max(
+        log((n - prefixLength), forBase: max(2, (n - prefixLength) / alphaA.mostPopularCount)),
+        log((m - prefixLength), forBase: max(2, (m - prefixLength) / alphaB.mostPopularCount))
     )
-
-    // TODO: building the n-gram tries is expensive (50% of runtime in some tests, and costly in terms of comparisons as well); experiment with:
-    // 1) add a `in: Range` parameter to build trie only for elements in range prefixLength..<n
-    // 2) add a `against: [knownRemoves|knownInserts]` parameter to entirely omit ngrams containing disjoint elements since they can never match anyway
-    // 3) identify prefixes that are very common and short circuit them to lookups that are fewer levels deep (essentially applying the principles of entropy encoding to the problem of expected n-gram lookup frequency)
-    // ultimately there's a problem here where the cost of the tries causes performance worse than Myers for some tests (like testLoremIpsums and low-edit randomized tests), despite the fact that they are extremely effective in degenerate tests with patterns like diff(a, a.reversed()) or diff(a, a.shuffled())
-    let trieA = NgramTrie<E>(for: a, depth: trieDepth)
-    let trieB = NgramTrie<E>(for: b, depth: trieDepth)
+    assert(trieDepth == 0 || trieDepth >= 2)
+    // n-gram tries are built on-demand when the algorithm determines they would be useful
+    var trieA: NgramTrie<E>? = nil
+    var trieB: NgramTrie<E>? = nil
 
     //
     // Diffing algorithm
@@ -105,10 +105,31 @@ func _club<E>(
      proliferation when the diffing loop has progressed beyond the position of
      the n-gram.
      */
-    var workQ = WorkQueue()
-    workQ.append(EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
+    let workQ = WorkQueue()
+    
+    // Every round of evaluation should limit itself to the 50 paths that have made the most progress
+    workQ.maxRoundSize = 50
 
+    workQ.turnoverCallback = {
+        var builtTries = false
+        // TODO: improve heuristics for trie creation over the ratio of alphabet size vs diff range
+        if workQ.count > 25 && alphaA.count > (n - prefixLength) / 2 && trieA == nil {
+            trieA = .init(for: a, in: prefixLength..<n, avoiding: knownRemoves, depth: trieDepth)
+            builtTries = true
+        }
+        if workQ.count > 25 && alphaB.count > (m - prefixLength) / 2 && trieB == nil {
+            trieB = .init(for: b, in: prefixLength..<m, avoiding: knownInserts, depth: trieDepth)
+            builtTries = true
+        }
+        if builtTries {
+//            print("built tries (depth: \(trieDepth)), starting over")
+            workQ.purge()
+            workQ.append(EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
+        }
+    }
+    
     var solutionNode: EditTreeNode? = nil
+    workQ.append(EditTreeNode(x: prefixLength, y: prefixLength, parent: nil))
     while var current = workQ.popFirst(), solutionNode == nil {
         var x = current.x, y = current.y
 
@@ -118,8 +139,8 @@ func _club<E>(
 
         // Greedy matching for:
         while x < n || y < m {
-            xGramInB = nil
-            yGramInA = nil
+            xGramInB = Int.max
+            yGramInA = Int.max
             if x < n && y < m && a[x] == b[y] {
                 // matches
                 x += 1
@@ -134,8 +155,8 @@ func _club<E>(
                 current = EditTreeNode(x: x, y: y, parent: current, free: true)
             } else {
                 // obvious ngrams (a[x..<x+trieDepth]∉b)
-                if x <= n-trieB.depth {
-                    xGramInB = trieB.lastOffset(of: a[x..<(x+trieB.depth)])
+                if let t = trieB, x < n-t.depth {
+                    xGramInB = t.lastOffset(of: a[x..<(x+t.depth)])
                     if xGramInB == nil {
                         x += 1
                         current = EditTreeNode(x: x, y: y, parent: current, free: true)
@@ -144,8 +165,8 @@ func _club<E>(
                 }
 
                 // obvious ngrams (b[y..<y+trieDepth]∉a)
-                if y <= m-trieA.depth {
-                    yGramInA = trieA.lastOffset(of: b[y..<(y+trieA.depth)])
+                if let t = trieA, y < m-t.depth {
+                    yGramInA = t.lastOffset(of: b[y..<(y+t.depth)])
                     if yGramInA == nil {
                         y += 1
                         current = EditTreeNode(x: x, y: y, parent: current, free: true)
@@ -168,7 +189,25 @@ func _club<E>(
                 // insert
                 workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
             case (let x, let y):
-                if let xgb = xGramInB, xgb < y {
+                let nextYInA = alphaA.offset(of: b[y], after: x)
+                let nextXInB = alphaB.offset(of: a[x], after: y)
+                if let nYIA = nextYInA, let nXIB = nextXInB, (nYIA-x) > 3*(nXIB-y) || (nXIB-y) > 3*(nYIA-x) {
+                    // Lossy optimization: always chase the nearest match of the two possibilities when there is a large disparity
+                    // TODO: `(nYIA-x) > 3*(nXIB-y) || (nXIB-y) > 3*(nYIA-x)` is confusing/clever. explain it a bit more.
+                    if nYIA - x < nXIB - y {
+                        // Remove
+                        workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
+                    } else {
+                        // Insert
+                        workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
+                    }
+                } else if nextXInB == nil {
+                    // a[x] does not exist after y in b do this must be a remove
+                     workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
+                } else if nextYInA == nil {
+                    // b[y] does not exist after x in a so this must be an insert
+                    workQ.append(EditTreeNode(x: x, y: y+1, parent: current))
+                } else if let xgb = xGramInB, xgb < y {
                     // Remove only: `current` is ahead of last instance of a[x..<x+trieDepth]) in b
                     workQ.append(EditTreeNode(x: x+1, y: y, parent: current))
                 } else if let yga = yGramInA, yga < x {
@@ -186,6 +225,7 @@ func _club<E>(
 
     // Solution forming
     var x = n, y = m
+    var changes = [CollectionDifference<E>.Change]()
     while let node = solutionNode?.parent {
         switch (x - node.x).compare(to: y - node.y) {
         case .lessThan:

@@ -23,24 +23,63 @@ struct NgramTrie<Element> where Element : Hashable {
             offsets: [Int]
      */
     
-    init(for buf: UnsafeBufferPointer<Element>, depth pdepth: Int) {
+    init(
+        for buf: UnsafeBufferPointer<Element>,
+        in range: Range<Int>,
+        avoiding knownUniques: Array<Bool>,
+        depth pdepth: Int
+    ) {
         depth = pdepth
         root = TrieNode()
-        guard depth <= buf.count else { return }
-        for i in 0..<(buf.count - depth) {
+        guard depth > 0 && depth <= range.count else { return }
+        
+        var skip = 0
+        for i in range.lowerBound..<(range.upperBound - depth) {
+            // Avoid adding any n-grams containing elements that are known to
+            // not exist in the other collection being diffed
+            if knownUniques[i + depth - 1] {
+                skip = depth
+            }
+            if skip > 0 {
+                skip -= 1
+                assert(knownUniques[i..<i+depth].contains(true))
+                continue
+            }
+            
             var node = root
-
-            // WTB: Slice overhead slowed this loop by 30% compared to direct access
-         // for e in buf[i..<(i + depth)] {
+            // WTB: `for e in buf[i..<(i + depth)]` is more idiomatic but Slice overhead was 30% of runtime
             for j in i..<(i + depth) {
-                let e = buf[j]
-                if let child = node.children[e] {
-                    node = child
-                } else {
-                    let newNode = TrieNode()
-                    node.children[e] = newNode
-                    node = newNode
-                }
+                /*
+                 Use a helper function to get the value of children[e], setting
+                 a default value if necessary, while paying for only one
+                 Dictionary lookup.
+                 `inout` is required for `f[e, default: d]` to use the `modify`
+                 (instead of `get`) accessor, but actually writing to the
+                 parameter isn't necessary!
+                 */
+                func get<N>(_ n: inout N) -> N { n }
+                node = get(&node.children[buf[j], default: TrieNode()])
+                /*
+                 Functionally, the this is the same as:
+                 
+                    if let child = node.children[buf[j]] {
+                        node = child
+                    } else {
+                        let newNode = TrieNode()
+                        node.children[buf[j]] = newNode
+                        node = newNode
+                    }
+                 
+                 but it should be ~50% faster, much like changing:
+                 
+                    `let tmp = f[e, default: 0]; f[e] = tmp + 1`
+                 
+                 to:
+                 
+                    `f[e, default: 0] += 1`
+                 
+                 TODO/WTB: Unfortunately, the transformation here is only worth 25%???
+                 */
             }
             node.locations.append(i)
         }
