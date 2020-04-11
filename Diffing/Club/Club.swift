@@ -55,8 +55,6 @@ where
     //
     
     // Determine the alphabet of each collection
-    // TODO: alphabet intersection could also be used to inform when the algorithm generates the tries (more overlap: more eager)
-    // TODO: the expected diff size could probably be estimated by taking shared elements and comparing the offset sums of each alphabet, which would also help inform trie generation
     let alphaA = _Alphabet(a, in: prefixLength..<n)
     let alphaB = _Alphabet(b, in: prefixLength..<m)
 
