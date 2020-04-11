@@ -132,23 +132,24 @@ class _WorkQueue {
                 return false
             }
 
-            let child: ReferenceWritableKeyPath<FrontierBiNode, FrontierBiNode?>
             switch (n.e.discountedX > e.discountedX, n.e.discountedY > e.discountedY) {
                 case (false, false):
                     // insertion to the southwest: parameter is superceded by this node
                     return false
                 case (false, true):
-                    child = \._nw
+                    if let c = _nw {
+                        return c.insert(n)
+                    }
+                    _nw = n
                 case (true, false):
-                    child = \._se
+                    if let c = _se {
+                        return c.insert(n)
+                    }
+                    _se = n
                 case (true, true):
                     // insertion to the northeast requires higher cardinality, which breaks edit path frontier guarantees
                     preconditionFailure("Insertion order violated (must be of descending cardinality)")
             }
-            if let c = self[keyPath: child] {
-                return c.insert(n)
-            }
-            self[keyPath: child] = n
             return true
         }
     }
