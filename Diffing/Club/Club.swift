@@ -136,7 +136,7 @@ where
             } else {
                 // obvious ngrams (a[x..<x+trieDepth]∉b)
                 if let t = trieB, x < n-t.depth {
-                    xGramInB = t.lastOffset(of: a[x..<(x+t.depth)])
+                    xGramInB = t.lastOffset(ofRange: x..<(x+t.depth), in: a)
                     if xGramInB == nil {
                         x += 1
                         current = _EditTreeNode(x: x, y: y, parent: current, free: true)
@@ -146,7 +146,7 @@ where
 
                 // obvious ngrams (b[y..<y+trieDepth]∉a)
                 if let t = trieA, y < m-t.depth {
-                    yGramInA = t.lastOffset(of: b[y..<(y+t.depth)])
+                    yGramInA = t.lastOffset(ofRange: y..<(y+t.depth), in: b)
                     if yGramInA == nil {
                         y += 1
                         current = _EditTreeNode(x: x, y: y, parent: current, free: true)

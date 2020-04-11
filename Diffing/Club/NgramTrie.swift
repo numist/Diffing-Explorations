@@ -85,10 +85,11 @@ struct _NgramTrie<Element> where Element : Hashable {
         }
     }
     
-    func lastOffset(of ngram: Slice<UnsafeBufferPointer<Element>>) -> Int? {
-        precondition(ngram.count == depth)
+    func lastOffset(ofRange range: Range<Int>, in a: UnsafeBufferPointer<Element>) -> Int? {
+        precondition(range.count == depth)
         var node = root
-        for e in ngram {
+        for i in range {
+            let e = a[i]
             if let child = node.children[e] {
                 node = child
             } else {
