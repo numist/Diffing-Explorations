@@ -100,35 +100,9 @@ class PrngTests: DiffingTestCase {
         measureDiffs(from: a, to: a)
     }
     
-    // TODO: DRY up the …PercentageChanged tests
-    func testBinaryByPercentageChanged() {
+    func checkDifferentPercentageChangedStrings(with frequencies: [(String,Double)]) {
         var r = rng()
-        var letterGenerator = VoseAliasMethod(binaryFrequencies, rng: r)
-        let size = 500
-        let a = (0..<size).map({ _ in letterGenerator.next() })
-        
-        for percent in stride(from: 0, to: 100, by: 5) {
-            if printStats { print("\(percent)%: ", terminator: "") }
-            let numChanges = size * percent / 100
-            var b = a
-            for _ in 0..<numChanges {
-                switch Int.random(in: 0..<3, using: &r) {
-                    case 0:
-                        guard b.count > 0 else { break }
-                        b.remove(at: Int.random(in: 0..<b.count, using: &r))
-                    case 1:
-                        b.insert(letterGenerator.next(), at: Int.random(in: 0...b.count, using: &r))
-                    default:
-                        b.insert(b.remove(at: Int.random(in: 0..<b.count, using: &r)), at: Int.random(in: 0...b.count, using: &r))
-                }
-            }
-            measureDiffs(from: a, to: b)
-        }
-    }
-
-    func testGenesByPercentageChanged() {
-        var r = rng()
-        var letterGenerator = VoseAliasMethod(geneticFrequencies, rng: r)
+        var letterGenerator = VoseAliasMethod(frequencies, rng: r)
         let size = 500
         let a = (0..<size).map({ _ in letterGenerator.next() })
         
@@ -151,29 +125,21 @@ class PrngTests: DiffingTestCase {
         }
     }
     
+    // TODO: DRY up the …PercentageChanged tests
+    func testBinaryByPercentageChanged() {
+        checkDifferentPercentageChangedStrings(with: binaryFrequencies)
+    }
+
+    func testGenesByPercentageChanged() {
+        checkDifferentPercentageChangedStrings(with: geneticFrequencies)
+    }
+    
+    func testNumbersByPercentageChanged() {
+        checkDifferentPercentageChangedStrings(with: numberFrequencies)
+    }
+    
     func testLettersByPercentageChanged() {
-        var r = rng()
-        var letterGenerator = VoseAliasMethod(letterFrequencies, rng: r)
-        let size = 500
-        let a = (0..<size).map({ _ in letterGenerator.next() })
-        
-        for percent in stride(from: 0, to: 100, by: 5) {
-            if printStats { print("\(percent)%: ", terminator: "") }
-            let numChanges = size * percent / 100
-            var b = a
-            for _ in 0..<numChanges {
-                switch Int.random(in: 0..<3, using: &r) {
-                    case 0:
-                        guard b.count > 0 else { break }
-                        b.remove(at: Int.random(in: 0..<b.count, using: &r))
-                    case 1:
-                        b.insert(letterGenerator.next(), at: Int.random(in: 0...b.count, using: &r))
-                    default:
-                        b.insert(b.remove(at: Int.random(in: 0..<b.count, using: &r)), at: Int.random(in: 0...b.count, using: &r))
-                }
-            }
-            measureDiffs(from: a, to: b)
-        }
+        checkDifferentPercentageChangedStrings(with: letterFrequencies)
     }
     
     func testUUIDByPercentageChanged() {
