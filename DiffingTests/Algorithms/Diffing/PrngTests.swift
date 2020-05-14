@@ -126,23 +126,23 @@ class PrngTests: DiffingTestCase {
     }
     
     // TODO: DRY up the …PercentageChanged tests
-    func testBinaryByPercentageChanged() {
+    func testByPercentageChangedBinary() {
         checkDifferentPercentageChangedStrings(with: binaryFrequencies)
     }
 
-    func testGenesByPercentageChanged() {
+    func testByPercentageChangedGenes() {
         checkDifferentPercentageChangedStrings(with: geneticFrequencies)
     }
     
-    func testNumbersByPercentageChanged() {
+    func testByPercentageChangedNumbers() {
         checkDifferentPercentageChangedStrings(with: numberFrequencies)
     }
     
-    func testLettersByPercentageChanged() {
+    func testByPercentageChangedLetters() {
         checkDifferentPercentageChangedStrings(with: letterFrequencies)
     }
     
-    func testUUIDByPercentageChanged() {
+    func testByPercentageChangedUUID() {
         var r = rng()
         let size = 500
         let a = (0..<size).map({ _ in UUID() })
