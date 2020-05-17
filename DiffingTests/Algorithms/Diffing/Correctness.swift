@@ -144,4 +144,11 @@ class CorrectnessMyers: XCTestCase {
         let d = diff(from: a, to: b)
         verify(from: a, to: b, produced: d)
     }
+
+    func testEmpty() {
+        let a: Array<Int> = []
+        let b: Array<Int> = []
+        let d = diff(from: a, to: b)
+        verify(from: a, to: b, produced: d)
+    }
 }
