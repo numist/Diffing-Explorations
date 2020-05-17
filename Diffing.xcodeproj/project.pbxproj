@@ -144,14 +144,6 @@
 			path = Literals;
 			sourceTree = "<group>";
 		};
-		BC74627C24411DF3008C52B3 /* Club */ = {
-			isa = PBXGroup;
-			children = (
-				BC390C042426A4CE00E2E916 /* Club.swift */,
-			);
-			path = Club;
-			sourceTree = "<group>";
-		};
 		BC969AEB243C205800C0A5C9 /* Data Structures */ = {
 			isa = PBXGroup;
 			children = (
@@ -185,7 +177,7 @@
 		BCA2154822C471E500290D70 /* Diffing */ = {
 			isa = PBXGroup;
 			children = (
-				BC74627C24411DF3008C52B3 /* Club */,
+				BC390C042426A4CE00E2E916 /* Club.swift */,
 				BCA2156E22C47C4900290D70 /* Difference.swift */,
 				BCA2154922C471E500290D70 /* Diffing.h */,
 				BCA2154A22C471E500290D70 /* Info.plist */,
