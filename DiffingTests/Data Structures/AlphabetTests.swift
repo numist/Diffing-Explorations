@@ -12,9 +12,10 @@ import XCTest
  incorrectness in _AlphabetTrie to not affect the correctness of the diffing
  algorithm's output while severely impacting performance.
 
- Unfortunately, since Dictionary's behaviour is so nondeterministic, it isn't
- possible to validate that the Alphabet type is behaving properly by calling
- the diffing algorithm and analyzing the number of calls to `Element.==`.
+ Unfortunately, since Dictionary's behaviour is sufficiently nondeterministic
+ that it's not possible to validate that the Alphabet type is behaving properly
+ by calling the diffing algorithm and analyzing the number of calls to
+ `Element.==`.
 
  So here we are.
  */

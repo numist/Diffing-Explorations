@@ -8,7 +8,7 @@
 import Foundation
 
 class LiteralTests: DiffingTestCase {
-    
+
     func testHamlin() {
         let a = Array("call this so we can override.")
         let b = Array("so we can override")

@@ -57,7 +57,7 @@ where
     // Determine the alphabet of each collection
     var trieA = _AlphabetTrie(for: a, in: prefixLength..<n) // WTB: only `var` due to use of lazy properties
     let alphaA = trieA.alphabet
-    
+
     var trieB = _AlphabetTrie(for: b, in: prefixLength..<m) // WTB: only `var` due to use of lazy properties
     let alphaB = trieB.alphabet
 
@@ -141,7 +141,6 @@ where
                         continue
                     }
                 }
-
                 // obvious ngrams (b[y..<y+trieDepth]∉a)
                 if y + trieDepth <= m {
                     yGramInA = trieA.offset(ofRange: y..<(y+trieDepth), in: b, afterOrNear: x)
@@ -151,7 +150,6 @@ where
                         continue
                     }
                 }
-                
                 break
             }
         }

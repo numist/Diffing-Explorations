@@ -82,7 +82,7 @@ class CorrectnessMyers: XCTestCase {
     }
     
     // Failing tests discovered by the fuzzer are preserved below for future regression coverage
-    
+
     func testCommonPrefixAndSuffixOverlap() {
         // Test case: common prefix and common suffix overlap
         //            [     !!]
@@ -130,14 +130,14 @@ class CorrectnessMyers: XCTestCase {
         let d = diff(from: a, to: b)
         verify(from: a, to: b, produced: d)
     }
-    
+
     func testClubTrieConfusion() {
         let a = ["a", "i", " ", " ", "m", " ", "e", "i", "r", "c"]
         let b = ["m", "k", "d", "i", "e", "r", "c"]
         let d = diff(from: a, to: b)
         verify(from: a, to: b, produced: d)
     }
-    
+
     func testClubNgramOutOfBounds() {
         let a = ["t", "a", "c", "l", "c", "h", "r", "t", "g", "s"]
         let b = ["d", " ", "t", "n", " ", "r", "i", "i", "a", " ", "l", "c", "r", "e", "g", "t", "s"]

@@ -46,10 +46,10 @@ struct _AlphabetTrie<Element> where Element : Hashable {
         root.locations = Array(range).map({ $0 - 1 })
         extend(root)
     }
-    
+
     private func extend(_ node: _TrieNode) {
         assert(node.children.count == 0)
-        
+
         for i in node.locations.map({ $0 + 1 }) {
             func get<N>(_ n: inout N) -> N { n }
             let child = get(&node.children[buf[i], default: _TrieNode()])
@@ -92,7 +92,7 @@ struct _AlphabetTrie<Element> where Element : Hashable {
         assert(min == max)
         return min < locations.count ? locations[min] : nil
     }
-    
+
     // WTB: This API would be so much better if it could use Slice instead of (Range, UnsafeBufferPointer) but the overhead is too high for so hot a code path
     func offset(ofRange range: Range<Int>, in a: UnsafeBufferPointer<Element>, afterOrNear loc: Int) -> Int? {
         var node = root
@@ -106,7 +106,7 @@ struct _AlphabetTrie<Element> where Element : Hashable {
                 return nil
             }
         }
-        
+
         let end = bsearch(for: loc, in: node.locations) ?? node.locations.last
         // Return value should relate to the beginning of the n-gram
         if let e = end {
@@ -121,7 +121,7 @@ struct _AlphabetTrie<Element> where Element : Hashable {
     func offsets(for e: Element) -> [Int] {
         return root.children[e]?.locations ?? []
     }
-    
+
     func offset(of e: Element, after i: Int) -> Int? {
         return bsearch(for: i, in: offsets(for: e))
     }
