@@ -125,7 +125,6 @@ class PrngTests: DiffingTestCase {
         }
     }
     
-    // TODO: DRY up the …PercentageChanged tests
     func testByPercentageChangedBinary() {
         checkDifferentPercentageChangedStrings(with: binaryFrequencies)
     }
