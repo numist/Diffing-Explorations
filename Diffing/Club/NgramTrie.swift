@@ -78,7 +78,7 @@ struct _AlphabetTrie<Element> where Element : Hashable {
         }
     }
 
-    func bsearch(for i: Int, in locations: [Int]) -> Int? {
+    private func bsearch(for i: Int, in locations: [Int]) -> Int? {
         var min = 0, max = locations.count
         while min < max {
             let pivot = (min + max)/2
@@ -110,7 +110,9 @@ struct _AlphabetTrie<Element> where Element : Hashable {
         let end = bsearch(for: loc, in: node.locations) ?? node.locations.last
         // Return value should relate to the beginning of the n-gram
         if let e = end {
-            return e - range.count
+            let result = e - (range.count - 1)
+            assert(buf[result] == a[range.startIndex])
+            return result
         } else {
             return nil
         }
