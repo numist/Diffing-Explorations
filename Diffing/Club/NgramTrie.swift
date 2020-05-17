@@ -5,94 +5,93 @@
  * Attribution is appreciated but not necessary.
  */
 
-struct _NgramTrie<Element> where Element : Hashable {
+struct _AlphabetTrie<Element> where Element : Hashable {
+    // Lazy construction requires a reference to the original collection
+    private let buf: UnsafeBufferPointer<Element>
+
+    // The trie structure is used to encode the collection's n-grams
     fileprivate class _TrieNode {
         var children = Dictionary<Element, _TrieNode>()
         var locations = Array<Int>()
     }
     private let root: _TrieNode
-    let depth: Int
-
-    /* desired shape of structure (pretending binary and depth = 2):
+    /* shape of the trie structure (depth = 2) encoding string 1100:
      
-                            root
-                         0 /    \ 1
-                         node    …
-                      0 /    \ 1
-                      node    …
-            offsets: [Int]
+                      root(locations: [-1,0,1,2])
+                  0 /      \ 1
+              node[2,3]   node[0,1]
+            0 /         0 /    \ 1
+            node[3]   node[2]  node[1]
      */
+
+    // The count of the most frequent element in the collection
+    lazy var mostPopularElementCount: Int = {
+        root.children.values.reduce(0, { max($0, $1.locations.count) })
+    }()
+
+    /*
+     * TODO: what is the cost of this `Set` conversion, and is there any way
+     * to avoid it without struggling with the hidden type `_TrieNode` in
+     * `Dictionary<Element, _TrieNode>.Keys`?
+     */
+    var alphabet: Set<Element> { Set(root.children.keys) }
     
+    // More efficient access to the value of `self.alphabet.count`
+    var alphabetSize: Int { return root.children.count }
+
     init(
-        depth pdepth: Int,
         for buf: UnsafeBufferPointer<Element>,
-        in range: Range<Int>,
-        alphabet: _Alphabet<Element>,
-        avoiding knownUniques: Array<Bool>
+        in range: Range<Int>
     ) {
-        depth = pdepth
-        root = _TrieNode()
-        root.children.reserveCapacity(alphabet.count)
-        guard depth > 0 && depth <= range.count else { return }
+        self.buf = buf
         
-        var skip = 0
-        for i in range.lowerBound..<(range.upperBound - depth) {
-            // Avoid adding any n-grams containing elements that are known to
-            // not exist in the other collection being diffed
-            if knownUniques[i + depth - 1] {
-                skip = depth
-            }
-            if skip > 0 {
-                skip -= 1
-                assert(knownUniques[i..<i+depth].contains(true))
-                continue
-            }
-            
-            var node = root
-            // WTB: `for e in buf[i..<(i + depth)]` is more idiomatic but Slice overhead was 30% of runtime
-            for j in i..<(i + depth) {
-                /*
-                 Use a helper function to get the value of children[e], setting
-                 a default value if necessary, while paying for only one
-                 Dictionary lookup.
-                 `inout` is required for `f[e, default: d]` to use the `modify`
-                 (instead of `get`) accessor, but actually writing to the
-                 parameter isn't necessary!
-                 */
-                func get<N>(_ n: inout N) -> N { n }
-                node = get(&node.children[buf[j], default: _TrieNode()])
-                /*
-                 Functionally, the this is the same as:
-                 
-                    if let child = node.children[buf[j]] {
-                        node = child
-                    } else {
-                        let newNode = _TrieNode()
-                        node.children[buf[j]] = newNode
-                        node = newNode
-                    }
-                 
-                 but it should be ~50% faster, much like changing:
-                 
-                    `let tmp = f[e, default: 0]; f[e] = tmp + 1`
-                 
-                 to:
-                 
-                    `f[e, default: 0] += 1`
-                 
-                 TODO/WTB: Unfortunately, the transformation here is only worth 25%???
-                 */
-            }
-            node.locations.append(i)
-        }
+        root = _TrieNode()
+        root.locations = Array(range).map({ $0 - 1 })
+        extend(root)
     }
     
-    func lastOffset(ofRange range: Range<Int>, in a: UnsafeBufferPointer<Element>) -> Int? {
-        precondition(range.count == depth)
+    private func extend(_ node: _TrieNode) {
+        assert(node.children.count == 0)
+        
+        for i in node.locations.map({ $0 + 1 }) {
+            func get<N>(_ n: inout N) -> N { n }
+            let child = get(&node.children[buf[i], default: _TrieNode()])
+            child.locations.append(i)
+            /*
+             * Functionally, the code above is equivalent to:
+             *
+             *    if let child = node.children[buf[i + 1]] {
+             *        child.locations.append(i + 1)
+             *    } else {
+             *        let child = _TrieNode()
+             *        child.locations.append(i + 1)
+             *        node.children[buf[i + 1]] = child
+             *    }
+             *
+             * but it should use ~50% fewer Dictionary lookups, much like changing:
+             *
+             *    `let tmp = f[e, default: 0]; f[e] = tmp + 1`
+             *
+             * to:
+             *
+             *    `f[e, default: 0] += 1`
+             *
+             * TODO/WTB: Unfortunately, the transformation here is only worth a 25% improvement???
+             */
+        }
+    }
+
+    // WTB: This API would be so much better if it could use Slice instead of (Range, UnsafeBufferPointer) but the overhead is too high for so hot a code path
+    // If `loc == nil` return the last incident of the ngram
+    func offset(ofRange range: Range<Int>, in a: UnsafeBufferPointer<Element>, after loc: Int? = nil) -> Int? {
+        // TODO: support `after:`
+        assert(loc == nil)
         var node = root
         for i in range {
-            let e = a[i]
-            if let child = node.children[e] {
+            if node.children.count == 0 && node.locations.last! < (buf.count - 1) {
+                extend(node)
+            }
+            if let child = node.children[a[i]] {
                 node = child
             } else {
                 return nil
@@ -100,4 +99,29 @@ struct _NgramTrie<Element> where Element : Hashable {
         }
         return node.locations.last
     }
+
+    func contains(_ e: Element) -> Bool {
+        return root.children[e] != nil
+    }
+
+    func offsets(for e: Element) -> [Int] {
+        return root.children[e]?.locations ?? []
+    }
+    
+    func offset(of e: Element, after i: Int) -> Int? {
+        let locations = offsets(for: e)
+        var min = 0, max = locations.count
+        while min < max {
+            let pivot = (min + max)/2
+            let loc = locations[pivot]
+            if loc > i {
+                max = pivot
+            } else {
+                min = pivot + 1
+            }
+        }
+        assert(min == max)
+        return min < locations.count ? locations[min] : nil
+    }
+
 }

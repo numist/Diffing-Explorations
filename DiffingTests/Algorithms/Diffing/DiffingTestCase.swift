@@ -36,7 +36,7 @@ class DiffingTestCase: XCTestCase {
         let b = new.map { MeasurementElement($0) }
         
         comparisons = 0
-        let md = _myers(from: a, to: b, using: ==)
+        let md = _club0(from: a, to: b)
         let baseline = comparisons
         comparisons = 0
         let cd = difference(from: a, to: b)
@@ -44,7 +44,7 @@ class DiffingTestCase: XCTestCase {
         
         let ratio = Double(club)/Double(baseline)
         if printStats {
-            print("--==:: club/myers = \(club)/\(baseline) = \(String(format: "%.03f",ratio)) changes: \(cd.count)/\(md.count) (\(String(format: "%.03f",cd.count==md.count ? 1.0 : Double(cd.count)/Double(md.count)))) ::==--")
+            print("--==:: club/club0 = \(club)/\(baseline) = \(String(format: "%.03f",ratio)) changes: \(cd.count)/\(md.count) (\(String(format: "%.03f",cd.count==md.count ? 1.0 : Double(cd.count)/Double(md.count)))) ::==--")
         }
         XCTAssert(a.applying(cd) == b)
         if a.count + b.count > 500 && md.count > 50 {
