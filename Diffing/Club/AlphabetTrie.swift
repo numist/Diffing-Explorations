@@ -17,7 +17,7 @@ struct _AlphabetTrie<Element> where Element : Hashable {
     private let root: _TrieNode
     /* shape of the trie structure (depth = 2) encoding string 1100:
      
-                      root(locations: [-1,0,1,2])
+                    root(locations: [-1,0,1,2])
                   0 /      \ 1
               node[2,3]   node[0,1]
             0 /         0 /    \ 1

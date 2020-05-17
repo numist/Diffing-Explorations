@@ -7,14 +7,13 @@
 
 import Foundation // for log()
 
-// TODO: eliminate dependency on Foundation
+// TODO: eliminate dependency on Foundation for `log()`
 fileprivate func log(_ val: Int, forBase base: Int) -> Int {
     if val <= 1 || base <= 1 { return 1 }
     let result = log(Double(val))/log(Double(base))
     return Int(result + 1.0)
 }
 
-// TODO: code will be messier, but this `extention Int` probably needs to go away before this becomes a swift PR
 fileprivate extension Int {
     enum ComparisonResult {
         case same
@@ -55,10 +54,10 @@ where
     //
     
     // Determine the alphabet of each collection
-    var trieA = _AlphabetTrie(for: a, in: prefixLength..<n) // WTB: only `var` due to use of lazy properties
+    var trieA = _AlphabetTrie(for: a, in: prefixLength..<n)
     let alphaA = trieA.alphabet
 
-    var trieB = _AlphabetTrie(for: b, in: prefixLength..<m) // WTB: only `var` due to use of lazy properties
+    var trieB = _AlphabetTrie(for: b, in: prefixLength..<m)
     let alphaB = trieB.alphabet
 
     let trieDepth = max(2, min(
