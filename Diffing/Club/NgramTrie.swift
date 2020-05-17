@@ -35,9 +35,6 @@ struct _AlphabetTrie<Element> where Element : Hashable {
      * `Dictionary<Element, _TrieNode>.Keys`?
      */
     var alphabet: Set<Element> { Set(root.children.keys) }
-    
-    // More efficient access to the value of `self.alphabet.count`
-    var alphabetSize: Int { return root.children.count }
 
     init(
         for buf: UnsafeBufferPointer<Element>,
@@ -81,35 +78,7 @@ struct _AlphabetTrie<Element> where Element : Hashable {
         }
     }
 
-    // WTB: This API would be so much better if it could use Slice instead of (Range, UnsafeBufferPointer) but the overhead is too high for so hot a code path
-    // If `loc == nil` return the last incident of the ngram
-    func offset(ofRange range: Range<Int>, in a: UnsafeBufferPointer<Element>, after loc: Int? = nil) -> Int? {
-        // TODO: support `after:`
-        assert(loc == nil)
-        var node = root
-        for i in range {
-            if node.children.count == 0 && node.locations.last! < (buf.count - 1) {
-                extend(node)
-            }
-            if let child = node.children[a[i]] {
-                node = child
-            } else {
-                return nil
-            }
-        }
-        return node.locations.last
-    }
-
-    func contains(_ e: Element) -> Bool {
-        return root.children[e] != nil
-    }
-
-    func offsets(for e: Element) -> [Int] {
-        return root.children[e]?.locations ?? []
-    }
-    
-    func offset(of e: Element, after i: Int) -> Int? {
-        let locations = offsets(for: e)
+    func bsearch(for i: Int, in locations: [Int]) -> Int? {
         var min = 0, max = locations.count
         while min < max {
             let pivot = (min + max)/2
@@ -122,6 +91,37 @@ struct _AlphabetTrie<Element> where Element : Hashable {
         }
         assert(min == max)
         return min < locations.count ? locations[min] : nil
+    }
+    
+    // WTB: This API would be so much better if it could use Slice instead of (Range, UnsafeBufferPointer) but the overhead is too high for so hot a code path
+    func offset(ofRange range: Range<Int>, in a: UnsafeBufferPointer<Element>, afterOrNear loc: Int) -> Int? {
+        var node = root
+        for i in range {
+            if node.children.count == 0 && node.locations.last! < (buf.count - 1) {
+                extend(node)
+            }
+            if let child = node.children[a[i]] {
+                node = child
+            } else {
+                return nil
+            }
+        }
+        
+        let end = bsearch(for: loc, in: node.locations) ?? node.locations.last
+        // Return value should relate to the beginning of the n-gram
+        if let e = end {
+            return e - range.count
+        } else {
+            return nil
+        }
+    }
+
+    func offsets(for e: Element) -> [Int] {
+        return root.children[e]?.locations ?? []
+    }
+    
+    func offset(of e: Element, after i: Int) -> Int? {
+        return bsearch(for: i, in: offsets(for: e))
     }
 
 }

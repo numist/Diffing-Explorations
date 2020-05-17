@@ -30,7 +30,6 @@
 		BCA2158422C5BC1C00290D70 /* LiteralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2158322C5BC1C00290D70 /* LiteralTests.swift */; };
 		BCBA1F172356464800DD6048 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCBA1F162356464800DD6048 /* main.swift */; };
 		BCBA1F1D235AE1BC00DD6048 /* Frequencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157522C56A6800290D70 /* Frequencies.swift */; };
-		BCD2312F2470B69B00008305 /* OldClub.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD2312E2470B69B00008305 /* OldClub.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,7 +102,6 @@
 		BCA2158322C5BC1C00290D70 /* LiteralTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiteralTests.swift; sourceTree = "<group>"; };
 		BCBA1F142356464800DD6048 /* DynamicMyersTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DynamicMyersTest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCBA1F162356464800DD6048 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		BCD2312E2470B69B00008305 /* OldClub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldClub.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,7 +161,6 @@
 				BC746262243D5B9E008C52B3 /* EditTreeNode.swift */,
 				BC390C08242715FF00E2E916 /* NgramTrie.swift */,
 				BC746264243D6009008C52B3 /* WorkQueue.swift */,
-				BCD2312E2470B69B00008305 /* OldClub.swift */,
 			);
 			path = Club;
 			sourceTree = "<group>";
@@ -410,7 +407,6 @@
 				BC390C09242715FF00E2E916 /* NgramTrie.swift in Sources */,
 				BC746263243D5B9E008C52B3 /* EditTreeNode.swift in Sources */,
 				BC746265243D6009008C52B3 /* WorkQueue.swift in Sources */,
-				BCD2312F2470B69B00008305 /* OldClub.swift in Sources */,
 				BC390C052426A4CE00E2E916 /* Club.swift in Sources */,
 				BCA2156F22C47C4900290D70 /* Difference.swift in Sources */,
 			);
