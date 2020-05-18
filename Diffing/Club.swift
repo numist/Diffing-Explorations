@@ -12,7 +12,9 @@ func _club<E>(
 where E: Hashable {
   // Greedily consume shared suffix
   var suffixLength = 0
-  while suffixLength < min(a.count, b.count) && a[a.count - (suffixLength+1)] == b[b.count - (suffixLength+1)] {
+  while suffixLength < min(a.count, b.count) &&
+    a[a.count - (suffixLength + 1)] == b[b.count - (suffixLength + 1)]
+  {
     suffixLength += 1
   }
   let n = a.count - suffixLength
@@ -87,7 +89,8 @@ where E: Hashable {
       } else {
         // a[x..<x+trieDepth]∉b, remove
         if x + trieDepth <= n {
-          xGramInB = trieB.offset(ofRange: x..<(x+trieDepth), in: a, afterOrNear: y)
+          xGramInB = trieB.offset(ofRange: x..<(x + trieDepth), in: a,
+                                  afterOrNear: y)
           if xGramInB == nil {
             x += 1
             current = _EditTreeNode(x: x, y: y, parent: current, free: true)
@@ -96,7 +99,8 @@ where E: Hashable {
         }
         // b[y..<y+trieDepth]∉a, insert
         if y + trieDepth <= m {
-          yGramInA = trieA.offset(ofRange: y..<(y+trieDepth), in: b, afterOrNear: x)
+          yGramInA = trieA.offset(ofRange: y..<(y + trieDepth), in: b,
+                                  afterOrNear: x)
           if yGramInA == nil {
             y += 1
             current = _EditTreeNode(x: x, y: y, parent: current, free: true)
@@ -107,68 +111,85 @@ where E: Hashable {
       }
     }
     assert(x <= n && y <= m, "diff computation exceeded allowed range")
-    assert(xGramInB != nil || x + trieDepth > n, "n-gram not calculated for valid range \(x)..<\(x+trieDepth) in \(a)")
-    assert(yGramInA != nil || y + trieDepth > m, "n-gram not calculated for valid range \(y)..<\(y+trieDepth) in \(b)")
+    assert(xGramInB != nil || x + trieDepth > n,
+      "n-gram not calculated for valid range \(x)..<\(x + trieDepth) in \(a)")
+    assert(yGramInA != nil || y + trieDepth > m,
+      "n-gram not calculated for valid range \(y)..<\(y + trieDepth) in \(b)")
 
     // Every unfinished edit path re-enqueues at least one iteration of itself
     switch (x, y) {
     case (n, m):
-      assert(n==0 || y==0 || a[n-1] != b[m-1], "Solution construction depends on unequal elements at end of diff range")
+      assert(n==0 || y==0 || a[n - 1] != b[m - 1],
+        "Solution construction depends on unequal elements at end of diff range")
       solutionNode = current
     case (_, m):
       // No elements remain in b, remove
-      workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
+      workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
     case (n, _):
       // No elements remain in a, insert
-      workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
+      workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
     case (let x, let y):
       // n-gram heuristics:
       if x + trieDepth <= n && xGramInB! < y {
-        // `current` is ahead of last instance of `a[x..<x+trieDepth]` in `b`, remove
-        workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
+        // `current` is ahead of last instance of `a[x..<x+trieDepth]` in `b`
+        workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
       } else if y + trieDepth <= m && yGramInA! < x {
-        // `current` is ahead of last instance of `b[y..<y+trieDepth]` in `a`, insert
-        workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
-      } else if x + trieDepth <= n && y + trieDepth <= m && ((yGramInA!-x) > 2*(xGramInB!-y) || (xGramInB!-y) > 2*(yGramInA!-x)) {
-        /* `xGramInB-y` represents the distance between `y` and the offset of `a[x..<x+trieDepth]` in `b`
-         * `yGramInA-x` represents the distance between `x` and the offset of `b[y..<y+trieDepth]` in `a`
-         * If one of those distances is less than half of the other, assume greedily editing the element
-         * with the more distant match will still produce a sufficiently minimal diff.
+        // `current` is ahead of last instance of `b[y..<y+trieDepth]` in `a`
+        workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
+      } else if (
+        x + trieDepth <= n &&
+        y + trieDepth <= m && (
+          (yGramInA! - x) > 2 * (xGramInB! - y) ||
+          (xGramInB! - y) > 2 * (yGramInA! - x)
+        )
+      ) {
+        /* `xGramInB-y` represents the distance between `y` and the offset of
+         * `a[x..<x+trieDepth]` in `b`. `yGramInA-x` represents the distance
+         * between `x` and the offset of `b[y..<y+trieDepth]` in `a`. If one of
+         * those distances is less than half of the other, assume greedily
+         * editing the element with the more distant match will still produce a
+         * sufficiently minimal diff.
          */
         if yGramInA! - x < xGramInB! - y {
           // `a[x..<x+trieDepth]` is more distant, remove
-          workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
+          workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
         } else {
           // `b[y..<y+trieDepth]` is more distant, insert
-          workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
+          workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
         }
       } else {
         // Element membership heuristics (same rules as n-grams):
-        switch (trieB.offset(of: a[x], after: y), trieA.offset(of: b[y], after: x)) {
+        switch (
+          trieB.offset(of: a[x], after: y), trieA.offset(of: b[y], after: x)
+        ) {
         case (nil, _):
           // `a[x]` does not exist after `y` in `b`, remove
-          workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
+          workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
         case (_, nil):
           // `b[y]` does not exist after `x` in `a`, insert
-          workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
+          workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
         case (let nextXInB, let nextYInA):
-          if (nextYInA!-x) > 2*(nextXInB!-y) || (nextXInB!-y) > 2*(nextYInA!-x) {
-            /* `nextXInB-y` represents the distance between `y` and the location of `a[x]` in `b`
-             * `nextYInA-x` represents the distance between `x` and the location of `b[y]` in `a`
-             * If one of those distances is less than half of the other, assume greedily editing
-             * the element with the more distant match will still produce a sufficiently minimal diff.
+          if (nextYInA! - x) > 2 * (nextXInB! - y) ||
+            (nextXInB! - y) > 2 * (nextYInA! - x)
+          {
+            /* `nextXInB-y` represents the distance between `y` and the location
+             * of `a[x]` in `b`. `nextYInA-x` represents the distance between
+             * `x` and the location of `b[y]` in `a`. If one of those distances
+             * is less than half of the other, assume greedily editing the
+             * element with the more distant match will still produce a
+             * sufficiently minimal diff.
              */
             if nextYInA! - x < nextXInB! - y {
               // `a[x]` is more distant, remove
-              workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
+              workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
             } else {
               // `b[y]` is more distant, insert
-              workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
+              workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
             }
           } else {
             // Default: fork current edit path
-            workQ.append(_EditTreeNode(x: x+1, y: y, parent: current))
-            workQ.append(_EditTreeNode(x: x, y: y+1, parent: current))
+            workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
+            workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
           }
         }
       }
@@ -176,23 +197,28 @@ where E: Hashable {
   }
 
   // Solution forming
-  assert(solutionNode!.x == n && solutionNode!.y == m, "Incomplete edit path proposed as solution")
+  assert(solutionNode!.x == n && solutionNode!.y == m,
+    "Incomplete edit path proposed as solution")
   var x = n, y = m
   var changes = [CollectionDifference<E>.Change]()
   while let node = solutionNode?.parent {
     // WTB: The compiler ought to know that `solutionNode` cannot be `nil` below
-    assert((x - node.x) != (y - node.y), "No edits between nodes \(solutionNode!) and \(node) in edit path")
+    assert((x - node.x) != (y - node.y),
+      "No edits between nodes \(solutionNode!) and \(node) in edit path")
     if (x - node.x) < (y - node.y) {
-      changes.append(.insert(offset: y-1, element: b[y-1], associatedWith: nil))
+      changes.append(.insert(offset: y - 1, element: b[y - 1],
+        associatedWith: nil))
     } else {
-      changes.append(.remove(offset: x-1, element: a[x-1], associatedWith: nil))
+      changes.append(.remove(offset: x - 1, element: a[x - 1],
+        associatedWith: nil))
     }
 
     x = node.x
     y = node.y
     solutionNode = node
   }
-  assert(x == prefixLength && y == prefixLength, "Solution path should end at beginning of diff range")
+  assert(x == prefixLength && y == prefixLength,
+    "Solution path should end at beginning of diff range")
 
   return CollectionDifference<E>(changes)!
 }
@@ -214,7 +240,8 @@ fileprivate class _EditTreeNode {
   private let freeInserts: Int
 
   init(x: Int, y: Int, parent: _EditTreeNode?, free: Bool = false) {
-    assert(parent == nil || 1 == abs((parent!.x - x) - (parent!.y - y)), "Nodes must depart from their parent by exactly one edit")
+    assert(parent == nil || 1 == abs((parent!.x - x) - (parent!.y - y)),
+      "Nodes must depart from their parent by exactly one edit")
 
     self.x = x
     self.y = y
@@ -309,7 +336,8 @@ fileprivate class _WorkQueue {
    * nodes that share the same rank.
    */
   private func activatePending() {
-    assert(maxRoundSize > 0, "Invalid `maxRoundSize` \(maxRoundSize) (must be > 0)")
+    assert(maxRoundSize > 0,
+      "Invalid `maxRoundSize` \(maxRoundSize) (must be > 0)")
     active = Array<_EditTreeNode>()
     var root: _QuadNode? = nil
     for e in pending.sorted(by: { (p1, p2) -> Bool in
@@ -355,7 +383,9 @@ fileprivate class _WorkQueue {
         return false
       }
 
-      switch (n.e.discountedX > e.discountedX, n.e.discountedY > e.discountedY) {
+      switch (
+        n.e.discountedX > e.discountedX, n.e.discountedY > e.discountedY
+      ) {
       case (false, false):
         // Insertion to the southwest: parameter is superceded by this node
         return false
@@ -431,7 +461,8 @@ fileprivate struct _AlphabetTrie<Element> where Element: Hashable {
 
   // Called lazily when a node needs its children populated.
   private func extend(_ node: _TrieNode) {
-    assert(node.children.count == 0, "Children of node \(node) have already been calculated!")
+    assert(node.children.count == 0,
+      "Children of node \(node) have already been calculated!")
 
     for i in node.locations.map({ $0 + 1 }) {
       func get<N>(_ n: inout N) -> N { n }
@@ -455,7 +486,7 @@ fileprivate struct _AlphabetTrie<Element> where Element: Hashable {
        *
        *  `f[e, default: 0] += 1`
        *
-       * WTB: Unfortunately, the transformation is only worth a 25% improvement here?
+       * WTB: Unfortunately, here it's only worth a 25% improvement?
        */
     }
   }
@@ -465,7 +496,11 @@ fileprivate struct _AlphabetTrie<Element> where Element: Hashable {
   }
 
   // WTB: Slice is a more ideal type here, were it not for its performance cost
-  func offset(ofRange range: Range<Int>, in a: UnsafeBufferPointer<Element>, afterOrNear loc: Int) -> Int? {
+  func offset(
+    ofRange range: Range<Int>,
+    in a: UnsafeBufferPointer<Element>,
+    afterOrNear loc: Int
+  ) -> Int? {
     var node = root
     for i in range {
       if node.children.count == 0 && node.locations.last! < (buf.count - 1) {
@@ -481,7 +516,8 @@ fileprivate struct _AlphabetTrie<Element> where Element: Hashable {
     let end = bsearch(for: loc, in: node.locations) ?? node.locations.last!
     // Return value should relate to the beginning of the n-gram
     let result = end - (range.count - 1)
-    assert(buf[result] == a[range.startIndex], "invalid calculation of n-gram match offset")
+    assert(buf[result] == a[range.startIndex],
+      "invalid calculation of n-gram match offset")
     return result
   }
 
