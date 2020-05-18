@@ -28,7 +28,7 @@ class DiffingTestCase: XCTestCase {
         super.tearDown()
     }
     
-    func measureDiffs<C, D>(from old: C, to new: D)
+    func measureDiffs<C, D>(from old: C, to new: D, strict: Bool = false)
         where C : BidirectionalCollection, D : BidirectionalCollection,
         C.Element == D.Element, C.Element : Hashable
     {
@@ -44,12 +44,14 @@ class DiffingTestCase: XCTestCase {
         
         let ratio = Double(club)/Double(baseline)
         if printStats {
-            print("--==:: club/myers = \(club)/\(baseline) = \(String(format: "%.03f",ratio)) changes: \(cd.count)/\(md.count) (\(String(format: "%.03f",cd.count==md.count ? 1.0 : Double(cd.count)/Double(md.count)))) ::==--")
+            print("--==:: comparisons: club/myers = \(club)/\(baseline) = \(String(format: "%.01f",ratio*100.0))% changes: \(cd.count)/\(md.count) (+\(String(format: "%.01f",cd.count==md.count ? 0.0 : Double(cd.count)/Double(md.count)*100.0-100.0))%) ::==--")
         }
         XCTAssert(a.applying(cd) == b)
         if a.count + b.count > 500 && md.count > 50 {
             XCTAssertLessThan(ratio, 4.0)
         }
-        XCTAssertLessThanOrEqual(cd.count, md.count * 2)
+        if strict {
+            XCTAssertLessThanOrEqual(cd.count, md.count * 2)
+        }
     }
 }

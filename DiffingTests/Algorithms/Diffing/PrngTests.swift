@@ -32,7 +32,11 @@ class PrngTests: DiffingTestCase {
         }
     }
     
-    func testRandomLetterStrings() {
+    func testRandomCode() {
+        checkDifferentLengthRandomStrings(with: VoseAliasMethod(codeFrequencies, rng: rng()))
+    }
+
+    func testRandomLetters() {
         checkDifferentLengthRandomStrings(with: VoseAliasMethod(letterFrequencies, rng: rng()))
     }
 
@@ -57,8 +61,12 @@ class PrngTests: DiffingTestCase {
             measureDiffs(from: a, to: b)
         }
     }
-    
-    func testReversedLetterStrings() {
+
+    func testReversedCode() {
+        checkDifferentLengthReversedStrings(with: VoseAliasMethod(codeFrequencies, rng: rng()))
+    }
+
+    func testReversedLetters() {
         checkDifferentLengthReversedStrings(with: VoseAliasMethod(letterFrequencies, rng: rng()))
     }
 
@@ -74,7 +82,16 @@ class PrngTests: DiffingTestCase {
         checkDifferentLengthReversedStrings(with: VoseAliasMethod(binaryFrequencies, rng: rng()))
     }
     
-    func testDisparateLetterVsNumberStrings() {
+    func testReversedUUID() {
+        for n in [1, 5, 10, 50, 100, 500] {
+            if printStats { print("n: \(n): ", terminator: "") }
+            let a = (0..<n).map({ _ in UUID() })
+            let b = a.reversed()
+            measureDiffs(from: a, to: b)
+        }
+    }
+
+    func testDisparateLettersVsNumbers() {
         var letterGenerator = VoseAliasMethod(letterFrequencies, rng: rng())
         var numberGenerator = VoseAliasMethod(numberFrequencies, rng: rng())
         for n in [1, 5, 10, 50, 100, 500] {
@@ -85,12 +102,11 @@ class PrngTests: DiffingTestCase {
         }
     }
     
-    func testOrderedSetPromotable() {
-        var r = rng()
+    func testDisparateUUIDs() {
         for n in [1, 5, 10, 50, 100, 500] {
-            let a = OrderedSet(0..<n)
             if printStats { print("n: \(n): ", terminator: "") }
-            let b = a.shuffled(using:&r)
+            let a = (0..<n).map({ _ in UUID() })
+            let b = (0..<n).map({ _ in UUID() })
             measureDiffs(from: a, to: b)
         }
     }
@@ -125,7 +141,7 @@ class PrngTests: DiffingTestCase {
         }
     }
     
-    func testByPercentageChangedBinary() {
+    func testByPercentageChangedBitBuffers() {
         checkDifferentPercentageChangedStrings(with: binaryFrequencies)
     }
 
@@ -136,7 +152,11 @@ class PrngTests: DiffingTestCase {
     func testByPercentageChangedNumbers() {
         checkDifferentPercentageChangedStrings(with: numberFrequencies)
     }
-    
+
+    func testByPercentageChangedCode() {
+        checkDifferentPercentageChangedStrings(with: codeFrequencies)
+    }
+
     func testByPercentageChangedLetters() {
         checkDifferentPercentageChangedStrings(with: letterFrequencies)
     }
@@ -171,5 +191,15 @@ class PrngTests: DiffingTestCase {
         let a = (0..<size).map({ _ in UUID() })
         let b = a.shuffled(using: &r)
         measureDiffs(from: a, to: b)
+    }
+
+    func testShuffledOrderedSetPromotable() {
+        var r = rng()
+        for n in [1, 5, 10, 50, 100, 500] {
+            let a = OrderedSet(0..<n)
+            if printStats { print("n: \(n): ", terminator: "") }
+            let b = a.shuffled(using:&r)
+            measureDiffs(from: a, to: b)
+        }
     }
 }

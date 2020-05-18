@@ -34,13 +34,13 @@ where E: Hashable {
   }
 
   // Characterize remaining input
-  var trieA = _AlphabetTrie(for: a, in: prefixLength..<n)
+  let trieA = _AlphabetTrie(for: a, in: prefixLength..<n)
   let alphaA = trieA.alphabet
-  var trieB = _AlphabetTrie(for: b, in: prefixLength..<m)
+  let trieB = _AlphabetTrie(for: b, in: prefixLength..<m)
   let alphaB = trieB.alphabet
   let trieDepth = max(2, min(
-    log(n-prefixLength, forBase: alphaA.count / max(trieA.mostPopularElementCount, 1)),
-    log(m-prefixLength, forBase: alphaB.count / max(trieB.mostPopularElementCount, 1))
+    log(n-prefixLength, forBase: alphaA.count),
+    log(m-prefixLength, forBase: alphaB.count)
   ))
 
   // Precompute all known e∈a,e∉b…
@@ -405,8 +405,7 @@ fileprivate struct _AlphabetTrie<Element> where Element: Hashable {
   }
   private let root: _TrieNode
   /* Due to laziness, a trie may not fully encode a string for any given depth.
-   * The below example is a valid construction resulting from n-gram queries
-   * over the string "1100":
+   * The below example is a valid construction for the string "1100":
    *                     ┌─────────────────────┐
    *               root: │locations: [-1,0,1,2]│
    *                     └─────────────────────┘
@@ -429,11 +428,6 @@ fileprivate struct _AlphabetTrie<Element> where Element: Hashable {
    *                                   │locations: [2]│
    *                                   └──────────────┘
    */
-
-  // The count of the most frequent element in the collection
-  lazy var mostPopularElementCount: Int = {
-    root.children.values.reduce(0, { max($0, $1.locations.count) })
-  }()
 
   /*
    * TODO: this `Set` conversion doesn't amount to much in the time profile,
