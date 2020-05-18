@@ -90,7 +90,9 @@ func _withContiguousStorage<C : Collection, R>(
   for values: C,
   _ body: (UnsafeBufferPointer<C.Element>) throws -> R
 ) rethrows -> R {
-  if let result = try values.withContiguousStorageIfAvailable(body) { return result }
+  if let result = try values.withContiguousStorageIfAvailable(body) {
+    return result
+  }
   let array = ContiguousArray(values)
   return try array.withUnsafeBufferPointer(body)
 }
