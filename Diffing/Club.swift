@@ -5,15 +5,6 @@
  * Attribution is appreciated but not necessary.
  */
 
-import Foundation // for log()
-
-// TODO: eliminate dependency on Foundation for `log()`
-fileprivate func log(_ val: Int, forBase base: Int) -> Int {
-  if val <= 1 || base <= 1 { return 1 }
-  let result = log(Double(val))/log(Double(base))
-  return Int(result + 1.0)
-}
-
 func _club<E>(
   from a: UnsafeBufferPointer<E>,
   to b: UnsafeBufferPointer<E>
@@ -38,10 +29,7 @@ where E: Hashable {
   let alphaA = trieA.alphabet
   let trieB = _AlphabetTrie(for: b, in: prefixLength..<m)
   let alphaB = trieB.alphabet
-  let trieDepth = max(2, min(
-    log(n-prefixLength, forBase: alphaA.count),
-    log(m-prefixLength, forBase: alphaB.count)
-  ))
+  let trieDepth = 2
 
   // Precompute all known e∈a,e∉b…
   var knownRemoves = Array<Bool>(repeating: false, count: n)
