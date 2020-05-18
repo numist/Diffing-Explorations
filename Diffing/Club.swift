@@ -409,12 +409,6 @@ fileprivate struct _AlphabetTrie<Element> where Element: Hashable {
    *    ┌──────────────┐      ┌──────────────┐  ┌──────────────┐
    *    │locations: [3]│      │locations: [2]│  │locations: [1]│
    *    └──────────────┘      └──────────────┘  └──────────────┘
-   *                                                    |
-   *                                       "0" ┌────────┘
-   *                                           ▼
-   *                                   ┌──────────────┐
-   *                                   │locations: [2]│
-   *                                   └──────────────┘
    */
 
   /*
