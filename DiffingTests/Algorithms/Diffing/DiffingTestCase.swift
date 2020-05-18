@@ -36,7 +36,7 @@ class DiffingTestCase: XCTestCase {
         let b = new.map { MeasurementElement($0) }
         
         comparisons = 0
-        let md = _myers(from: a, to: b, using: ==)
+        let md = difference(from: a, to: b, using: ==)
         let baseline = comparisons
         comparisons = 0
         let cd = difference(from: a, to: b)

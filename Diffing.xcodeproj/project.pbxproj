@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		BC0A730A23552B680037EAFD /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0A730923552B680037EAFD /* main.swift */; };
+		BC382A0024733123001DC36F /* Myers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156222C4722600290D70 /* Myers.swift */; };
 		BC390C032425B93C00E2E916 /* Correctness.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C022425B93C00E2E916 /* Correctness.swift */; };
 		BC390C052426A4CE00E2E916 /* Club.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C042426A4CE00E2E916 /* Club.swift */; };
 		BC746271243D90F1008C52B3 /* btree.f55ea8f456.c in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC746269243D8D8F008C52B3 /* btree.f55ea8f456.c */; };
 		BC746272243D90F5008C52B3 /* btree.79ce96ab39.c in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC74626A243D8D8F008C52B3 /* btree.79ce96ab39.c */; };
-		BC74627724411A4C008C52B3 /* Myers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156222C4722600290D70 /* Myers.swift */; };
 		BC74627824411A92008C52B3 /* Vose.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156022C471FA00290D70 /* Vose.swift */; };
 		BC74627924411A92008C52B3 /* Xoshiro.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156622C476D400290D70 /* Xoshiro.swift */; };
 		BC74627A24411C1F008C52B3 /* Frequencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157522C56A6800290D70 /* Frequencies.swift */; };
@@ -181,6 +181,7 @@
 				BCA2156E22C47C4900290D70 /* Difference.swift */,
 				BCA2154922C471E500290D70 /* Diffing.h */,
 				BCA2154A22C471E500290D70 /* Info.plist */,
+				BCA2156222C4722600290D70 /* Myers.swift */,
 			);
 			path = Diffing;
 			sourceTree = "<group>";
@@ -213,7 +214,6 @@
 				BC390C022425B93C00E2E916 /* Correctness.swift */,
 				BCA2158122C5BBDA00290D70 /* DiffingTestCase.swift */,
 				BCA2158322C5BC1C00290D70 /* LiteralTests.swift */,
-				BCA2156222C4722600290D70 /* Myers.swift */,
 				BCA2155422C471E500290D70 /* PrngTests.swift */,
 			);
 			path = Diffing;
@@ -382,6 +382,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BC390C052426A4CE00E2E916 /* Club.swift in Sources */,
+				BC382A0024733123001DC36F /* Myers.swift in Sources */,
 				BCA2156F22C47C4900290D70 /* Difference.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -391,7 +392,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				BC74627924411A92008C52B3 /* Xoshiro.swift in Sources */,
-				BC74627724411A4C008C52B3 /* Myers.swift in Sources */,
 				BC74627A24411C1F008C52B3 /* Frequencies.swift in Sources */,
 				BCA2158222C5BBDA00290D70 /* DiffingTestCase.swift in Sources */,
 				BC74627B24411C62008C52B3 /* OrderedSet.swift in Sources */,

@@ -46,7 +46,7 @@ class CorrectnessMyers: XCTestCase {
         where C : BidirectionalCollection, D : BidirectionalCollection,
         C.Element == D.Element, C.Element : Hashable
     {
-        return _myers(from: old, to: new, using: ==)
+        return difference(from: old, to: new, using: ==)
     }
     
     func verify<C, E>(from a: C, to b: C, produced d: CollectionDifference<E>, mutationCount c: Int = Int.max)

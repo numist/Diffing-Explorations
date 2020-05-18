@@ -5,25 +5,6 @@
  * Attribution is appreciated but not necessary.
  */
 
-// For _withContiguousStorage, to avoid duplication
-@testable import Diffing
-
-func _myers<C,D>(
-    from old: C, to new: D,
-    using cmp: (C.Element, D.Element) -> Bool
-) -> CollectionDifference<C.Element>
-where
-    C : BidirectionalCollection,
-    D : BidirectionalCollection,
-    C.Element == D.Element
-{
-    return _withContiguousStorage(for: old) { a in
-        return _withContiguousStorage(for: new) { b in
-            return _myers(from: a, to: b, using: cmp)
-        }
-    }
-}
-
 func _myers<E>(
     from a: UnsafeBufferPointer<E>,
     to b: UnsafeBufferPointer<E>,
