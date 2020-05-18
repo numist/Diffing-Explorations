@@ -10,7 +10,11 @@ func _club<E>(
   to b: Slice<UnsafeBufferPointer<E>>
 ) -> CollectionDifference<E>
 where E: Hashable {
-  // This code gets hard to read with `.endIndex` littered all over the place
+  assert(a.count == 0 || b.count == 0 ||
+    (a.first != b.first && a.last != b.last),
+    "_club requires prefix and suffix matching be performed by the caller")
+
+  // Hoist commonly-used values into locals
   let n = a.endIndex
   let m = b.endIndex
   

@@ -18,9 +18,11 @@ func _myers<E>(
     from a: Slice<UnsafeBufferPointer<E>>,
     to b: Slice<UnsafeBufferPointer<E>>
   ) -> [_V] {
+    // Hoist commonly-used values into locals
+    let offX = a.startIndex
+    let offY = b.startIndex
     let n = a.endIndex - a.startIndex
     let m = b.endIndex - b.startIndex
-    let max = n + m
     
     var result = [_V]()
     var v = _V(maxIndex: 1)
@@ -28,7 +30,7 @@ func _myers<E>(
     
     var x = 0
     var y = 0
-    iterator: for d in 0...max {
+    iterator: for d in 0...(n + m) {
       let prev_v = v
       result.append(v)
       v = _V(maxIndex: d)
@@ -55,7 +57,7 @@ func _myers<E>(
         y = x &- k
         
         while x < n && y < m {
-          if !cmp(a[a.startIndex + x], b[b.startIndex + y]) {
+          if !cmp(a[offX + x], b[offY + y]) {
             break;
           }
           x &+= 1

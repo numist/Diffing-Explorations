@@ -18,43 +18,35 @@ where
 {
   return _withContiguousStorage(for: old, { a in
     _withContiguousStorage(for: new, { b in
-      return _hashableDifference(from: a, to: b)
+      // Greedily consume shared suffix
+      var suffixLength = 0
+      while suffixLength < min(a.count, b.count) &&
+        a[a.count - (suffixLength + 1)] == b[b.count - (suffixLength + 1)]
+      {
+        suffixLength += 1
+      }
+      let n = a.count - suffixLength
+      let m = b.count - suffixLength
+
+      // Greedily consume shared prefix
+      var prefixLength = 0
+      while prefixLength < min(n, m) && a[prefixLength] == b[prefixLength] {
+        prefixLength += 1
+      }
+
+      let sliceA = a[prefixLength..<n]
+      let sliceB = b[prefixLength..<m]
+      
+      // TODO: algorithms should return [Change] instead of CollectionDifference
+
+      if n * m < 2500 {
+        return _myers(from: sliceA, to: sliceB, using: ==)
+      } else {
+        
+      }
+      return _club(from: sliceA, to: sliceB)
     })
   })
-}
-
-func _hashableDifference<Element>(
-    from a: UnsafeBufferPointer<Element>,
-    to b: UnsafeBufferPointer<Element>
-) -> CollectionDifference<Element>
-where
-    Element : Hashable
-{
-  // Greedily consume shared suffix
-  var suffixLength = 0
-  while suffixLength < min(a.count, b.count) &&
-    a[a.count - (suffixLength + 1)] == b[b.count - (suffixLength + 1)]
-  {
-    suffixLength += 1
-  }
-  let n = a.count - suffixLength
-  let m = b.count - suffixLength
-
-  // Greedily consume shared prefix
-  var prefixLength = 0
-  while prefixLength < min(n, m) && a[prefixLength] == b[prefixLength] {
-    prefixLength += 1
-  }
-
-  let sliceA = a[prefixLength..<n]
-  let sliceB = b[prefixLength..<m]
-  
-  // TODO: algorithms should return [Change] instead of CollectionDifference
-
-  if n * m < 2500 {
-    return _myers(from: sliceA, to: sliceB, using: ==)
-  }
-  return _club(from: sliceA, to: sliceB)
 }
 
 // MARK - Element: Equatable
@@ -117,4 +109,3 @@ func _withContiguousStorage<C : Collection, R>(
   let array = ContiguousArray(values)
   return try array.withUnsafeBufferPointer(body)
 }
-
