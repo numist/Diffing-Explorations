@@ -16,7 +16,7 @@ where
   C.Element == D.Element,
   C.Element : Hashable
 {
-  return _withContiguousStorage(for: old, { a in
+  let changes: _Changes<C.Element> = _withContiguousStorage(for: old, { a in
     _withContiguousStorage(for: new, { b in
       // Greedily consume shared suffix
       var suffixLength = 0
@@ -50,6 +50,7 @@ where
       return _club(from: sliceA, alphabet: alphaA, to: sliceB, alphabet: alphaB)
     })
   })
+  return CollectionDifference(changes)!
 }
 
 public func difference<C, D>(
@@ -61,11 +62,12 @@ where
     C.Element == D.Element,
     C.Element : Equatable
 {
-  return _withContiguousStorage(for: old, { a in
+  let changes = _withContiguousStorage(for: old, { a in
     _withContiguousStorage(for: new, { b in
       return _myers(from: (a, 0..<a.count), to: (b, 0..<b.count), using: ==)
     })
   })
+  return CollectionDifference(changes)!
 }
 
 public func difference<C, D>(
@@ -76,14 +78,18 @@ where
   D: BidirectionalCollection,
   C.Element == D.Element
 {
-  return _withContiguousStorage(for: old, { a in
+  let changes = _withContiguousStorage(for: old, { a in
     _withContiguousStorage(for: new, { b in
       return _myers(from: (a, 0..<a.count), to: (b, 0..<b.count), using: cmp)
     })
   })
+  return CollectionDifference(changes)!
 }
 
 // MARK: Support
+
+typealias _Slice<Element> = (base: UnsafeBufferPointer<Element>, range: Range<Int>)
+typealias _Changes<Element> = [CollectionDifference<Element>.Change]
 
 /* Splatting the collections into contiguous storage has two advantages:
  *
@@ -108,8 +114,6 @@ func _withContiguousStorage<C : Collection, R>(
   let array = ContiguousArray(values)
   return try array.withUnsafeBufferPointer(body)
 }
-
-typealias _Slice<Element> = (base: UnsafeBufferPointer<Element>, range: Range<Int>)
 
 /* The Alphabet/Trie performs input characterization as well as efficient
  * membership testing for both individual elements as well as ranges (n-grams).

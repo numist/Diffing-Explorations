@@ -11,7 +11,7 @@ func _myers<E>(
   from a: _Slice<E>,
   to b: _Slice<E>,
   using cmp: (E, E) -> Bool
-) -> CollectionDifference<E> {
+) -> _Changes<E> {
   // Core implementation of the algorithm described at http://www.xmailserver.org/diff2.pdf
   // Variable names match those used in the paper as closely as possible
   func _descent(
@@ -80,8 +80,8 @@ func _myers<E>(
     from a: _Slice<E>,
     to b: _Slice<E>,
     using trace: [_V]
-  ) -> [CollectionDifference<E>.Change] {
-    var changes = [CollectionDifference<E>.Change]()
+  ) -> _Changes<E> {
+    var changes = _Changes<E>()
     changes.reserveCapacity(trace.count)
     
     var x = a.range.count
@@ -115,7 +115,7 @@ func _myers<E>(
     return changes
   }
 
-  return CollectionDifference(_formChanges(from: a, to: b, using:_descent(from: a, to: b)))!
+  return _formChanges(from: a, to: b, using:_descent(from: a, to: b))
 }
 
 // _V is a rudimentary type made to represent the rows of the triangular matrix type used by the Myer's algorithm

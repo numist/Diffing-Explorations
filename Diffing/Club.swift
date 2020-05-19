@@ -8,8 +8,7 @@
 func _club<E>(
   from a: _Slice<E>, alphabet optAlphaA: _AlphabetTrie<E>? = nil,
   to b: _Slice<E>, alphabet optAlphaB: _AlphabetTrie<E>? = nil
-) -> CollectionDifference<E>
-where E: Hashable {
+) -> _Changes<E> where E: Hashable {
   assert(a.range.count == 0 || b.range.count == 0 || (
     a.base[a.range.startIndex] != b.base[b.range.startIndex] &&
     a.base[a.range.endIndex - 1] != b.base[b.range.endIndex - 1]),
@@ -191,7 +190,7 @@ where E: Hashable {
   assert(solutionNode!.x == n && solutionNode!.y == m,
     "Incomplete edit path proposed as solution")
   var x = n, y = m
-  var changes = [CollectionDifference<E>.Change]()
+  var changes = _Changes<E>()
   while let node = solutionNode?.parent {
     // WTB: The compiler ought to know that `solutionNode` cannot be `nil` below
     assert((x - node.x) != (y - node.y),
@@ -211,7 +210,7 @@ where E: Hashable {
   assert(x == a.range.startIndex && y == b.range.startIndex,
     "Solution path should end at beginning of diff range")
 
-  return CollectionDifference<E>(changes)!
+  return changes
 }
 
 /* An edit tree represents all active edit paths in the search for a solution.
