@@ -5,7 +5,7 @@
  * Attribution is appreciated but not necessary.
  */
 
-// TODO: stdlib code style
+// TODO(numist): stdlib code style
 
 func _myers<E>(
   from a: Slice<UnsafeBufferPointer<E>>,

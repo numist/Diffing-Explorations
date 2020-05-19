@@ -431,13 +431,6 @@ fileprivate struct _AlphabetTrie<Element> where Element: Hashable {
    *    └──────────────┘      └──────────────┘  └──────────────┘
    */
 
-  /*
-   * TODO: this `Set` conversion doesn't amount to much in the time profile,
-   * but it feels like leaving performance on the table.
-   * Unfortunately I'm not sure what else to do since
-   * `Dictionary<Element, _TrieNode>.Keys` depends on the private type
-   * `_TrieNode`.
-   */
   var alphabet: Set<Element> { Set(root.children.keys) }
 
   init(for buf: Slice<UnsafeBufferPointer<Element>>) {

@@ -34,10 +34,11 @@ where
         prefixLength += 1
       }
 
+      // TODO(numist): Slice is slow. use (UnsafeBufferPointer, Range) instead.
       let sliceA = a[prefixLength..<n]
       let sliceB = b[prefixLength..<m]
       
-      // TODO: algorithms should return [Change] instead of CollectionDifference
+      // TODO(numist): algorithms return [Change] instead of CollectionDifference
 
       if n * m < 2500 {
         return _myers(from: sliceA, to: sliceB, using: ==)
