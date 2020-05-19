@@ -6,17 +6,18 @@
  */
 
 func _club<E>(
-  from a: Slice<UnsafeBufferPointer<E>>,
-  to b: Slice<UnsafeBufferPointer<E>>
+  from a: _Slice<E>,
+  to b: _Slice<E>
 ) -> CollectionDifference<E>
 where E: Hashable {
-  assert(a.count == 0 || b.count == 0 ||
-    (a.first != b.first && a.last != b.last),
+  assert(a.range.count == 0 || b.range.count == 0 || (
+    a.base[a.range.startIndex] != b.base[b.range.startIndex] &&
+    a.base[a.range.endIndex - 1] != b.base[b.range.endIndex - 1]),
     "_club requires prefix and suffix matching be performed by the caller")
 
   // Hoist commonly-used values into locals
-  let n = a.endIndex
-  let m = b.endIndex
+  let n = a.range.endIndex
+  let m = b.range.endIndex
   
   // Characterize remaining input
   let trieA = _AlphabetTrie(for: a)
@@ -55,7 +56,7 @@ where E: Hashable {
   let workQ = _WorkQueue()
   workQ.maxRoundSize = 50
   var solutionNode: _EditTreeNode? = nil
-  workQ.append(_EditTreeNode(x: a.startIndex, y: b.startIndex, parent: nil))
+  workQ.append(_EditTreeNode(x: a.range.startIndex, y: b.range.startIndex, parent: nil))
   while var current = workQ.popFirst(), solutionNode == nil {
     var x = current.x, y = current.y
     // Cached n-gram lookup results
@@ -66,7 +67,7 @@ where E: Hashable {
     while x < n || y < m {
       xGramInB = nil
       yGramInA = nil
-      if x < n && y < m && a[x] == b[y] {
+      if x < n && y < m && a.base[x] == b.base[y] {
         // Match
         x += 1
         y += 1
@@ -81,7 +82,7 @@ where E: Hashable {
       } else {
         // a[x..<x+trieDepth]∉b, remove
         if x + trieDepth <= n {
-          xGramInB = trieB.offset(of: a[x..<(x + trieDepth)], afterOrNear: y)
+          xGramInB = trieB.offset(of: (a.base, x..<(x + trieDepth)), afterOrNear: y)
           if xGramInB == nil {
             x += 1
             current = _EditTreeNode(x: x, y: y, parent: current, free: true)
@@ -90,7 +91,7 @@ where E: Hashable {
         }
         // b[y..<y+trieDepth]∉a, insert
         if y + trieDepth <= m {
-          yGramInA = trieA.offset(of: b[y..<(y + trieDepth)], afterOrNear: x)
+          yGramInA = trieA.offset(of: (b.base, y..<(y + trieDepth)), afterOrNear: x)
           if yGramInA == nil {
             y += 1
             current = _EditTreeNode(x: x, y: y, parent: current, free: true)
@@ -109,7 +110,7 @@ where E: Hashable {
     // Every unfinished edit path re-enqueues at least one iteration of itself
     switch (x, y) {
     case (n, m):
-      assert(n==0 || y==0 || a[n - 1] != b[m - 1],
+      assert(n==0 || y==0 || a.base[n - 1] != b.base[m - 1],
         "Solution construction depends on unequal elements at end of diff range")
       solutionNode = current
     case (_, m):
@@ -150,7 +151,7 @@ where E: Hashable {
       } else {
         // Element membership heuristics (same rules as n-grams):
         switch (
-          trieB.offset(of: a[x], after: y), trieA.offset(of: b[y], after: x)
+          trieB.offset(of: a.base[x], after: y), trieA.offset(of: b.base[y], after: x)
         ) {
         case (nil, _):
           // `a[x]` does not exist after `y` in `b`, remove
@@ -196,10 +197,10 @@ where E: Hashable {
     assert((x - node.x) != (y - node.y),
       "No edits between nodes \(solutionNode!) and \(node) in edit path")
     if (x - node.x) < (y - node.y) {
-      changes.append(.insert(offset: y - 1, element: b[y - 1],
+      changes.append(.insert(offset: y - 1, element: b.base[y - 1],
         associatedWith: nil))
     } else {
-      changes.append(.remove(offset: x - 1, element: a[x - 1],
+      changes.append(.remove(offset: x - 1, element: a.base[x - 1],
         associatedWith: nil))
     }
 
@@ -207,7 +208,7 @@ where E: Hashable {
     y = node.y
     solutionNode = node
   }
-  assert(x == a.startIndex && y == b.startIndex,
+  assert(x == a.range.startIndex && y == b.range.startIndex,
     "Solution path should end at beginning of diff range")
 
   return CollectionDifference<E>(changes)!
@@ -404,7 +405,7 @@ fileprivate class _WorkQueue {
  */
 fileprivate struct _AlphabetTrie<Element> where Element: Hashable {
   // Lazy construction requires a reference to the original collection
-  private let buf: Slice<UnsafeBufferPointer<Element>>
+  private let buf: _Slice<Element>
 
   // The trie structure is used to encode the collection's n-grams
   private class _TrieNode {
@@ -433,11 +434,11 @@ fileprivate struct _AlphabetTrie<Element> where Element: Hashable {
 
   var alphabet: Set<Element> { Set(root.children.keys) }
 
-  init(for buf: Slice<UnsafeBufferPointer<Element>>) {
+  init(for buf: _Slice<Element>) {
     self.buf = buf
 
     root = _TrieNode()
-    root.locations = Array(buf.startIndex..<buf.endIndex).map({ $0 - 1 })
+    root.locations = Array(buf.range.startIndex..<buf.range.endIndex).map({ $0 - 1 })
     extend(root)
   }
 
@@ -448,7 +449,7 @@ fileprivate struct _AlphabetTrie<Element> where Element: Hashable {
 
     for i in node.locations.map({ $0 + 1 }) {
       func get<N>(_ n: inout N) -> N { n }
-      let child = get(&node.children[buf[i], default: _TrieNode()])
+      let child = get(&node.children[buf.base[i], default: _TrieNode()])
       child.locations.append(i)
       /* Functionally, the code above is equivalent to:
        *
@@ -478,15 +479,15 @@ fileprivate struct _AlphabetTrie<Element> where Element: Hashable {
   }
 
   func offset(
-    of ngram: Slice<UnsafeBufferPointer<Element>>,
+    of ngram: _Slice<Element>,
     afterOrNear loc: Int
   ) -> Int? {
     var node = root
-    for i in ngram.startIndex..<ngram.endIndex {
-      if node.children.count == 0 && node.locations.last! < (buf.count - 1) {
+    for i in ngram.range.startIndex..<ngram.range.endIndex {
+      if node.children.count == 0 && node.locations.last! < (buf.range.count - 1) {
         extend(node)
       }
-      if let child = node.children[ngram[i]] {
+      if let child = node.children[ngram.base[i]] {
         node = child
       } else {
         return nil
@@ -495,8 +496,8 @@ fileprivate struct _AlphabetTrie<Element> where Element: Hashable {
     assert(node.locations.count > 0, "n-gram node \(node) has no locations")
     let end = bsearch(for: loc, in: node.locations) ?? node.locations.last!
     // Return value should relate to the beginning of the n-gram
-    let result = end - (ngram.count - 1)
-    assert(buf[result] == ngram.first,
+    let result = end - (ngram.range.count - 1)
+    assert(buf.base[result] == ngram.base[ngram.range.startIndex],
       "invalid calculation of n-gram match offset")
     return result
   }

@@ -5,7 +5,7 @@
  * Attribution is appreciated but not necessary.
  */
 
-// MARK - Element: Hashable
+// MARK: API
 
 public func difference<C, D>(
   from old: C, to new: D
@@ -35,8 +35,8 @@ where
       }
 
       // TODO(numist): Slice is slow. use (UnsafeBufferPointer, Range) instead.
-      let sliceA = a[prefixLength..<n]
-      let sliceB = b[prefixLength..<m]
+      let sliceA: _Slice<C.Element> = (a, prefixLength..<n)
+      let sliceB: _Slice<C.Element> = (b, prefixLength..<m)
       
       // TODO(numist): algorithms return [Change] instead of CollectionDifference
 
@@ -50,8 +50,6 @@ where
   })
 }
 
-// MARK - Element: Equatable
-
 public func difference<C, D>(
     from old: C, to new: D
 ) -> CollectionDifference<C.Element>
@@ -63,12 +61,10 @@ where
 {
   return _withContiguousStorage(for: old, { a in
     _withContiguousStorage(for: new, { b in
-      return _myers(from: a[0..<a.count], to: b[0..<b.count], using: ==)
+      return _myers(from: (a, 0..<a.count), to: (b, 0..<b.count), using: ==)
     })
   })
 }
-
-// MARK - Custom equality
 
 public func difference<C, D>(
     from old: C, to new: D, using cmp: (C.Element, D.Element) -> Bool
@@ -80,12 +76,12 @@ where
 {
   return _withContiguousStorage(for: old, { a in
     _withContiguousStorage(for: new, { b in
-      return _myers(from: a[0..<a.count], to: b[0..<b.count], using: cmp)
+      return _myers(from: (a, 0..<a.count), to: (b, 0..<b.count), using: cmp)
     })
   })
 }
 
-// MARK - Support
+// MARK: Support
 
 /* Splatting the collections into contiguous storage has two advantages:
  *
@@ -110,3 +106,5 @@ func _withContiguousStorage<C : Collection, R>(
   let array = ContiguousArray(values)
   return try array.withUnsafeBufferPointer(body)
 }
+
+typealias _Slice<Element> = (base: UnsafeBufferPointer<Element>, range: Range<Int>)
