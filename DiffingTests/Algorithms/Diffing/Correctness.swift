@@ -100,6 +100,22 @@ class CorrectnessDifference: XCTestCase {
     XCTAssertEqual(b, a.applying(d)!, "incorrect diff produced between \(a) and \(b)!")
   }
   
+  func testTrieTrap() {
+    let a = ["q", "r", "1", "2", "3", "4", "a", "f", "7", "8", "9", "0", "q", "r"]
+    let b = ["a", "f", "1", "2", "3", "4", "q", "r", "7", "8", "9", "0", "a", "f"]
+    guard let d = diff(from: a, to: b) else { return }
+    for c in d {
+      switch c {
+      case .remove(offset: _, element: let e, associatedWith: _):
+        fallthrough
+      case .insert(offset: _, element: let e, associatedWith: _):
+        for f in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"] {
+          XCTAssertNotEqual(f, e)
+        }
+      }
+    }
+  }
+
   func testFuzz() {
     DispatchQueue.concurrentPerform(iterations: 10) { _ in
       for _ in 0..<100 {
