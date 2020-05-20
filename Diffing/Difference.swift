@@ -225,12 +225,9 @@ struct _AlphabetTrie<Element> where Element: Hashable {
         return nil
       }
     }
-    assert(node.locations.count > 0, "n-gram node \(node) has no locations")
     let end = bsearch(for: loc, in: node.locations) ?? node.locations.last!
     // Return value should relate to the beginning of the n-gram
     let result = end - (ngram.range.count - 1)
-    assert(buf.base[result] == ngram.base[ngram.range.startIndex],
-      "invalid calculation of n-gram match offset")
     return result
   }
 
@@ -240,8 +237,7 @@ struct _AlphabetTrie<Element> where Element: Hashable {
 
   func offset(of e: Element) -> Int? {
     let off = offsets(for: e)
-    assert(off.count <= 1)
-    return off.first
+    return off.last
   }
 
   // Factored binary search helper for membership testing functions
@@ -256,7 +252,6 @@ struct _AlphabetTrie<Element> where Element: Hashable {
         min = pivot + 1
       }
     }
-    assert(min == max, "binary search failed to resolve")
     return min < locations.count ? locations[min] : nil
   }
 }

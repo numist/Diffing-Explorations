@@ -193,9 +193,6 @@ func _club<E>(
   var x = n, y = m
   var changes = _Changes<E>()
   while let node = solutionNode?.parent {
-    // WTB: The compiler ought to know that `solutionNode` cannot be `nil` below
-    assert((x - node.x) != (y - node.y),
-      "No edits between nodes \(solutionNode!) and \(node) in edit path")
     if (x - node.x) < (y - node.y) {
       changes.append(.insert(offset: y - 1, element: b.base[y - 1],
         associatedWith: nil))
@@ -231,9 +228,6 @@ fileprivate class _EditTreeNode {
   private let freeInserts: Int
 
   init(x: Int, y: Int, parent: _EditTreeNode?, free: Bool = false) {
-    assert(parent == nil || 1 == abs((parent!.x - x) - (parent!.y - y)),
-      "Nodes must depart from their parent by exactly one edit")
-
     self.x = x
     self.y = y
     self.parent = parent

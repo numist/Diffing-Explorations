@@ -99,7 +99,6 @@ func _myers<E>(
         y &-= 1
       }
       
-      assert((x == prev_x && y > prev_y) || (y == prev_y && x > prev_x))
       if y != prev_y {
         let actualIndex = b.range.startIndex + prev_y
         changes.append(.insert(offset: actualIndex, element: b.base[actualIndex], associatedWith: nil))
