@@ -17,9 +17,7 @@ class CorrectnessClub: CorrectnessDifference {
     var b = new
     _trimCommon(between: &a, and: &b)
     
-    return CollectionDifference(_club(
-      from: _AlphabetTrie(for: a),
-      to: _AlphabetTrie(for: b)))
+    return CollectionDifference(_club(from: a, to: b))
   }
   
   func testLargeDiffPerf() {
@@ -57,14 +55,15 @@ class CorrectnessArrow: CorrectnessDifference {
   override func diffImp<E>(
     from old: _Slice<E>, to new: _Slice<E>
   ) -> CollectionDifference<E>? where E : Hashable {
-    let alphaA = _AlphabetTrie(for: old)
-    let alphaB = _AlphabetTrie(for: new)
-    if alphaA.alphabet.count < old.range.count ||
-      alphaB.alphabet.count < new.range.count
+    let trieA = _AlphabetTrie(for: old)
+    let trieB = _AlphabetTrie(for: new)
+    if trieA.alphabet(for: old.range).count < old.range.count ||
+      trieB.alphabet(for: new.range).count < new.range.count
     {
       return nil
     }
-    return CollectionDifference(_arrow(from: alphaA, to: alphaB))
+    return CollectionDifference(_arrow(from: old, trie: trieA,
+                                       to: new, trie: trieB))
   }
 }
 

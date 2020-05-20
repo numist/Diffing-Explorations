@@ -6,11 +6,11 @@
 */
 
 func _arrow<E>(
-  from alphaA: _AlphabetTrie<E>,
-  to alphaB: _AlphabetTrie<E>
+  from a: _Slice<E>, trie pTrieA: _AlphabetTrie<E>? = nil,
+  to b: _Slice<E>, trie pTrieB: _AlphabetTrie<E>? = nil
 ) -> _Changes<E> where E: Hashable {
-  let a = alphaA.buf
-  let b = alphaB.buf
+  let trieA = pTrieA ?? _AlphabetTrie(for: a)
+  let trieB = pTrieB ?? _AlphabetTrie(for: b)
   let n = a.range.endIndex
   let m = b.range.endIndex
   
@@ -30,7 +30,10 @@ func _arrow<E>(
         x += 1
         y += 1
       } else {
-        switch (alphaB.offset(of: a.base[x]), alphaA.offset(of: b.base[y])) {
+        switch (
+          trieB.offset(of: a.base[x], in: y..<b.range.endIndex),
+          trieA.offset(of: b.base[y], in: x..<a.range.endIndex)
+        ) {
         case (.none, _):
           result.append(.remove(offset: x, element: a.base[x], associatedWith: nil))
           x += 1
@@ -38,13 +41,8 @@ func _arrow<E>(
           result.append(.insert(offset: y, element: b.base[y], associatedWith: nil))
           y += 1
         case (.some(let axInB), .some(let byInA)):
-          if axInB < y {
-            result.append(.remove(offset: x, element: a.base[x], associatedWith: nil))
-            x += 1
-          } else if byInA < x {
-            result.append(.insert(offset: y, element: b.base[y], associatedWith: nil))
-            y += 1
-          } else if axInB - y > byInA - x {
+          assert(axInB > y && byInA > x)
+          if axInB - y > byInA - x {
             result.append(.remove(offset: x, element: a.base[x], associatedWith: nil))
             x += 1
           } else {

@@ -77,21 +77,25 @@ private func _hybrid<E>(
     return _myers(from: sliceA, to: sliceB, using: ==)
   }
 
-  let alphaA = _AlphabetTrie(for: sliceA)
-  let alphaB = _AlphabetTrie(for: sliceB)
+  let trieA = _AlphabetTrie(for: sliceA)
+  let alphaA = trieA.alphabet(for: sliceA.range)
+  let trieB = _AlphabetTrie(for: sliceB)
+  let alphaB = trieB.alphabet(for: sliceB.range)
 
-  let intersection = Set(alphaA.alphabet).intersection(Set(alphaB.alphabet))
+  let intersection = alphaA.intersection(alphaB)
   if intersection.count == 0 {
     return _pave(from: sliceA, to: sliceB)
   }
 
-  if alphaA.alphabet.count == sliceA.range.count &&
-    alphaB.alphabet.count == sliceB.range.count
+  if alphaA.count == sliceA.range.count &&
+    alphaB.count == sliceB.range.count
   {
-    return _arrow(from: alphaA, to: alphaB)
+    return _arrow(from: sliceA, trie: trieA,
+                  to: sliceB, trie: trieB)
   }
 
-  return _club(from: alphaA, to: alphaB)
+  return _club(from: sliceA, trie: trieA, alphabet: alphaA,
+               to: sliceB, trie: trieB, alphabet: alphaB)
 }
 
 private func _pave<E>(
@@ -174,7 +178,7 @@ struct _AlphabetTrie<Element> where Element: Hashable {
   let buf: _Slice<Element>
 
   // The trie structure is used to encode the collection's n-grams
-  class _TrieNode {
+  private class _TrieNode {
     var children = Dictionary<Element, _TrieNode>()
     var locations = Array<Int>()
   }
@@ -198,14 +202,19 @@ struct _AlphabetTrie<Element> where Element: Hashable {
    *    └──────────────┘      └──────────────┘  └──────────────┘
    */
 
-  var alphabet: Dictionary<Element, _TrieNode>.Keys { root.children.keys }
-
   init(for buf: _Slice<Element>) {
     self.buf = buf
 
     root = _TrieNode()
     root.locations = Array(buf.range.startIndex..<buf.range.endIndex).map({ $0 - 1 })
     extend(root)
+  }
+
+  func alphabet(for range: Range<Int>) -> Set<Element> {
+    if range == buf.range {
+      return Set(root.children.keys)
+    }
+    return Set(buf.base[range])
   }
 
   // Called lazily when a node needs its children populated.
@@ -240,13 +249,37 @@ struct _AlphabetTrie<Element> where Element: Hashable {
     }
   }
 
-  func offsets(for e: Element) -> [Int] {
-    return root.children[e]?.locations ?? []
+  private func trim(_ offsets: [Int], to range: Range<Int>) -> [Int] {
+    var window = 0..<offsets.count
+    while !range.contains(offsets[window.startIndex]) {
+      window.removeFirst()
+    }
+    while !range.contains(offsets[window.endIndex - 1]) {
+      window.removeLast()
+    }
+
+    return Array(offsets[window])
+  }
+
+  func offsets(for e: Element, in range: Range<Int>) -> [Int] {
+    guard let offsets = root.children[e]?.locations else { return [] }
+    if range == buf.range {
+      return offsets
+    }
+    return trim(offsets, to: range)
+  }
+
+  private func first(_ offsets: [Int], in range: Range<Int>) -> Int? {
+    for off in offsets {
+      if range.contains(off) { return off }
+      if off >= range.endIndex { break }
+    }
+    return nil
   }
 
   func offset(
     of ngram: _Slice<Element>,
-    afterOrNear loc: Int
+    in range: Range<Int>
   ) -> Int? {
     var node = root
     for i in ngram.range.startIndex..<ngram.range.endIndex {
@@ -259,19 +292,20 @@ struct _AlphabetTrie<Element> where Element: Hashable {
         return nil
       }
     }
-    let end = bsearch(for: loc, in: node.locations) ?? node.locations.last!
-    // Return value should relate to the beginning of the n-gram
-    let result = end - (ngram.range.count - 1)
-    return result
+
+    let nOff = (ngram.range.count - 1)
+    if let end = first(node.locations,
+                      in: (range.startIndex - nOff)..<(range.endIndex - nOff))
+    {
+      // Return value should relate to the beginning of the n-gram
+      return end - nOff
+    }
+    return nil
   }
 
-  func offset(of e: Element, after i: Int) -> Int? {
-    return bsearch(for: i, in: offsets(for: e))
-  }
-
-  func offset(of e: Element) -> Int? {
-    let off = offsets(for: e)
-    return off.last
+  func offset(of e: Element, in range: Range<Int>) -> Int? {
+    guard let offsets = root.children[e]?.locations else { return nil }
+    return first(offsets, in: range)
   }
 
   // Factored binary search helper for membership testing functions
