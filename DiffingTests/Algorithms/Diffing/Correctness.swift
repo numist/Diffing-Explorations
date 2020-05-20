@@ -212,4 +212,18 @@ class CorrectnessDifference: XCTestCase {
     let d = diff(from: a, to: b)
     verify(from: a, to: b, produced: d)
   }
+
+  func testAllInsert() {
+    let a = Array<String>()
+    let b = ["t", "a", "c", "l", "c", "h", "r", "t", "g", "s"]
+    let d = diff(from: a, to: b)
+    verify(from: a, to: b, produced: d)
+  }
+
+  func testAllRemove() {
+    let a = ["t", "a", "c", "l", "c", "h", "r", "t", "g", "s"]
+    let b = Array<String>()
+    let d = diff(from: a, to: b)
+    verify(from: a, to: b, produced: d)
+  }
 }

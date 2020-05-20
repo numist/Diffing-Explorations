@@ -94,7 +94,7 @@ class DiffingTestCase: XCTestCase {
       print("")
     }
     XCTAssert(a.applying(hd) == b)
-    if a.count + b.count > 500 && md.count > 50 {
+    if a.count + b.count > 500 && md.count > 50 && baseline > 0 && hybrid > 0 {
       XCTAssertLessThan(ratio, 4.0)
     }
     // `strict` is only set to true for all unit test cases that represent common real-world workloads

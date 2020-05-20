@@ -22,6 +22,20 @@ where
       var sliceB: _Slice<C.Element> = (b, 0..<b.count)
       _trimCommon(between: &sliceA, and: &sliceB)
       
+      if sliceA.range.count == 0 {
+        var result = _Changes<C.Element>()
+        for i in sliceB.range.startIndex..<sliceB.range.endIndex {
+          result.append(.insert(offset: i, element: sliceB.base[i], associatedWith: nil))
+        }
+        return result
+      } else if sliceB.range.count == 0 {
+        var result = _Changes<C.Element>()
+        for i in sliceA.range.startIndex..<sliceA.range.endIndex {
+          result.append(.remove(offset: i, element: sliceA.base[i], associatedWith: nil))
+        }
+        return result
+      }
+
       if sliceA.range.count * sliceB.range.count < 2500 {
         return _myers(from: sliceA, to: sliceB, using: ==)
       }
