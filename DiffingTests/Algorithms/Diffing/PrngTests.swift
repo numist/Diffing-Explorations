@@ -115,9 +115,9 @@ class PrngTests: DiffingTestCase {
     var r = rng()
     var letterGenerator = VoseAliasMethod(frequencies, rng: r)
     
-    for size in [50, 100, 500] {
-      let a = (0..<size).map({ _ in letterGenerator.next() })
-      for percent in stride(from: 0, to: 101, by: 20) {
+    for percent in stride(from: 0, to: 101, by: 20) {
+      for size in [50, 100, 500, 1000] {
+        let a = (0..<size).map({ _ in letterGenerator.next() })
         if printStats { print("\(percent)%", terminator: ", ") }
         let numChanges = size * percent / 100
         var b = a
@@ -160,9 +160,9 @@ class PrngTests: DiffingTestCase {
   func testByPercentageChangedUUID() {
     var r = rng()
     
-    for size in [50, 100, 500] {
-      let a = (0..<size).map({ _ in UUID() })
-      for percent in stride(from: 0, to: 101, by: 20) {
+    for percent in stride(from: 0, to: 101, by: 20) {
+      for size in [50, 100, 500] {
+        let a = (0..<size).map({ _ in UUID() })
         if printStats { print("\(percent)%", terminator: ", ") }
         let numChanges = size * percent / 100
         var b = a
@@ -185,10 +185,10 @@ class PrngTests: DiffingTestCase {
   func testByPercentageChangedDoubledUUID() {
     var r = rng()
     
-    for size in [46, 91, 455] {
-      let s = (0..<size).map({ _ in UUID() })
-      let a = (s + s[0..<(s.count/10)]).shuffled(using: &r)
-      for percent in stride(from: 0, to: 101, by: 20) {
+    for percent in stride(from: 0, to: 101, by: 20) {
+      for size in [46, 91, 455] {
+        let s = (0..<size).map({ _ in UUID() })
+        let a = (s + s[0..<(s.count/10)]).shuffled(using: &r)
         if printStats { print("\(percent)%", terminator: ", ") }
         let numChanges = size * percent / 100
         var b = a
