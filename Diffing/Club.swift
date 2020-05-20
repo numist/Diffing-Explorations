@@ -323,13 +323,14 @@ fileprivate class _WorkQueue {
   private func activatePending() {
     assert(maxRoundSize > 0,
       "Invalid `maxRoundSize` \(maxRoundSize) (must be > 0)")
-    active = Array<_EditTreeNode>()
+    active.removeAll(keepingCapacity: true)
     var root: _QuadNode? = nil
-    for e in pending.sorted(by: { (p1, p2) -> Bool in
+    pending.sort(by: { (p1, p2) -> Bool in
       let left = p1.discountedX + p1.discountedY
       let right = p2.discountedX + p2.discountedY
       return left == right ? Bool.random() : left > right
-    }) {
+    })
+    for e in pending {
       if let r = root {
         if r.insert(_QuadNode(e)) {
           active.append(e)
@@ -343,7 +344,7 @@ fileprivate class _WorkQueue {
       }
     }
     i = 0
-    pending = Array<_EditTreeNode>()
+    pending.removeAll(keepingCapacity: true)
   }
 
   /* `_WorkQueue._QuadNode` is a quadtree node with two additional restrictions:
