@@ -69,4 +69,10 @@ class LiteralTests: DiffingTestCase {
     let b = Array<Character>()
     measureDiffs(from: a, to: b)
   }
+
+  func testHalves() {
+    let a = Array(repeating: "0", count: 500) + Array(repeating: "1", count: 500)
+    let b = a.reversed()
+    measureDiffs(from: a, to: b)
+  }
 }

@@ -16,42 +16,11 @@ where
   C.Element == D.Element,
   C.Element : Hashable
 {
-  let changes: _Changes<C.Element> = _withContiguousStorage(for: old, { a in
-    _withContiguousStorage(for: new, { b in
-      var sliceA: _Slice<C.Element> = (a, 0..<a.count)
-      var sliceB: _Slice<C.Element> = (b, 0..<b.count)
-      _trimCommon(between: &sliceA, and: &sliceB)
-      
-      if sliceA.range.count == 0 {
-        var result = _Changes<C.Element>()
-        for i in sliceB.range.startIndex..<sliceB.range.endIndex {
-          result.append(.insert(offset: i, element: sliceB.base[i], associatedWith: nil))
-        }
-        return result
-      } else if sliceB.range.count == 0 {
-        var result = _Changes<C.Element>()
-        for i in sliceA.range.startIndex..<sliceA.range.endIndex {
-          result.append(.remove(offset: i, element: sliceA.base[i], associatedWith: nil))
-        }
-        return result
-      }
-
-      if sliceA.range.count * sliceB.range.count < 2500 {
-        return _myers(from: sliceA, to: sliceB, using: ==)
-      }
-
-      let alphaA = _AlphabetTrie(for: sliceA)
-      let alphaB = _AlphabetTrie(for: sliceB)
-
-      if alphaA.alphabet.count == sliceA.range.count &&
-        alphaB.alphabet.count == sliceB.range.count
-      {
-        return _arrow(from: alphaA, to: alphaB)
-      }
-
-      return _club(from: alphaA, to: alphaB)
-    })
-  })
+  let changes = _withContiguousStorage(for: old) { a in
+    _withContiguousStorage(for: new) { b -> _Changes<C.Element> in
+      return _hybrid(from: (a, 0..<a.count), to: (b, 0..<b.count))
+    }
+  }
   return CollectionDifference(changes)!
 }
 
@@ -86,6 +55,57 @@ where
     })
   })
   return CollectionDifference(changes)!
+}
+
+// MARK: Meta/micro diffing algorithms
+
+private func _hybrid<E>(
+  from pSliceA: _Slice<E>, alphabet alphaA: _AlphabetTrie<E>? = nil,
+  to pSliceB: _Slice<E>, alphabet alphaB: _AlphabetTrie<E>? = nil
+) -> _Changes<E> {
+  var sliceA = pSliceA
+  var sliceB = pSliceB
+  _trimCommon(between: &sliceA, and: &sliceB)
+
+  if sliceA.range.count == 0 {
+    return _pave(from: sliceA, to: sliceB)
+  } else if sliceB.range.count == 0 {
+    return _pave(from: sliceA, to: sliceB)
+  }
+
+  if sliceA.range.count * sliceB.range.count < 2500 {
+    return _myers(from: sliceA, to: sliceB, using: ==)
+  }
+
+  let alphaA = _AlphabetTrie(for: sliceA)
+  let alphaB = _AlphabetTrie(for: sliceB)
+
+  let intersection = Set(alphaA.alphabet).intersection(Set(alphaB.alphabet))
+  if intersection.count == 0 {
+    return _pave(from: sliceA, to: sliceB)
+  }
+
+  if alphaA.alphabet.count == sliceA.range.count &&
+    alphaB.alphabet.count == sliceB.range.count
+  {
+    return _arrow(from: alphaA, to: alphaB)
+  }
+
+  return _club(from: alphaA, to: alphaB)
+}
+
+private func _pave<E>(
+  from sliceA: _Slice<E>,
+  to sliceB: _Slice<E>
+) -> _Changes<E> {
+  var result = _Changes<E>()
+  for i in sliceB.range.startIndex..<sliceB.range.endIndex {
+    result.append(.insert(offset: i, element: sliceB.base[i], associatedWith: nil))
+  }
+  for i in sliceA.range.startIndex..<sliceA.range.endIndex {
+    result.append(.remove(offset: i, element: sliceA.base[i], associatedWith: nil))
+  }
+  return result
 }
 
 // MARK: Top-level helpers
