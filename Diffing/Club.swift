@@ -58,14 +58,8 @@ func _club<E>(
   workQ.append(_EditTreeNode(x: a.range.startIndex, y: b.range.startIndex, parent: nil))
   while var current = workQ.popFirst(), solutionNode == nil {
     var x = current.x, y = current.y
-    // Cached n-gram lookup results
-    var xGramInB: Int?
-    var yGramInA: Int?
-
     // Greedy loop for matches and obvious edits:
     while x < n || y < m {
-      xGramInB = nil
-      yGramInA = nil
       if x < n && y < m && a.base[x] == b.base[y] {
         // Match
         x += 1
@@ -79,32 +73,10 @@ func _club<E>(
         y += 1
         current = _EditTreeNode(x: x, y: y, parent: current, free: true)
       } else {
-        // a[x..<x+trieDepth]∉b, remove
-        if x + trieDepth <= n {
-          xGramInB = trieB.offset(of: (a.base, x..<(x + trieDepth)), afterOrNear: y)
-          if xGramInB == nil {
-            x += 1
-            current = _EditTreeNode(x: x, y: y, parent: current, free: true)
-            continue
-          }
-        }
-        // b[y..<y+trieDepth]∉a, insert
-        if y + trieDepth <= m {
-          yGramInA = trieA.offset(of: (b.base, y..<(y + trieDepth)), afterOrNear: x)
-          if yGramInA == nil {
-            y += 1
-            current = _EditTreeNode(x: x, y: y, parent: current, free: true)
-            continue
-          }
-        }
         break
       }
     }
     assert(x <= n && y <= m, "diff computation exceeded allowed range")
-    assert(xGramInB != nil || x + trieDepth > n,
-      "n-gram not calculated for valid range \(x)..<\(x + trieDepth) in \(a)")
-    assert(yGramInA != nil || y + trieDepth > m,
-      "n-gram not calculated for valid range \(y)..<\(y + trieDepth) in \(b)")
 
     // Every unfinished edit path re-enqueues at least one iteration of itself
     switch (x, y) {
@@ -119,71 +91,87 @@ func _club<E>(
       // No elements remain in a, insert
       workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
     case (let x, let y):
-      // n-gram heuristics:
-      if x + trieDepth <= n && xGramInB! < y {
-        // `current` is ahead of last instance of `a[x..<x+trieDepth]` in `b`
+
+      // Element membership heuristics (same rules as n-grams):
+      let nextXInB = trieB.offset(of: a.base[x], after: y)
+      if nextXInB == nil {
+        // `a[x]` does not exist after `y` in `b`, remove
         workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
-      } else if y + trieDepth <= m && yGramInA! < x {
-        // `current` is ahead of last instance of `b[y..<y+trieDepth]` in `a`
+        continue
+      }
+      let nextYInA = trieA.offset(of: b.base[y], after: x)
+      if nextYInA == nil {
+        // `b[y]` does not exist after `x` in `a`, insert
         workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
-      } else if (
-        x + trieDepth <= n &&
-        y + trieDepth <= m && (
-          (yGramInA! - x) > 2 * (xGramInB! - y) ||
-          (xGramInB! - y) > 2 * (yGramInA! - x)
-        )
-      ) {
-        /* `xGramInB-y` represents the distance between `y` and the offset of
-         * `a[x..<x+trieDepth]` in `b`. `yGramInA-x` represents the distance
-         * between `x` and the offset of `b[y..<y+trieDepth]` in `a`. If one of
-         * those distances is less than half of the other, assume greedily
-         * editing the element with the more distant match will still produce a
+        continue
+      }
+      if (nextYInA! - x) > 2 * (nextXInB! - y) ||
+        (nextXInB! - y) > 2 * (nextYInA! - x)
+      {
+        /* `nextXInB-y` represents the distance between `y` and the location
+         * of `a[x]` in `b`. `nextYInA-x` represents the distance between
+         * `x` and the location of `b[y]` in `a`. If one of those distances
+         * is less than half of the other, assume greedily editing the
+         * element with the more distant match will still produce a
          * sufficiently minimal diff.
          */
-        if yGramInA! - x < xGramInB! - y {
-          // `a[x..<x+trieDepth]` is more distant, remove
+        if nextYInA! - x < nextXInB! - y {
+          // `a[x]` is more distant, remove
           workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
+          continue
         } else {
-          // `b[y..<y+trieDepth]` is more distant, insert
+          // `b[y]` is more distant, insert
           workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
-        }
-      } else {
-        // Element membership heuristics (same rules as n-grams):
-        switch (
-          trieB.offset(of: a.base[x], after: y),
-          trieA.offset(of: b.base[y], after: x)
-        ) {
-        case (nil, _):
-          // `a[x]` does not exist after `y` in `b`, remove
-          workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
-        case (_, nil):
-          // `b[y]` does not exist after `x` in `a`, insert
-          workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
-        case (let nextXInB, let nextYInA):
-          if (nextYInA! - x) > 2 * (nextXInB! - y) ||
-            (nextXInB! - y) > 2 * (nextYInA! - x)
-          {
-            /* `nextXInB-y` represents the distance between `y` and the location
-             * of `a[x]` in `b`. `nextYInA-x` represents the distance between
-             * `x` and the location of `b[y]` in `a`. If one of those distances
-             * is less than half of the other, assume greedily editing the
-             * element with the more distant match will still produce a
-             * sufficiently minimal diff.
-             */
-            if nextYInA! - x < nextXInB! - y {
-              // `a[x]` is more distant, remove
-              workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
-            } else {
-              // `b[y]` is more distant, insert
-              workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
-            }
-          } else {
-            // Default: fork current edit path
-            workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
-            workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
-          }
+          continue
         }
       }
+
+      // n-gram heuristics (same rules as element membership testing)
+      if x + trieDepth <= n && y + trieDepth <= m {
+        let xGramInB = trieB.offset(of: (a.base, x..<(x + trieDepth)), afterOrNear: y)
+        if xGramInB == nil {
+          // a[x..<x+trieDepth]∉b, remove
+          workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
+          continue
+        } else if xGramInB! < y {
+          // `current` is ahead of last instance of `a[x..<x+trieDepth]` in `b`
+          workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
+          continue
+        }
+        let yGramInA = trieA.offset(of: (b.base, y..<(y + trieDepth)), afterOrNear: x)
+        if yGramInA == nil {
+          // b[y..<y+trieDepth]∉a, insert
+          workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
+          continue
+        } else if yGramInA! < x {
+          // `current` is ahead of last instance of `b[y..<y+trieDepth]` in `a`
+          workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
+          continue
+        }
+        if (yGramInA! - x) > 2 * (xGramInB! - y) ||
+          (xGramInB! - y) > 2 * (yGramInA! - x)
+        {
+          /* `xGramInB-y` represents the distance between `y` and the offset of
+           * `a[x..<x+trieDepth]` in `b`. `yGramInA-x` represents the distance
+           * between `x` and the offset of `b[y..<y+trieDepth]` in `a`. If one of
+           * those distances is less than half of the other, assume greedily
+           * editing the element with the more distant match will still produce a
+           * sufficiently minimal diff.
+           */
+          if yGramInA! - x < xGramInB! - y {
+            // `a[x..<x+trieDepth]` is more distant, remove
+            workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
+          } else {
+            // `b[y..<y+trieDepth]` is more distant, insert
+            workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
+          }
+          continue
+        }
+      }
+
+      // Default: fork current edit path
+      workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
+      workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
     }
   }
 
