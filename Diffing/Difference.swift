@@ -47,7 +47,13 @@ where
       let alphaA = _AlphabetTrie(for: sliceA)
       let alphaB = _AlphabetTrie(for: sliceB)
 
-      return _club(from: sliceA, alphabet: alphaA, to: sliceB, alphabet: alphaB)
+      if alphaA.alphabet.count == sliceA.range.count &&
+        alphaB.alphabet.count == sliceB.range.count
+      {
+        return _arrow(from: alphaA, to: alphaB)
+      }
+
+      return _club(from: alphaA, to: alphaB)
     })
   })
   return CollectionDifference(changes)!
@@ -120,7 +126,7 @@ func _withContiguousStorage<C : Collection, R>(
  */
 struct _AlphabetTrie<Element> where Element: Hashable {
   // Lazy construction requires a reference to the original collection
-  private let buf: _Slice<Element>
+  let buf: _Slice<Element>
 
   // The trie structure is used to encode the collection's n-grams
   private class _TrieNode {
@@ -219,6 +225,12 @@ struct _AlphabetTrie<Element> where Element: Hashable {
 
   func offset(of e: Element, after i: Int) -> Int? {
     return bsearch(for: i, in: offsets(for: e))
+  }
+
+  func offset(of e: Element) -> Int? {
+    let off = offsets(for: e)
+    assert(off.count <= 1)
+    return off.first
   }
 
   // Factored binary search helper for membership testing functions

@@ -25,6 +25,7 @@
 		BCA2158422C5BC1C00290D70 /* LiteralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2158322C5BC1C00290D70 /* LiteralTests.swift */; };
 		BCBA1F172356464800DD6048 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCBA1F162356464800DD6048 /* main.swift */; };
 		BCBA1F1D235AE1BC00DD6048 /* Frequencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157522C56A6800290D70 /* Frequencies.swift */; };
+		BCDFFD6E2474A1DB00EC8864 /* Arrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCDFFD6D2474A1DB00EC8864 /* Arrow.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +93,7 @@
 		BCA2158322C5BC1C00290D70 /* LiteralTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiteralTests.swift; sourceTree = "<group>"; };
 		BCBA1F142356464800DD6048 /* DynamicMyersTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DynamicMyersTest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCBA1F162356464800DD6048 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		BCDFFD6D2474A1DB00EC8864 /* Arrow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arrow.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,6 +179,7 @@
 		BCA2154822C471E500290D70 /* Diffing */ = {
 			isa = PBXGroup;
 			children = (
+				BCDFFD6D2474A1DB00EC8864 /* Arrow.swift */,
 				BC390C042426A4CE00E2E916 /* Club.swift */,
 				BCA2156E22C47C4900290D70 /* Difference.swift */,
 				BCA2154922C471E500290D70 /* Diffing.h */,
@@ -382,6 +385,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BC390C052426A4CE00E2E916 /* Club.swift in Sources */,
+				BCDFFD6E2474A1DB00EC8864 /* Arrow.swift in Sources */,
 				BC382A0024733123001DC36F /* Myers.swift in Sources */,
 				BCA2156F22C47C4900290D70 /* Difference.swift in Sources */,
 			);

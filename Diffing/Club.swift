@@ -6,9 +6,12 @@
  */
 
 func _club<E>(
-  from a: _Slice<E>, alphabet optAlphaA: _AlphabetTrie<E>? = nil,
-  to b: _Slice<E>, alphabet optAlphaB: _AlphabetTrie<E>? = nil
+  from trieA: _AlphabetTrie<E>,
+  to trieB: _AlphabetTrie<E>
 ) -> _Changes<E> where E: Hashable {
+  let a = trieA.buf
+  let b = trieB.buf
+
   assert(a.range.count == 0 || b.range.count == 0 || (
     a.base[a.range.startIndex] != b.base[b.range.startIndex] &&
     a.base[a.range.endIndex - 1] != b.base[b.range.endIndex - 1]),
@@ -18,14 +21,11 @@ func _club<E>(
   let n = a.range.endIndex
   let m = b.range.endIndex
   
-  // Characterize remaining input
-  let trieA = optAlphaA ?? _AlphabetTrie(for: a)
-  let alphaA = trieA.alphabet
-  let trieB = optAlphaB ?? _AlphabetTrie(for: b)
-  let alphaB = trieB.alphabet
   let trieDepth = 2
 
   // Precompute all known e∈a,e∉b…
+  let alphaA = trieA.alphabet
+  let alphaB = trieB.alphabet
   var knownRemoves = Array<Bool>(repeating: false, count: n)
   for e in alphaA {
     if !alphaB.contains(e) {
