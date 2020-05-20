@@ -39,19 +39,19 @@ class DiffingTestCase: XCTestCase {
         let md = difference(from: a, to: b, using: ==)
         let baseline = comparisons
         comparisons = 0
-        let cd = difference(from: a, to: b)
-        let club = comparisons
+        let hd = difference(from: a, to: b)
+        let hybrid = comparisons
         
-        let ratio = Double(club)/Double(baseline)
+        let ratio = Double(hybrid)/Double(baseline)
         if printStats {
-            print("--==:: comparisons: club/myers = \(club)/\(baseline) = \(String(format: "%.01f",ratio*100.0))% changes: \(cd.count)/\(md.count) (+\(String(format: "%.01f",cd.count==md.count ? 0.0 : Double(cd.count)/Double(md.count)*100.0-100.0))%) ::==--")
+            print("--==:: comparisons: hybrid/myers = \(hybrid)/\(baseline) = \(String(format: "%.01f",ratio*100.0))% changes: \(hd.count)/\(md.count) (+\(String(format: "%.01f",hd.count==md.count ? 0.0 : Double(hd.count)/Double(md.count)*100.0-100.0))%) ::==--")
         }
-        XCTAssert(a.applying(cd) == b)
+        XCTAssert(a.applying(hd) == b)
         if a.count + b.count > 500 && md.count > 50 {
             XCTAssertLessThan(ratio, 4.0)
         }
         if strict {
-            XCTAssertLessThanOrEqual(cd.count, md.count * 2)
+            XCTAssertLessThanOrEqual(hd.count, md.count * 2)
         }
     }
 }
