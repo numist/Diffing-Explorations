@@ -24,8 +24,7 @@ class PrngTests: DiffingTestCase {
     
     func checkDifferentLengthRandomStrings<E>(with g: VoseAliasMethod<E>) where E : Hashable {
         var generator = g
-        for n in [1, 5, 10, 50, 100, 500] {
-            if printStats { print("n: \(n): ", terminator: "") }
+        for n in [1, 5, 10, 50, 100, 500, 1000] {
             let a = (0..<n).map({ _ in generator.next() })
             let b = (0..<n).map({ _ in generator.next() })
             measureDiffs(from: a, to: b)
@@ -54,8 +53,7 @@ class PrngTests: DiffingTestCase {
     
     func checkDifferentLengthReversedStrings<E>(with g: VoseAliasMethod<E>) where E : Hashable {
         var generator = g
-        for n in [1, 5, 10, 50, 100, 500] {
-            if printStats { print("n: \(n): ", terminator: "") }
+        for n in [1, 5, 10, 50, 100, 500, 1000] {
             let a = (0..<n).map({ _ in generator.next() })
             let b = a.reversed()
             measureDiffs(from: a, to: b)
@@ -84,7 +82,6 @@ class PrngTests: DiffingTestCase {
     
     func testReversedUUID() {
         for n in [1, 5, 10, 50, 100, 500] {
-            if printStats { print("n: \(n): ", terminator: "") }
             let a = (0..<n).map({ _ in UUID() })
             let b = a.reversed()
             measureDiffs(from: a, to: b)
@@ -95,7 +92,6 @@ class PrngTests: DiffingTestCase {
         var letterGenerator = VoseAliasMethod(letterFrequencies, rng: rng())
         var numberGenerator = VoseAliasMethod(numberFrequencies, rng: rng())
         for n in [1, 5, 10, 50, 100, 500] {
-            if printStats { print("n: \(n): ", terminator: "") }
             let a = (0..<n).map({ _ in letterGenerator.next() })
             let b = (0..<n).map({ _ in numberGenerator.next() })
             measureDiffs(from: a, to: b)
@@ -104,7 +100,6 @@ class PrngTests: DiffingTestCase {
     
     func testDisparateUUIDs() {
         for n in [1, 5, 10, 50, 100, 500] {
-            if printStats { print("n: \(n): ", terminator: "") }
             let a = (0..<n).map({ _ in UUID() })
             let b = (0..<n).map({ _ in UUID() })
             measureDiffs(from: a, to: b)
@@ -119,11 +114,11 @@ class PrngTests: DiffingTestCase {
     func checkDifferentPercentageChangedStrings(with frequencies: [(String,Double)]) {
         var r = rng()
         var letterGenerator = VoseAliasMethod(frequencies, rng: r)
-        let size = 500
+        let size = 1000
         let a = (0..<size).map({ _ in letterGenerator.next() })
         
         for percent in stride(from: 0, to: 100, by: 5) {
-            if printStats { print("\(percent)%: ", terminator: "") }
+            if printStats { print("\(percent)%", terminator: ", ") }
             let numChanges = size * percent / 100
             var b = a
             for _ in 0..<numChanges {
@@ -167,7 +162,7 @@ class PrngTests: DiffingTestCase {
         let a = (0..<size).map({ _ in UUID() })
         
         for percent in stride(from: 0, to: 100, by: 5) {
-            if printStats { print("\(percent)%: ", terminator: "") }
+            if printStats { print("\(percent)%", terminator: ", ") }
             let numChanges = size * percent / 100
             var b = a
             for _ in 0..<numChanges {
@@ -197,7 +192,6 @@ class PrngTests: DiffingTestCase {
         var r = rng()
         for n in [1, 5, 10, 50, 100, 500] {
             let a = OrderedSet(0..<n)
-            if printStats { print("n: \(n): ", terminator: "") }
             let b = a.shuffled(using:&r)
             measureDiffs(from: a, to: b)
         }

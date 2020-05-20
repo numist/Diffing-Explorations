@@ -13,26 +13,13 @@ class CorrectnessClub: CorrectnessDifference {
     from old: _Slice<E>, to new: _Slice<E>
   ) -> CollectionDifference<E>? where E : Hashable {
     // Club requires greedy consumption of shared suffix/prefix
-    var suffixLength = 0
-    while suffixLength < min(old.range.count, new.range.count) &&
-      old.base[old.range.endIndex - (suffixLength + 1)] == new.base[new.range.endIndex - (suffixLength + 1)]
-    {
-      suffixLength += 1
-    }
-    let n = old.range.endIndex - suffixLength
-    let m = new.range.endIndex - suffixLength
-    
-    // Greedily consume shared prefix
-    var prefixLength = 0
-    while prefixLength < min(n, m) &&
-      old.base[old.range.startIndex + prefixLength] == new.base[new.range.startIndex + prefixLength]
-    {
-      prefixLength += 1
-    }
+    var a = old
+    var b = new
+    _trimCommon(between: &a, and: &b)
     
     return CollectionDifference(_club(
-      from: _AlphabetTrie(for: (old.base, (old.range.startIndex + prefixLength)..<n)),
-      to: _AlphabetTrie(for: (new.base, (new.range.startIndex + prefixLength)..<m))))
+      from: _AlphabetTrie(for: a),
+      to: _AlphabetTrie(for: b)))
   }
   
   func testLargeDiffPerf() {
@@ -114,27 +101,28 @@ class CorrectnessDifference: XCTestCase {
   }
   
   func testFuzz() {
-    var r = rng()
-    for _ in 0..<1000 {
-      // How many mutations between before and after state
-      let mutations = Int.random(in: 0..<20, using: &r)
-      
-      // Create "before" state
-      var generator = VoseAliasMethod(letterFrequencies, rng: r)
-      let a = (0..<10).map { _ in generator.next() }
-      
-      // Create "after" state
-      var b = a
-      for _ in 0..<mutations {
-        if b.count > 0 && Int.random(in: 0...1, using: &r) == 0 {
-          b.remove(at: Int.random(in: 0..<b.count, using: &r))
-        } else {
-          b.insert(generator.next(), at: Int.random(in: 0...b.count, using: &r))
+    DispatchQueue.concurrentPerform(iterations: 10) { _ in
+      for _ in 0..<100 {
+        // How many mutations between before and after state
+        let mutations = Int.random(in: 0..<20)
+        
+        // Create "before" state
+        var generator = VoseAliasMethod(letterFrequencies)
+        let a = (0..<10).map { _ in generator.next() }
+        
+        // Create "after" state
+        var b = a
+        for _ in 0..<mutations {
+          if b.count > 0 && Int.random(in: 0...1) == 0 {
+            b.remove(at: Int.random(in: 0..<b.count))
+          } else {
+            b.insert(generator.next(), at: Int.random(in: 0...b.count))
+          }
         }
+        
+        let d = diff(from: a, to: b)
+        verify(from: a, to: b, produced: d, mutationCount: mutations)
       }
-      
-      let d = diff(from: a, to: b)
-      verify(from: a, to: b, produced: d, mutationCount: mutations)
     }
   }
   

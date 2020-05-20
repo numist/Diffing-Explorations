@@ -150,7 +150,8 @@ func _club<E>(
       } else {
         // Element membership heuristics (same rules as n-grams):
         switch (
-          trieB.offset(of: a.base[x], after: y), trieA.offset(of: b.base[y], after: x)
+          trieB.offset(of: a.base[x], after: y),
+          trieA.offset(of: b.base[y], after: x)
         ) {
         case (nil, _):
           // `a[x]` does not exist after `y` in `b`, remove

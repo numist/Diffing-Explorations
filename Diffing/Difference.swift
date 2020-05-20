@@ -18,29 +18,11 @@ where
 {
   let changes: _Changes<C.Element> = _withContiguousStorage(for: old, { a in
     _withContiguousStorage(for: new, { b in
-      // Greedily consume shared suffix
-      var suffixLength = 0
-      while suffixLength < min(a.count, b.count) &&
-        a[a.count - (suffixLength + 1)] == b[b.count - (suffixLength + 1)]
-      {
-        suffixLength += 1
-      }
-      let n = a.count - suffixLength
-      let m = b.count - suffixLength
-
-      // Greedily consume shared prefix
-      var prefixLength = 0
-      while prefixLength < min(n, m) && a[prefixLength] == b[prefixLength] {
-        prefixLength += 1
-      }
-
-      // TODO(numist): Slice is slow. use (UnsafeBufferPointer, Range) instead.
-      let sliceA: _Slice<C.Element> = (a, prefixLength..<n)
-      let sliceB: _Slice<C.Element> = (b, prefixLength..<m)
+      var sliceA: _Slice<C.Element> = (a, 0..<a.count)
+      var sliceB: _Slice<C.Element> = (b, 0..<b.count)
+      _trimCommon(between: &sliceA, and: &sliceB)
       
-      // TODO(numist): algorithms return [Change] instead of CollectionDifference
-
-      if n * m < 2500 {
+      if sliceA.range.count * sliceB.range.count < 2500 {
         return _myers(from: sliceA, to: sliceB, using: ==)
       }
 
@@ -119,6 +101,35 @@ func _withContiguousStorage<C : Collection, R>(
   }
   let array = ContiguousArray(values)
   return try array.withUnsafeBufferPointer(body)
+}
+
+/* Convenience function for consuming the shared prefix and suffix between two
+ * slices.
+ */
+func _trimCommon<E>(between a: inout _Slice<E>, and b: inout _Slice<E>)
+  where E:Equatable
+{
+  var suffixLength = 0
+  while min(a.range.count, b.range.count) - suffixLength > 0 &&
+    a.base[a.range.endIndex - (suffixLength + 1)] ==
+    b.base[b.range.endIndex - (suffixLength + 1)]
+  {
+    suffixLength += 1
+  }
+  let n = a.range.endIndex - suffixLength
+  let m = b.range.endIndex - suffixLength
+
+  // Greedily consume shared prefix
+  var prefixLength = 0
+  while prefixLength < min(n, m) &&
+    a.base[a.range.startIndex + prefixLength] ==
+    b.base[b.range.startIndex + prefixLength]
+  {
+    prefixLength += 1
+  }
+  
+  a = (a.base, (a.range.startIndex + prefixLength)..<n)
+  b = (b.base, (b.range.startIndex + prefixLength)..<m)
 }
 
 /* The Alphabet/Trie performs input characterization as well as efficient
