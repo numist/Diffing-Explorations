@@ -12,10 +12,20 @@ let printStats = true
 
 class DiffingTestCase: XCTestCase {
     
+    private static var intro: () = {
+        print("================================================================================")
+        print("\tWelcome! Here's a legend for the performance test output:")
+        print("\t\t \"n=\": the size of the collections being diffed")
+        print("\t\t \"==\": the number of element equality evaluations")
+        print("\t\t\"|Δ|\": the number of changes in the diff produced by the algorithm")
+        print("\t\t  \"⌛︎\": wall clock time (only when both algorithms exceed 10ms)")
+    }()
+
     override func setUp() {
         super.setUp()
         
         if printStats {
+            _ = DiffingTestCase.intro
             print("================================= hybrid/myers =================================")
         }
     }
