@@ -74,7 +74,7 @@ where
   return CollectionDifference(changes)!
 }
 
-// MARK: Support
+// MARK: Top-level helpers
 
 typealias _Slice<Element> = (base: UnsafeBufferPointer<Element>, range: Range<Int>)
 typealias _Changes<Element> = [CollectionDifference<Element>.Change]
@@ -140,7 +140,7 @@ struct _AlphabetTrie<Element> where Element: Hashable {
   let buf: _Slice<Element>
 
   // The trie structure is used to encode the collection's n-grams
-  private class _TrieNode {
+  class _TrieNode {
     var children = Dictionary<Element, _TrieNode>()
     var locations = Array<Int>()
   }
@@ -164,7 +164,7 @@ struct _AlphabetTrie<Element> where Element: Hashable {
    *    └──────────────┘      └──────────────┘  └──────────────┘
    */
 
-  var alphabet: Set<Element> { Set(root.children.keys) }
+  var alphabet: Dictionary<Element, _TrieNode>.Keys { root.children.keys }
 
   init(for buf: _Slice<Element>) {
     self.buf = buf
