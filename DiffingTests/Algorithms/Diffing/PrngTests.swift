@@ -118,7 +118,6 @@ class PrngTests: DiffingTestCase {
     for percent in stride(from: 0, to: 101, by: 20) {
       for size in [50, 100, 500, 1000] {
         let a = (0..<size).map({ _ in letterGenerator.next() })
-        if printStats { print("\(percent)%", terminator: ", ") }
         let numChanges = size * percent / 100
         var b = a
         for _ in 0..<numChanges {
@@ -163,7 +162,6 @@ class PrngTests: DiffingTestCase {
     for percent in stride(from: 0, to: 101, by: 20) {
       for size in [50, 100, 500] {
         let a = (0..<size).map({ _ in UUID() })
-        if printStats { print("\(percent)%", terminator: ", ") }
         let numChanges = size * percent / 100
         var b = a
         for _ in 0..<numChanges {
@@ -189,7 +187,6 @@ class PrngTests: DiffingTestCase {
       for size in [46, 91, 455] {
         let s = (0..<size).map({ _ in UUID() })
         let a = (s + s[0..<(s.count/10)]).shuffled(using: &r)
-        if printStats { print("\(percent)%", terminator: ", ") }
         let numChanges = size * percent / 100
         var b = a
         for _ in 0..<numChanges {

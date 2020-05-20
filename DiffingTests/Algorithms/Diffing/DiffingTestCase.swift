@@ -9,6 +9,7 @@ import XCTest
 import Diffing
 
 let printStats = true
+let printAll = true
 
 class DiffingTestCase: XCTestCase {
   
@@ -17,8 +18,8 @@ class DiffingTestCase: XCTestCase {
     print("        │                          Legend:                          │")
     print("        │                                                           │")
     print("        │ 'n=' -- size of the collections being diffed              │")
-    print("        │ '==' -- count of element equality evaluations             │")
     print("        │'|Δ|' -- count of individual changes in the diffs          │")
+    print("        │ '==' -- count of element equality evaluations             │")
     print("        │  '⌛︎' -- wall clock time (when both algorithms exceed 10ms)│")
     print("        └───────────────────────────────────────────────────────────┘")
   }()
@@ -27,17 +28,21 @@ class DiffingTestCase: XCTestCase {
     super.setUp()
     _ = intro
   }
-  
+
+  var printedHeader = false
   override func setUp() {
     super.setUp()
-    
-    if printStats {
+    printedHeader = false
+  }
+  func printHeaderIfNecessary() {
+    if printStats && !printedHeader {
       print("================================= hybrid/myers =================================")
     }
+    printedHeader = true
   }
   
   override func tearDown() {
-    if printStats {
+    if printStats && printedHeader {
       print("================================================================================")
     }
     
@@ -81,12 +86,16 @@ class DiffingTestCase: XCTestCase {
       hybridElapsed = -hybridStart.timeIntervalSinceNow / Double(measureCount)
     }
 
-    
     let ratio = Double(hybrid)/Double(baseline)
-    if printStats {
+    if printStats && (printAll || strict ||
+      (a.count * b.count > 100 && ratio > 1.1) ||
+      (hybridElapsed > myersElapsed && myersElapsed > 0.01) ||
+      hd.count > md.count * 2
+    ) {
+      printHeaderIfNecessary()
       print("n=(\(a.count),\(b.count)):", terminator: "\t")
-      print("==:\(hybrid)/\(baseline) (\(String(format: "%.01f",ratio*100.0))%)", terminator: "\t")
       print("|Δ|:\(hd.count)/\(md.count) (+\(String(format: "%.01f",hd.count==md.count ? 0.0 : Double(hd.count)/Double(md.count)*100.0-100.0))%)", terminator: "\t")
+      print("==:\(hybrid)/\(baseline) (\(String(format: "%.01f",ratio*100.0))%)", terminator: "\t")
       print("⌛︎:\(String(format: "%.02f",hybridElapsed))/\(String(format: "%.02f",myersElapsed))", terminator: "")
       if myersElapsed > 0.001 && hybridElapsed > 0.001 {
         print(" (\(String(format: "%.01f",(hybridElapsed/myersElapsed)*100.0))%)", terminator: "")
