@@ -174,13 +174,14 @@ func _club<E>(
   assert(x == a.range.startIndex && y == b.range.startIndex,
     "Solution path should end at beginning of diff range")
 
+  changes.reverse() // WTB: lol
   return changes
 }
 
 /* An edit tree represents all active edit paths in the search for a solution.
  * Because the search makes progress from the leaves, ownership is reversed from
  * a traditional tree: nodes strongly reference their parent.
- * The `discounted*` properties omit the effects of "obvious" edits greedily
+ * The `net*` properties omit the effects of "obvious" edits greedily
  * consumed by the diffing algorithm, to ensure that they do not affect the
  * behaviour of the `_WorkQueue`'s ranking arithmetic.
  */
@@ -188,8 +189,8 @@ fileprivate class _EditTreeNode {
   let x: Int
   let y: Int
   let parent: _EditTreeNode?
-  var discountedX: Int { return (x - freeRemoves) }
-  var discountedY: Int { return (y - freeInserts) }
+  var netX: Int { return (x - freeRemoves) }
+  var netY: Int { return (y - freeInserts) }
   private let freeRemoves: Int
   private let freeInserts: Int
 
@@ -280,22 +281,18 @@ fileprivate class _WorkQueue {
    * insertion sort order—the resulting structure will also contain no northeast
    * children, resulting in a binary tree structure.
    *
-   * Unlike an actual binary tree it is not possible to implement self-balancing
-   * during insertion as the geometric guarantees above are broken when a parent
-   * node has a smaller `x + y` than any of its children. The best possible
-   * balancing behaviour is approximated by randomizing the insertion order of
-   * nodes that share the same rank.
+   * Unlike an actual binary tree it is not possible to implement full
+   * self-balancing during insertion as the geometric guarantees above are
+   * broken when a parent node has a smaller `x + y` than any of its children.
+   * TODO: however, it should be ok to rotate nodes with the same rank, which
+   * would allow for some amount of self-balancing.
    */
   private func activatePending() {
     assert(maxRoundSize > 0,
       "Invalid `maxRoundSize` \(maxRoundSize) (must be > 0)")
     active.removeAll(keepingCapacity: true)
     var root: _QuadNode? = nil
-    pending.sort(by: { (p1, p2) -> Bool in
-      let left = p1.discountedX + p1.discountedY
-      let right = p2.discountedX + p2.discountedY
-      return left == right ? Bool.random() : left > right
-    })
+    pending.sort(by: { $0.netX + $0.netY > $1.netX + $1.netY })
     for e in pending {
       if let r = root {
         if r.insert(_QuadNode(e)) {
@@ -330,13 +327,13 @@ fileprivate class _WorkQueue {
     init(_ e: _EditTreeNode) { self.e = e }
 
     func insert(_ n: _QuadNode) -> Bool {
-      if n.e.discountedX == e.discountedX && n.e.discountedY == e.discountedY {
+      if n.e.netX == e.netX && n.e.netY == e.netY {
         // Do nothing
         return false
       }
 
       switch (
-        n.e.discountedX > e.discountedX, n.e.discountedY > e.discountedY
+        n.e.netX > e.netX, n.e.netY > e.netY
       ) {
       case (false, false):
         // Insertion to the southwest: parameter is superceded by this node
