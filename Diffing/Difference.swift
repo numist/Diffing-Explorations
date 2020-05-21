@@ -90,23 +90,63 @@ private func _hybrid<E>(
   if alphaA.count == sliceA.range.count &&
     alphaB.count == sliceB.range.count
   {
-    return _arrow(from: sliceA, trie: trieA,
-                  to: sliceB, trie: trieB)
+    return _arrow(from: sliceA, trie: trieA, to: sliceB, trie: trieB)
   }
 
   // If there's a lot of alphabet overlap…
   if intersection.count > min(sliceA.range.count, sliceB.range.count) / 2 {
+    print("alphabet overlap: \(intersection.count)")
+
+    var uniqueTrackerA = Dictionary<E, Int>()
+    uniqueTrackerA.reserveCapacity(intersection.count)
+    for i in sliceA.range {
+      let e = sliceA.base[i]
+      if intersection.contains(e) {
+        uniqueTrackerA[e, default: 0] += 1
+      }
+    }
+    var uniqueTrackerB = Dictionary<E, Int>()
+    uniqueTrackerB.reserveCapacity(intersection.count)
+    for i in sliceB.range {
+      let e = sliceB.base[i]
+      if intersection.contains(e) {
+        uniqueTrackerB[e, default: 0] += 1
+      }
+    }
 
     // …figure out how much of that is in uniques
     let intersectingUniques = Set(intersection.filter { e in
-      return trieA.offsets(for: e, in: sliceA.range).count == 1 &&
-             trieB.offsets(for: e, in: sliceB.range).count == 1
+      return uniqueTrackerA[e] == 1 &&
+             uniqueTrackerB[e] == 1
     })
 
     // …if it's a lot
     if intersectingUniques.count > intersection.count / 2 {
-      let sharedUniquesInA = sliceA.base[sliceA.range].filter({ intersectingUniques.contains($0) })
-      let sharedUniquesInB = sliceB.base[sliceB.range].filter({ intersectingUniques.contains($0) })
+
+      // filter down the uniques in each collection and save their indices!
+      var sharedUniquesInA = Array<E>()
+      sharedUniquesInA.reserveCapacity(intersectingUniques.count)
+      var aIndexOf = Dictionary<E,Int>()
+      aIndexOf.reserveCapacity(intersectingUniques.count)
+      for i in sliceA.range.startIndex..<sliceA.range.endIndex {
+        let e = sliceA.base[i]
+        if intersectingUniques.contains(e) {
+          sharedUniquesInA.append(e)
+          aIndexOf[e] = i
+        }
+      }
+      var sharedUniquesInB = Array<E>()
+      sharedUniquesInB.reserveCapacity(intersectingUniques.count)
+      var bIndexOf = Dictionary<E,Int>()
+      bIndexOf.reserveCapacity(intersectingUniques.count)
+      for i in sliceB.range.startIndex..<sliceB.range.endIndex {
+        let e = sliceB.base[i]
+        if intersectingUniques.contains(e) {
+          sharedUniquesInB.append(e)
+          bIndexOf[e] = i
+        }
+      }
+
       if let result = _withContiguousStorage(for: sharedUniquesInA, { suia in
         _withContiguousStorage(for: sharedUniquesInB) { suib -> _Changes<E>? in
           var sliceSuia: _Slice<E> = (suia, 0..<suia.endIndex)
@@ -126,20 +166,21 @@ private func _hybrid<E>(
           let orderedMatches = suia.filter { sharedUniques.contains($0) }
 
           // …we can use the matches as pivots in a divide-and-conquer scheme!
+          print("_impatience")
           var i = 0
           var x = sliceA.range.startIndex
           var y = sliceB.range.startIndex
           var result = _Changes<E>()
           while i <= orderedMatches.count {
             let e = i < orderedMatches.count ? orderedMatches[i] : nil
-            let aRange = x..<(e == nil ? sliceA.range.endIndex : trieA.offset(of: e!, in: sliceA.range)!)
-            let bRange = y..<(e == nil ? sliceB.range.endIndex : trieB.offset(of: e!, in: sliceB.range)!)
+            let aRange = x..<(e == nil ? sliceA.range.endIndex : aIndexOf[e!]!)
+            let bRange = y..<(e == nil ? sliceB.range.endIndex : bIndexOf[e!]!)
             i += 1
             x += aRange.count + 1
             y += bRange.count + 1
             if aRange.count > 0 || bRange.count > 0 {
-              result += _hybrid(from: (sliceA.base, aRange), trie: trieA,
-                                to: (sliceB.base, bRange), trie: trieB)
+              result += _hybrid(from: (sliceA.base, aRange),
+                                to: (sliceB.base, bRange))
             }
           }
           return result
@@ -271,20 +312,19 @@ struct _AlphabetTrie<Element> where Element: Hashable {
 
     root = _TrieNode()
     root.locations = Array(buf.range.startIndex..<buf.range.endIndex).map({ $0 - 1 })
-    extend(root)
   }
 
   func alphabet(for range: Range<Int>) -> Set<Element> {
-    if range == buf.range {
-      return Set(root.children.keys)
+    var result = Set<Element>()
+    for i in range {
+      result.insert(buf.base[i])
     }
-    return Set(buf.base[range])
+    return result
   }
 
   // Called lazily when a node needs its children populated.
   private func extend(_ node: _TrieNode) {
-    assert(node.children.count == 0,
-      "Children of node \(node) have already been calculated!")
+    guard node.children.count == 0 else { return }
 
     for i in node.locations.map({ $0 + 1 }) {
       func get<N>(_ n: inout N) -> N { n }
@@ -327,6 +367,7 @@ struct _AlphabetTrie<Element> where Element: Hashable {
 
   func offsets(for e: Element, in range: Range<Int>) -> [Int] {
     assert(buf.range._contains(range))
+    extend(root)
     guard let offsets = root.children[e]?.locations else { return [] }
     if range == buf.range {
       return offsets
@@ -347,6 +388,7 @@ struct _AlphabetTrie<Element> where Element: Hashable {
     in range: Range<Int>
   ) -> Int? {
     assert(buf.range._contains(range))
+    extend(root)
     var node = root
     for i in ngram.range.startIndex..<ngram.range.endIndex {
       if node.children.count == 0 && node.locations.last! < (buf.range.count - 1) {
@@ -371,6 +413,7 @@ struct _AlphabetTrie<Element> where Element: Hashable {
 
   func offset(of e: Element, in range: Range<Int>) -> Int? {
     assert(buf.range._contains(range))
+    extend(root)
     guard let offsets = root.children[e]?.locations else { return nil }
     return first(offsets, in: range)
   }

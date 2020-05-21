@@ -184,7 +184,7 @@ class PrngTests: DiffingTestCase {
     var r = rng()
     
     for percent in stride(from: 0, to: 101, by: 20) {
-      for size in [46, 91, 455] {
+      for size in [46, 91, 455, 910] {
         let s = (0..<size).map({ _ in UUID() })
         let a = (s + s[0..<(s.count/10)]).shuffled(using: &r)
         let numChanges = size * percent / 100
