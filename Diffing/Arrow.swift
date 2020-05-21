@@ -6,11 +6,11 @@
 */
 
 func _arrow<E>(
-  from a: _Slice<E>, trie pTrieA: _AlphabetTrie<E>? = nil,
-  to b: _Slice<E>, trie pTrieB: _AlphabetTrie<E>? = nil
+  from a: _Slice<E>, lookup pLookupA: _Lookup<E>? = nil,
+  to b: _Slice<E>, lookup pLookupB: _Lookup<E>? = nil
 ) -> _Changes<E> where E: Hashable {
-  let trieA = pTrieA ?? _AlphabetTrie(for: a)
-  let trieB = pTrieB ?? _AlphabetTrie(for: b)
+  let lookupA = pLookupA ?? _Lookup(for: a)
+  let lookupB = pLookupB ?? _Lookup(for: b)
   let n = a.range.endIndex
   let m = b.range.endIndex
   
@@ -31,8 +31,8 @@ func _arrow<E>(
         y += 1
       } else {
         switch (
-          trieB.offset(of: a.base[x], in: y..<b.range.endIndex),
-          trieA.offset(of: b.base[y], in: x..<a.range.endIndex)
+          lookupB.offset(of: a.base[x], in: y..<b.range.endIndex),
+          lookupA.offset(of: b.base[y], in: x..<a.range.endIndex)
         ) {
         case (.none, _):
           result.append(.remove(offset: x, element: a.base[x], associatedWith: nil))

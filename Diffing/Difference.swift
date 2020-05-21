@@ -7,6 +7,16 @@
 
 // MARK: API
 
+import Foundation
+
+// TODO: eliminate dependency on Foundation for `log()`
+fileprivate func log(_ val: Int, forBase base: Int) -> Int {
+  if val <= 1 || base <= 1 { return 1 }
+  let result = log(Double(val))/log(Double(base))
+  return Int(result + 1.0)
+}
+
+
 public func difference<C, D>(
   from old: C, to new: D
 ) -> CollectionDifference<C.Element>
@@ -59,9 +69,17 @@ where
 
 // MARK: Meta/micro diffing algorithms
 
+private struct _Ngram<E> : Hashable where E: Hashable {
+  // TODO: this will almost certainly need some perf love but it's a proof of concept!
+  private let buf: Array<E>
+  init(location: Int, length: Int, in buf: _Slice<E>) {
+    self.buf = Array(buf.base[location..<(location+length)])
+  }
+}
+
 private func _hybrid<E>(
-  from pSliceA: _Slice<E>, alphabet alphaA: _AlphabetTrie<E>? = nil,
-  to pSliceB: _Slice<E>, alphabet alphaB: _AlphabetTrie<E>? = nil
+  from pSliceA: _Slice<E>, alphabet alphaA: _Lookup<E>? = nil,
+  to pSliceB: _Slice<E>, alphabet alphaB: _Lookup<E>? = nil
 ) -> _Changes<E> {
   var sliceA = pSliceA
   var sliceB = pSliceB
@@ -77,10 +95,10 @@ private func _hybrid<E>(
     return _myers(from: sliceA, to: sliceB, using: ==)
   }
 
-  let trieA = _AlphabetTrie(for: sliceA)
-  let alphaA = trieA.alphabet(for: sliceA.range)
-  let trieB = _AlphabetTrie(for: sliceB)
-  let alphaB = trieB.alphabet(for: sliceB.range)
+  let lookupA = _Lookup(for: sliceA)
+  let alphaA = lookupA.alphabet(for: sliceA.range)
+  let lookupB = _Lookup(for: sliceB)
+  let alphaB = lookupB.alphabet(for: sliceB.range)
 
   let intersection = alphaA.intersection(alphaB)
   if intersection.count == 0 {
@@ -90,12 +108,27 @@ private func _hybrid<E>(
   if alphaA.count == sliceA.range.count &&
     alphaB.count == sliceB.range.count
   {
-    return _arrow(from: sliceA, trie: trieA,
-                  to: sliceB, trie: trieB)
+    return _arrow(from: sliceA, lookup: lookupA,
+                  to: sliceB, lookup: lookupB)
   }
 
-  return _club(from: sliceA, trie: trieA, alphabet: alphaA,
-               to: sliceB, trie: trieB, alphabet: alphaB)
+  if alphaA.count > 1 && alphaB.count > 1 {
+    let lowLogA = log(sliceA.range.count, forBase: ((sliceA.range.count - 1) / lookupA.lowestFrequency) + 1)
+    let medLogA = log(sliceA.range.count, forBase: alphaA.count)
+    let highLogA = log(sliceA.range.count, forBase: ((sliceA.range.count - 1) / lookupA.highestFrequency) + 1)
+    print("log possibilities for a(\(sliceA.range.count), ɑ:\(alphaA.count)): \(lowLogA), \(medLogA), \(highLogA)")
+    let lowLogB = log(sliceB.range.count, forBase: ((sliceB.range.count - 1) / lookupB.lowestFrequency) + 1)
+    let medLogB = log(sliceB.range.count, forBase: alphaB.count)
+    let highLogB = log(sliceB.range.count, forBase: ((sliceB.range.count - 1) / lookupB.highestFrequency) + 1)
+    print("log possibilities for b(\(sliceB.range.count), ɑ:\(alphaB.count)): \(lowLogB), \(medLogB), \(highLogB)")
+    let len = min(lowLogA, lowLogB)
+    let agrams = (sliceA.range.startIndex..<(sliceA.range.endIndex - len)).map { _Ngram(location: $0, length: len, in: sliceA) }
+    let bgrams = (sliceB.range.startIndex..<(sliceB.range.endIndex - len)).map { _Ngram(location: $0, length: len, in: sliceB) }
+    
+  }
+
+  return _club(from: sliceA, lookup: lookupA, alphabet: alphaA,
+               to: sliceB, lookup: lookupB, alphabet: alphaB)
 }
 
 private func _pave<E>(
@@ -170,83 +203,46 @@ func _trimCommon<E>(between a: inout _Slice<E>, and b: inout _Slice<E>)
   b = (b.base, (b.range.startIndex + prefixLength)..<m)
 }
 
-/* The Alphabet/Trie performs input characterization as well as efficient
+/* The Alphabet/Lookup performs input characterization as well as efficient
  * membership testing for both individual elements as well as ranges (n-grams).
  */
-struct _AlphabetTrie<Element> where Element: Hashable {
+struct _Lookup<Element> where Element: Hashable {
   // Lazy construction requires a reference to the original collection
   let buf: _Slice<Element>
-
-  // The trie structure is used to encode the collection's n-grams
-  private class _TrieNode {
-    var children = Dictionary<Element, _TrieNode>()
-    var locations = Array<Int>()
-  }
-  private let root: _TrieNode
-  /* Due to laziness, a trie may not fully encode a string for any given depth.
-   * The below example is a valid construction for the string "1100":
-   *                     ┌─────────────────────┐
-   *               root: │locations: [-1,0,1,2]│
-   *                     └─────────────────────┘
-   *                                │
-   *                 "0" ┌──────────┴──────────┐ "1"
-   *                     ▼                     ▼
-   *            ┌────────────────┐    ┌─────────────────┐
-   *            │locations: [2,3]│    │locations: [0, 1]│
-   *            └────────────────┘    └─────────────────┘
-   *                     │                     │
-   *        "0" ┌────────┘        "0" ┌────────┴────────┐ "1"
-   *            ▼                     ▼                 ▼
-   *    ┌──────────────┐      ┌──────────────┐  ┌──────────────┐
-   *    │locations: [3]│      │locations: [2]│  │locations: [1]│
-   *    └──────────────┘      └──────────────┘  └──────────────┘
-   */
+  private let indexesOf: Dictionary<Element, [Int]>
 
   init(for buf: _Slice<Element>) {
     self.buf = buf
 
-    root = _TrieNode()
-    root.locations = Array(buf.range.startIndex..<buf.range.endIndex).map({ $0 - 1 })
-    extend(root)
+    var tmp = Dictionary<Element, [Int]>()
+    for i in buf.range {
+      tmp[buf.base[i], default: [Int]()] += [i]
+    }
+    indexesOf = tmp
+  }
+
+  var highestFrequency: Int {
+    assert(indexesOf.count > 0)
+    return indexesOf.values.reduce(0, { max($0, $1.count) })
+  }
+  var lowestFrequency: Int {
+    assert(indexesOf.count > 0)
+    return indexesOf.values.reduce(Int.max, { min($0, $1.count) })
   }
 
   func alphabet(for range: Range<Int>) -> Set<Element> {
+    var result = Set<Element>()
     if range == buf.range {
-      return Set(root.children.keys)
+      result.reserveCapacity(indexesOf.count)
+      for e in indexesOf.keys {
+        result.insert(e)
+      }
+      return result
     }
-    return Set(buf.base[range])
-  }
-
-  // Called lazily when a node needs its children populated.
-  private func extend(_ node: _TrieNode) {
-    assert(node.children.count == 0,
-      "Children of node \(node) have already been calculated!")
-
-    for i in node.locations.map({ $0 + 1 }) {
-      func get<N>(_ n: inout N) -> N { n }
-      let child = get(&node.children[buf.base[i], default: _TrieNode()])
-      child.locations.append(i)
-      /* Functionally, the code above is equivalent to:
-       *
-       *  if let child = node.children[buf[i + 1]] {
-       *    child.locations.append(i + 1)
-       *  } else {
-       *    let child = _TrieNode()
-       *    child.locations.append(i + 1)
-       *    node.children[buf[i + 1]] = child
-       *  }
-       *
-       * but it should use ~50% fewer Dictionary lookups, much like changing:
-       *
-       *  `let tmp = f[e, default: 0]; f[e] = tmp + 1`
-       *
-       * to:
-       *
-       *  `f[e, default: 0] += 1`
-       *
-       * WTB: Unfortunately, here it's only worth a 25% improvement?
-       */
+    for i in range {
+      result.insert(buf.base[i])
     }
+    return result
   }
 
   private func trim(_ offsets: [Int], to range: Range<Int>) -> [Int] {
@@ -262,7 +258,7 @@ struct _AlphabetTrie<Element> where Element: Hashable {
   }
 
   func offsets(for e: Element, in range: Range<Int>) -> [Int] {
-    guard let offsets = root.children[e]?.locations else { return [] }
+    guard let offsets = indexesOf[e] else { return [] }
     if range == buf.range {
       return offsets
     }
@@ -277,49 +273,8 @@ struct _AlphabetTrie<Element> where Element: Hashable {
     return nil
   }
 
-  func offset(
-    of ngram: _Slice<Element>,
-    in range: Range<Int>
-  ) -> Int? {
-    var node = root
-    for i in ngram.range.startIndex..<ngram.range.endIndex {
-      if node.children.count == 0 && node.locations.last! < (buf.range.count - 1) {
-        extend(node)
-      }
-      if let child = node.children[ngram.base[i]] {
-        node = child
-      } else {
-        return nil
-      }
-    }
-
-    let nOff = (ngram.range.count - 1)
-    if let end = first(node.locations,
-                      in: (range.startIndex - nOff)..<(range.endIndex - nOff))
-    {
-      // Return value should relate to the beginning of the n-gram
-      return end - nOff
-    }
-    return nil
-  }
-
   func offset(of e: Element, in range: Range<Int>) -> Int? {
-    guard let offsets = root.children[e]?.locations else { return nil }
+    guard let offsets = indexesOf[e] else { return nil }
     return first(offsets, in: range)
-  }
-
-  // Factored binary search helper for membership testing functions
-  private func bsearch(for i: Int, in locations: [Int]) -> Int? {
-    var min = 0, max = locations.count
-    while min < max {
-      let pivot = (min + max)/2
-      let loc = locations[pivot]
-      if loc > i {
-        max = pivot
-      } else {
-        min = pivot + 1
-      }
-    }
-    return min < locations.count ? locations[min] : nil
   }
 }

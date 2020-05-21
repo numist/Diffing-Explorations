@@ -6,11 +6,11 @@
  */
 
 func _club<E>(
-  from a: _Slice<E>, trie pTrieA: _AlphabetTrie<E>? = nil, alphabet pAlphaA: Set<E>? = nil,
-  to b: _Slice<E>, trie pTrieB: _AlphabetTrie<E>? = nil, alphabet pAlphaB: Set<E>? = nil
+  from a: _Slice<E>, lookup pLookupA: _Lookup<E>? = nil, alphabet pAlphaA: Set<E>? = nil,
+  to b: _Slice<E>, lookup pLookupB: _Lookup<E>? = nil, alphabet pAlphaB: Set<E>? = nil
 ) -> _Changes<E> where E: Hashable {
-  let trieA = pTrieA ?? _AlphabetTrie(for: a)
-  let trieB = pTrieB ?? _AlphabetTrie(for: b)
+  let lookupA = pLookupA ?? _Lookup(for: a)
+  let lookupB = pLookupB ?? _Lookup(for: b)
 
   assert(a.range.count == 0 || b.range.count == 0 || (
     a.base[a.range.startIndex] != b.base[b.range.startIndex] &&
@@ -21,15 +21,15 @@ func _club<E>(
   let n = a.range.endIndex
   let m = b.range.endIndex
   
-  let trieDepth = 2
+  let lookupDepth = 2
 
   // Precompute all known e∈a,e∉b…
-  let alphaA = pAlphaA ?? trieA.alphabet(for: a.range)
-  let alphaB = pAlphaB ?? trieB.alphabet(for: b.range)
+  let alphaA = pAlphaA ?? lookupA.alphabet(for: a.range)
+  let alphaB = pAlphaB ?? lookupB.alphabet(for: b.range)
   var knownRemoves = Array<Bool>(repeating: false, count: n)
   for e in alphaA {
     if !alphaB.contains(e) {
-      for i in trieA.offsets(for: e, in: a.range) {
+      for i in lookupA.offsets(for: e, in: a.range) {
         knownRemoves[i] = true
       }
     }
@@ -38,7 +38,7 @@ func _club<E>(
   var knownInserts = Array<Bool>(repeating: false, count: m)
   for e in alphaB {
     if !alphaA.contains(e) {
-      for i in trieB.offsets(for: e, in: b.range) {
+      for i in lookupB.offsets(for: e, in: b.range) {
         knownInserts[i] = true
       }
     }
@@ -91,58 +91,39 @@ func _club<E>(
       // No elements remain in a, insert
       workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
     case (let x, let y):
-      // Attempts to perform "obvious" edits given the offset of the current
-      // token in the other collection
-      func obv(_ nextXInBClosure: @autoclosure () -> Int?,
-               _ nextYInAClosure: @autoclosure () -> Int?
-      ) -> Bool {
-        guard let nextXInB = nextXInBClosure() else {
-          // `a[x]` does not exist after `y` in `b`, remove
-          workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
-          return true
-        }
-        guard let nextYInA = nextYInAClosure() else {
-          // `b[y]` does not exist after `x` in `a`, insert
-          workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
-          return true
-        }
 
-        if (nextYInA - x) > 2 * (nextXInB - y) ||
-          (nextXInB - y) > 2 * (nextYInA - x)
-        {
-          /* `nextXInB-y` represents the distance between `y` and the location
-           * of `a[x]` in `b`. `nextYInA-x` represents the distance between
-           * `x` and the location of `b[y]` in `a`. If one of those distances
-           * is less than half of the other, assume greedily editing the
-           * element with the more distant match will still produce a
-           * sufficiently minimal diff.
-           */
-          if nextYInA - x < nextXInB - y {
-            // `a[x]` is more distant, remove
-            workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
-            return true
-          } else {
-            // `b[y]` is more distant, insert
-            workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
-            return true
-          }
-        }
-
-        return false
-      }
-
-      // Apply obviousness heuristics to element membership
-      if obv(trieB.offset(of: a.base[x], in: y..<b.range.endIndex),
-             trieA.offset(of: b.base[y], in: x..<a.range.endIndex))
-      {
+      // Element membership heuristics:
+      let nextXInB = lookupB.offset(of: a.base[x], in: y..<b.range.endIndex)
+      if nextXInB == nil {
+        // `a[x]` does not exist after `y` in `b`, remove
+        workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
         continue
       }
 
-      if x + trieDepth <= n && y + trieDepth <= m {
-        // Apply obviousness heuristics to n-gram membership
-        if obv(trieB.offset(of: (a.base, x..<(x + trieDepth)), in: y..<b.range.endIndex),
-               trieA.offset(of: (b.base, y..<(y + trieDepth)), in: x..<a.range.endIndex))
-        {
+      let nextYInA = lookupA.offset(of: b.base[y], in: x..<a.range.endIndex)
+      if nextYInA == nil {
+        // `b[y]` does not exist after `x` in `a`, insert
+        workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
+        continue
+      }
+
+      if (nextYInA! - x) > 2 * (nextXInB! - y) ||
+        (nextXInB! - y) > 2 * (nextYInA! - x)
+      {
+        /* `nextXInB-y` represents the distance between `y` and the location
+         * of `a[x]` in `b`. `nextYInA-x` represents the distance between
+         * `x` and the location of `b[y]` in `a`. If one of those distances
+         * is less than half of the other, assume greedily editing the
+         * element with the more distant match will still produce a
+         * sufficiently minimal diff.
+         */
+        if nextYInA! - x < nextXInB! - y {
+          // `a[x]` is more distant, remove
+          workQ.append(_EditTreeNode(x: x + 1, y: y, parent: current))
+          continue
+        } else {
+          // `b[y]` is more distant, insert
+          workQ.append(_EditTreeNode(x: x, y: y + 1, parent: current))
           continue
         }
       }

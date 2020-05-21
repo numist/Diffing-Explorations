@@ -24,8 +24,8 @@ let b = Array(CommandLine.arguments[CommandLine.arguments.count - 1])
 
 //print("diffing \(a) and \(b)")
 
-let alphaA = _Alphabet(a)
-let alphaB = _Alphabet(b)
+let alphaA = _Lookup(a)
+let alphaB = _Lookup(b)
 
 var digraph = """
 digraph d {

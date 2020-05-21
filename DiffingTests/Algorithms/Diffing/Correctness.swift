@@ -19,28 +19,29 @@ class CorrectnessClub: CorrectnessDifference {
     
     return CollectionDifference(_club(from: a, to: b))
   }
-  
-  func testLargeDiffPerf() {
-    print("This test is considered passed if it finishes before you can read the rest of this log message (as opposed to a few hours, or longer)")
-    var rng = Xoshiro(seed: deterministicSeed)
-    let a = Array(0..<9000).shuffled(using: &rng)
-    let b = Array(1000..<10000).shuffled(using: &rng)
-    let d = diff(from: a, to: b)
-    verify(from: a, to: b, produced: d)
-  }
-  
-  func testBtree79ce96ab39To93ba69ec97ByLine() {
-    print("This test is considered passed if it finishes before you can read the rest of this log message (as opposed to a few hours, or longer)")
-    
-    let testBundle = Bundle(for: LiteralTests.self)
-    let url79ce96ab39 = testBundle.url(forResource: "btree.79ce96ab39", withExtension: "c")!
-    let btree79ce96ab39 = try! String(contentsOf: url79ce96ab39, encoding: .utf8).split(separator: "\n", omittingEmptySubsequences: false)
-    verify(
-      from: btree79ce96ab39,
-      to: btree79ce96ab39.reversed(),
-      produced: diff(from: btree79ce96ab39, to: btree79ce96ab39.reversed())
-    )
-  }
+
+  // TODO(numist): these should be in test correctnessHybrid or smth
+//  func testLargeDiffPerf() {
+//    print("This test is considered passed if it finishes before you can read the rest of this log message (as opposed to a few hours, or longer)")
+//    var rng = Xoshiro(seed: deterministicSeed)
+//    let a = Array(0..<9000).shuffled(using: &rng)
+//    let b = Array(1000..<10000).shuffled(using: &rng)
+//    let d = diff(from: a, to: b)
+//    verify(from: a, to: b, produced: d)
+//  }
+//
+//  func testBtree79ce96ab39To93ba69ec97ByLine() {
+//    print("This test is considered passed if it finishes before you can read the rest of this log message (as opposed to a few hours, or longer)")
+//
+//    let testBundle = Bundle(for: LiteralTests.self)
+//    let url79ce96ab39 = testBundle.url(forResource: "btree.79ce96ab39", withExtension: "c")!
+//    let btree79ce96ab39 = try! String(contentsOf: url79ce96ab39, encoding: .utf8).split(separator: "\n", omittingEmptySubsequences: false)
+//    verify(
+//      from: btree79ce96ab39,
+//      to: btree79ce96ab39.reversed(),
+//      produced: diff(from: btree79ce96ab39, to: btree79ce96ab39.reversed())
+//    )
+//  }
 }
 
 class CorrectnessMyers: CorrectnessDifference {
@@ -55,15 +56,15 @@ class CorrectnessArrow: CorrectnessDifference {
   override func diffImp<E>(
     from old: _Slice<E>, to new: _Slice<E>
   ) -> CollectionDifference<E>? where E : Hashable {
-    let trieA = _AlphabetTrie(for: old)
-    let trieB = _AlphabetTrie(for: new)
-    if trieA.alphabet(for: old.range).count < old.range.count ||
-      trieB.alphabet(for: new.range).count < new.range.count
+    let lookupA = _Lookup(for: old)
+    let lookupB = _Lookup(for: new)
+    if lookupA.alphabet(for: old.range).count < old.range.count ||
+      lookupB.alphabet(for: new.range).count < new.range.count
     {
       return nil
     }
-    return CollectionDifference(_arrow(from: old, trie: trieA,
-                                       to: new, trie: trieB))
+    return CollectionDifference(_arrow(from: old, lookup: lookupA,
+                                       to: new, lookup: lookupB))
   }
 }
 
