@@ -210,7 +210,7 @@ struct _AlphabetTrie<Element> where Element: Hashable {
     fullAlphabet = a
 
     root = _TrieNode()
-    root.locations = Array(buf.range.startIndex..<buf.range.endIndex).map({ $0 - 1 })
+    root.locations = (buf.range.startIndex..<buf.range.endIndex).map({ $0 - 1 })
     root.children.reserveCapacity(a.count)
     extend(root)
   }
@@ -229,8 +229,7 @@ struct _AlphabetTrie<Element> where Element: Hashable {
 
     for i in node.locations.map({ $0 + 1 }) {
       func get<N>(_ n: inout N) -> N { n }
-      let child = get(&node.children[buf.base[i], default: _TrieNode()])
-      child.locations.append(i)
+      get(&node.children[buf.base[i], default: _TrieNode()]).locations += [i]
       /* Functionally, the code above is equivalent to:
        *
        *  if let child = node.children[buf[i + 1]] {
