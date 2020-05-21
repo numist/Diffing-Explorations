@@ -122,16 +122,30 @@ private func _hybrid<E>(
     let highLogB = log(sliceB.range.count, forBase: ((sliceB.range.count - 1) / lookupB.highestFrequency) + 1)
     print("log possibilities for b(\(sliceB.range.count), ɑ:\(alphaB.count)): \(lowLogB), \(medLogB), \(highLogB)")
     let len = min(lowLogA, lowLogB)
-    let agrams = (sliceA.range.startIndex..<(sliceA.range.endIndex - len)).map { _Ngram(location: $0, length: len, in: sliceA) }
-    let bgrams = (sliceB.range.startIndex..<(sliceB.range.endIndex - len)).map { _Ngram(location: $0, length: len, in: sliceB) }
-    
+    let d = _gram(from: sliceA, to: sliceB, len: len)
+    print("diffed with \(d.count) changes")
   }
 
   return _club(from: sliceA, lookup: lookupA, alphabet: alphaA,
                to: sliceB, lookup: lookupB, alphabet: alphaB)
 }
 
-private func _pave<E>(
+func _gram<E>(
+  from sliceA: _Slice<E>,
+  to sliceB: _Slice<E>,
+  len: Int
+) -> _Changes<E> where E: Hashable {
+  let agrams = (sliceA.range.startIndex..<(sliceA.range.endIndex - len)).map { _Ngram(location: $0, length: len, in: sliceA) }
+  let bgrams = (sliceB.range.startIndex..<(sliceB.range.endIndex - len)).map { _Ngram(location: $0, length: len, in: sliceB) }
+  let d = _withContiguousStorage(for: agrams) { ag in
+    _withContiguousStorage(for: bgrams) { bg in
+      return _club(from: (ag, 0..<ag.count), to: (bg, 0..<bg.count))
+    }
+  }
+  fatalError()
+}
+
+func _pave<E>(
   from sliceA: _Slice<E>,
   to sliceB: _Slice<E>
 ) -> _Changes<E> {
