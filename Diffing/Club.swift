@@ -273,7 +273,15 @@ fileprivate class _WorkQueue {
       "Invalid `maxRoundSize` \(maxRoundSize) (must be > 0)")
     active.removeAll(keepingCapacity: true)
     var root: _QuadNode? = nil
-    pending.sort(by: { $0.netX + $0.netY > $1.netX + $1.netY })
+    var sortingHat = false
+    pending.sort(by: { (p1, p2) -> Bool in
+      let left = p1.netX + p1.netY, right = p2.netX + p2.netY
+      if left == right {
+        sortingHat = !sortingHat
+        return sortingHat
+      }
+      return left > right
+    })
     for e in pending {
       if let r = root {
         if r.insert(_QuadNode(e)) {
