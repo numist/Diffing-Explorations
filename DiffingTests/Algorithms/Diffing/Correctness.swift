@@ -55,15 +55,15 @@ class CorrectnessArrow: CorrectnessDifference {
   override func diffImp<E>(
     from old: _Slice<E>, to new: _Slice<E>
   ) -> CollectionDifference<E>? where E : Hashable {
-    let trieA = _AlphabetTrie(for: old)
-    let trieB = _AlphabetTrie(for: new)
-    if trieA.alphabet(for: old.range).count < old.range.count ||
-      trieB.alphabet(for: new.range).count < new.range.count
+    let lookupA = _Lookup(for: old)
+    let lookupB = _Lookup(for: new)
+    if lookupA.alphabet(for: old.range).count < old.range.count ||
+      lookupB.alphabet(for: new.range).count < new.range.count
     {
       return nil
     }
-    return CollectionDifference(_arrow(from: old, trie: trieA,
-                                       to: new, trie: trieB))
+    return CollectionDifference(_arrow(from: old, lookup: lookupA,
+                                       to: new, lookup: lookupB))
   }
 }
 
