@@ -60,8 +60,8 @@ where
 // MARK: Meta/micro diffing algorithms
 
 private func _hybrid<E>(
-  from pSliceA: _Slice<E>, alphabet alphaA: _AlphabetTrie<E>? = nil,
-  to pSliceB: _Slice<E>, alphabet alphaB: _AlphabetTrie<E>? = nil
+  from pSliceA: _Slice<E>, trie pTrieA: _AlphabetTrie<E>? = nil,
+  to pSliceB: _Slice<E>, trie pTrieB: _AlphabetTrie<E>? = nil
 ) -> _Changes<E> {
   var sliceA = pSliceA
   var sliceB = pSliceB
@@ -77,9 +77,9 @@ private func _hybrid<E>(
     return _myers(from: sliceA, to: sliceB, using: ==)
   }
 
-  let trieA = _AlphabetTrie(for: sliceA)
+  let trieA = pTrieA ?? _AlphabetTrie(for: sliceA)
   let alphaA = trieA.alphabet(for: sliceA.range)
-  let trieB = _AlphabetTrie(for: sliceB)
+  let trieB = pTrieB ?? _AlphabetTrie(for: sliceB)
   let alphaB = trieB.alphabet(for: sliceB.range)
 
   let intersection = alphaA.intersection(alphaB)
@@ -92,6 +92,62 @@ private func _hybrid<E>(
   {
     return _arrow(from: sliceA, trie: trieA,
                   to: sliceB, trie: trieB)
+  }
+
+  // If there's a lot of alphabet overlap…
+  if intersection.count > min(sliceA.range.count, sliceB.range.count) / 2 {
+
+    // …figure out how much of that is in uniques
+    let intersectingUniques = Set(intersection.filter { e in
+      return trieA.offsets(for: e, in: sliceA.range).count == 1 &&
+             trieB.offsets(for: e, in: sliceB.range).count == 1
+    })
+
+    // …if it's a lot
+    if intersectingUniques.count > intersection.count / 2 {
+      let sharedUniquesInA = sliceA.base[sliceA.range].filter({ intersectingUniques.contains($0) })
+      let sharedUniquesInB = sliceB.base[sliceB.range].filter({ intersectingUniques.contains($0) })
+      if let result = _withContiguousStorage(for: sharedUniquesInA, { suia in
+        _withContiguousStorage(for: sharedUniquesInB) { suib -> _Changes<E>? in
+          var sliceSuia: _Slice<E> = (suia, 0..<suia.endIndex)
+          var sliceSuib: _Slice<E> = (suib, 0..<suib.endIndex)
+          _trimCommon(between: &sliceSuia, and: &sliceSuib)
+          let d = _arrow(from: sliceSuia, to: sliceSuib)
+
+          // …and enough of the uniques line up
+          guard d.count <= min(suia.count, suib.count) / 2 else { return nil }
+          let changedUniques = Set(d.map({ c -> E in
+            switch c {
+              case .remove(_, let e, _): return e
+              case .insert(_, let e, _): return e
+            }
+          }))
+          let sharedUniques = intersectingUniques.subtracting(changedUniques)
+          let orderedMatches = suia.filter { sharedUniques.contains($0) }
+
+          // …we can use the matches as pivots in a divide-and-conquer scheme!
+          var i = 0
+          var x = sliceA.range.startIndex
+          var y = sliceB.range.startIndex
+          var result = _Changes<E>()
+          while i <= orderedMatches.count {
+            let e = i < orderedMatches.count ? orderedMatches[i] : nil
+            let aRange = x..<(e == nil ? sliceA.range.endIndex : trieA.offset(of: e!, in: sliceA.range)!)
+            let bRange = y..<(e == nil ? sliceB.range.endIndex : trieB.offset(of: e!, in: sliceB.range)!)
+            i += 1
+            x += aRange.count + 1
+            y += bRange.count + 1
+            if aRange.count > 0 || bRange.count > 0 {
+              result += _hybrid(from: (sliceA.base, aRange), trie: trieA,
+                                to: (sliceB.base, bRange), trie: trieB)
+            }
+          }
+          return result
+        }
+      }) {
+        return result
+      }
+    }
   }
 
   return _club(from: sliceA, trie: trieA, alphabet: alphaA,
@@ -159,7 +215,9 @@ func _trimCommon<E>(between a: inout _Slice<E>, and b: inout _Slice<E>)
 
   // Greedily consume shared prefix
   var prefixLength = 0
-  while prefixLength < min(n, m) &&
+  while
+    a.range.startIndex + prefixLength < n &&
+    b.range.startIndex + prefixLength < m &&
     a.base[a.range.startIndex + prefixLength] ==
     b.base[b.range.startIndex + prefixLength]
   {
@@ -168,6 +226,12 @@ func _trimCommon<E>(between a: inout _Slice<E>, and b: inout _Slice<E>)
   
   a = (a.base, (a.range.startIndex + prefixLength)..<n)
   b = (b.base, (b.range.startIndex + prefixLength)..<m)
+}
+
+extension Range where Bound == Int {
+  fileprivate func _contains(_ range: Self) -> Bool {
+    return self.startIndex <= range.startIndex && self.endIndex >= range.endIndex
+  }
 }
 
 /* The Alphabet/Trie performs input characterization as well as efficient
@@ -262,6 +326,7 @@ struct _AlphabetTrie<Element> where Element: Hashable {
   }
 
   func offsets(for e: Element, in range: Range<Int>) -> [Int] {
+    assert(buf.range._contains(range))
     guard let offsets = root.children[e]?.locations else { return [] }
     if range == buf.range {
       return offsets
@@ -281,6 +346,7 @@ struct _AlphabetTrie<Element> where Element: Hashable {
     of ngram: _Slice<Element>,
     in range: Range<Int>
   ) -> Int? {
+    assert(buf.range._contains(range))
     var node = root
     for i in ngram.range.startIndex..<ngram.range.endIndex {
       if node.children.count == 0 && node.locations.last! < (buf.range.count - 1) {
@@ -304,6 +370,7 @@ struct _AlphabetTrie<Element> where Element: Hashable {
   }
 
   func offset(of e: Element, in range: Range<Int>) -> Int? {
+    assert(buf.range._contains(range))
     guard let offsets = root.children[e]?.locations else { return nil }
     return first(offsets, in: range)
   }
