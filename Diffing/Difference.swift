@@ -82,11 +82,6 @@ private func _hybrid<E>(
   let trieB = _AlphabetTrie(for: sliceB)
   let alphaB = trieB.alphabet(for: sliceB.range)
 
-  let intersection = alphaA.intersection(alphaB)
-  if intersection.count == 0 {
-    return _pave(from: sliceA, to: sliceB)
-  }
-
   if alphaA.count == sliceA.range.count &&
     alphaB.count == sliceB.range.count
   {
@@ -176,6 +171,8 @@ func _trimCommon<E>(between a: inout _Slice<E>, and b: inout _Slice<E>)
 struct _AlphabetTrie<Element> where Element: Hashable {
   // Lazy construction requires a reference to the original collection
   let buf: _Slice<Element>
+  // Someone always calls alphabet so we may as well use it in the initializer
+  let fullAlphabet: Set<Element>
 
   // The trie structure is used to encode the collection's n-grams
   private class _TrieNode {
@@ -205,14 +202,22 @@ struct _AlphabetTrie<Element> where Element: Hashable {
   init(for buf: _Slice<Element>) {
     self.buf = buf
 
+    var a = Set<Element>()
+    // WTB: Slice overhead for buf.base[buf.range] was 25% of time spent in init()
+    for i in buf.range {
+      a.insert(buf.base[i])
+    }
+    fullAlphabet = a
+
     root = _TrieNode()
     root.locations = Array(buf.range.startIndex..<buf.range.endIndex).map({ $0 - 1 })
+    root.children.reserveCapacity(a.count)
     extend(root)
   }
 
   func alphabet(for range: Range<Int>) -> Set<Element> {
     if range == buf.range {
-      return Set(root.children.keys)
+      return fullAlphabet
     }
     return Set(buf.base[range])
   }
