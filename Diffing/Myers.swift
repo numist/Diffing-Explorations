@@ -114,7 +114,7 @@ func _myers<E>(
     return changes
   }
 
-  return _formChanges(from: a, to: b, using:_descent(from: a, to: b))
+  return _formChanges(from: a, to: b, using:_descent(from: a, to: b)).reversed() // WTB: lol
 }
 
 // _V is a rudimentary type made to represent the rows of the triangular matrix type used by the Myer's algorithm
