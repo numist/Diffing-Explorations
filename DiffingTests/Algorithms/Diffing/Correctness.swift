@@ -44,6 +44,22 @@ class CorrectnessClub: CorrectnessDifference {
 //  }
 }
 
+// class CorrectnessGram: CorrectnessDifference {
+//   override func diffImp<E>(
+//     from old: _Slice<E>, to new: _Slice<E>
+//   ) -> CollectionDifference<E>? where E : Hashable {
+//     return CollectionDifference(_gram(from: old, to: new, len: 2))
+//   }
+// }
+
+class CorrectnessPave: CorrectnessDifference {
+  override func diffImp<E>(
+    from old: _Slice<E>, to new: _Slice<E>
+  ) -> CollectionDifference<E>? where E : Hashable {
+    return CollectionDifference(_pave(from: old, to: new))
+  }
+}
+
 class CorrectnessMyers: CorrectnessDifference {
   override func diffImp<E>(
     from old: _Slice<E>, to new: _Slice<E>
@@ -104,6 +120,7 @@ class CorrectnessDifference: XCTestCase {
     let a = ["q", "r", "1", "2", "3", "4", "a", "f", "7", "8", "9", "0", "q", "r"]
     let b = ["a", "f", "1", "2", "3", "4", "q", "r", "7", "8", "9", "0", "a", "f"]
     guard let d = diff(from: a, to: b) else { return }
+    if d.count == a.count + b.count { return }
     for c in d {
       switch c {
       case .remove(offset: _, element: let e, associatedWith: _):
