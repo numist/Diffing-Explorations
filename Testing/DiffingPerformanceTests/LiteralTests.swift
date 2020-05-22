@@ -35,9 +35,11 @@ class LiteralTests: DiffingTestCase {
   }
   
   func testSortedReversed() {
-    let a = Array(0..<1000)
-    let b = a.reversed()
-    measureDiffs(from: a, to: b)
+    for size in [500, 1000] {
+      let a = Array(0..<size)+[0]
+      let b = a.reversed()
+      measureDiffs(from: a, to: b)
+    }
   }
   
   func testBtree79ce96ab39Tof55ea8f456ByLine() {
@@ -57,20 +59,34 @@ class LiteralTests: DiffingTestCase {
   }
   
   func testOneSided() {
-    let a = Array(repeating: "0", count: 10000)
-    let b = Array<String>()
-    measureDiffs(from: a, to: b)
+    for size in [500, 1000] {
+      let a = Array(repeating: 0, count: size)
+      let b = Array<Int>()
+      measureDiffs(from: a, to: b)
+    }
   }
 
   func testOtherSided() {
-    let a = Array<Character>()
-    let b = Array("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-    measureDiffs(from: a, to: b)
+    for size in [500, 1000] {
+      let a = Array<Int>()
+      let b = Array(repeating: 0, count: size)
+      measureDiffs(from: a, to: b)
+    }
   }
 
   func testHalves() {
-    let a = Array(repeating: "0", count: 1000) + Array(repeating: "1", count: 1000)
-    let b = a.reversed()
-    measureDiffs(from: a, to: b)
+    for size in [250, 500] {
+      let a = Array(repeating: "0", count: size) + Array(repeating: "1", count: size)
+      let b = a.reversed()
+      measureDiffs(from: a, to: b)
+    }
+  }
+
+  func testWorkQueueOverload() {
+    for size in [249, 499] {
+      let a = Array(0...size)
+      let b = Array(size...size*2)
+      measureDiffs(from: a + b, to: b + a)
+    }
   }
 }

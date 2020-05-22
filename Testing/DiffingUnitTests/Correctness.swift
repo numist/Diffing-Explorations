@@ -60,8 +60,8 @@ extension CorrectnessArrow {
 
   func testWorkQueueOverload() {
     let n = 100
-    let a = (0..<n).map { _ in UUID() }
-    let b = (0..<n).map { _ in UUID() }
+    let a = Array(0...n)
+    let b = Array(n...n*2)
     let d = diff(from: a + b, to: b + a)
     verify(from: a + b, to: b + a, produced: d)
   }
