@@ -24,7 +24,7 @@ class PrngTests: DiffingTestCase {
   
   func checkDifferentLengthRandomStrings<E>(with g: VoseAliasMethod<E>) where E : Hashable {
     var generator = g
-    for n in [50, 100, 500, 1000] {
+    for n in [500, 1000] {
       let a = (0..<n).map({ _ in generator.next() })
       let b = (0..<n).map({ _ in generator.next() })
       measureDiffs(from: a, to: b)
@@ -53,7 +53,7 @@ class PrngTests: DiffingTestCase {
   
   func checkDifferentLengthReversedStrings<E>(with g: VoseAliasMethod<E>) where E : Hashable {
     var generator = g
-    for n in [50, 100, 500, 1000] {
+    for n in [500, 1000] {
       let a = (0..<n).map({ _ in generator.next() })
       let b = a.reversed()
       measureDiffs(from: a, to: b)
@@ -81,7 +81,7 @@ class PrngTests: DiffingTestCase {
   }
   
   func testReversedUUID() {
-    for size in [50, 100, 500, 1000] {
+    for size in [500, 1000] {
       let a = (0..<size).map({ _ in UUID() })
       let b = a.reversed()
       measureDiffs(from: a, to: b)
@@ -91,7 +91,7 @@ class PrngTests: DiffingTestCase {
   func testDisparateLettersVsNumbers() {
     var letterGenerator = VoseAliasMethod(letterFrequencies, rng: rng())
     var numberGenerator = VoseAliasMethod(numberFrequencies, rng: rng())
-    for size in [50, 100, 500, 1000] {
+    for size in [500, 1000] {
       let a = (0..<size).map({ _ in letterGenerator.next() })
       let b = (0..<size).map({ _ in numberGenerator.next() })
       measureDiffs(from: a, to: b)
@@ -99,24 +99,19 @@ class PrngTests: DiffingTestCase {
   }
   
   func testDisparateUUIDs() {
-    for size in [50, 100, 500, 1000] {
+    for size in [500, 1000] {
       let a = (0..<size).map({ _ in UUID() })
       let b = (0..<size).map({ _ in UUID() })
       measureDiffs(from: a, to: b)
     }
   }
-  
-  func testIdentical() {
-    let a = Array(0..<10000)
-    measureDiffs(from: a, to: a)
-  }
-  
+
   func checkDifferentPercentageChangedStrings(with frequencies: [(String,Double)]) {
     var r = rng()
     var letterGenerator = VoseAliasMethod(frequencies, rng: r)
     
-    for percent in stride(from: 0, to: 101, by: 20) {
-      for size in [50, 100, 500, 1000] {
+    for percent in stride(from: 20, to: 101, by: 20) {
+      for size in [500, 1000] {
         let a = (0..<size).map({ _ in letterGenerator.next() })
         let numChanges = size * percent / 100
         var b = a
@@ -159,8 +154,8 @@ class PrngTests: DiffingTestCase {
   func testByPercentageChangedUUID() {
     var r = rng()
     
-    for percent in stride(from: 0, to: 101, by: 20) {
-      for size in [50, 100, 500, 1000] {
+    for percent in stride(from: 20, to: 101, by: 20) {
+      for size in [500, 1000] {
         let a = (0..<size).map({ _ in UUID() })
         let numChanges = size * percent / 100
         var b = a
@@ -183,8 +178,8 @@ class PrngTests: DiffingTestCase {
   func testByPercentageChangedDoubledUUID() {
     var r = rng()
     
-    for percent in stride(from: 0, to: 101, by: 20) {
-      for size in [46, 91, 455, 910] {
+    for percent in stride(from: 20, to: 101, by: 20) {
+      for size in [455, 910] {
         let s = (0..<size).map({ _ in UUID() })
         let a = (s + s[0..<(s.count/10)]).shuffled(using: &r)
         let numChanges = size * percent / 100
@@ -207,7 +202,7 @@ class PrngTests: DiffingTestCase {
   
   func testShuffledUUID() {
     var r = rng()
-    for size in [50, 100, 500, 1000] {
+    for size in [500, 1000] {
       let a = (0..<size).map({ _ in UUID() })
       let b = a.shuffled(using: &r)
       measureDiffs(from: a, to: b)
@@ -216,7 +211,7 @@ class PrngTests: DiffingTestCase {
   
   func testShuffledOrderedSetPromotable() {
     var r = rng()
-    for size in [50, 100, 500, 1000] {
+    for size in [500, 1000] {
       let a = Array(0..<size)
       let b = a.shuffled(using:&r)
       measureDiffs(from: a, to: b)

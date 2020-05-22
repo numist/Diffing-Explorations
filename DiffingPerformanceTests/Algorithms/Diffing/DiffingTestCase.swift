@@ -86,10 +86,12 @@ class DiffingTestCase: XCTestCase {
       hybridElapsed = -hybridStart.timeIntervalSinceNow / Double(measureCount)
     }
 
+//    XCTAssert(myersElapsed > 0.001 || hybridElapsed > 0.001, "Too fast to test!")
+
     let ratio = Double(hybrid)/Double(baseline)
-    if printStats && (printAll || strict ||
+    if printStats && (printAll ||
       (a.count * b.count > 100 && ratio > 1.1) ||
-      (hybridElapsed > myersElapsed && myersElapsed > 0.01) ||
+      (hybridElapsed > myersElapsed && myersElapsed > 0.016) ||
       hd.count > md.count * 2
     ) {
       printHeaderIfNecessary()
@@ -99,6 +101,20 @@ class DiffingTestCase: XCTestCase {
       print("⌛︎:\(String(format: "%.02f",hybridElapsed))/\(String(format: "%.02f",myersElapsed))", terminator: "")
       if myersElapsed > 0.001 && hybridElapsed > 0.001 {
         print(" (\(String(format: "%.01f",(hybridElapsed/myersElapsed)*100.0))%)", terminator: "")
+      }
+      if !printAll {
+        print("\t", terminator: "")
+        print("(reasons: ", terminator: "")
+        if hd.count > md.count * 2 {
+          print("Δ ", terminator: "")
+        }
+        if (a.count * b.count > 100 && ratio > 1.1) {
+          print("== ", terminator: "")
+        }
+        if (hybridElapsed > myersElapsed && myersElapsed > 0.01) {
+          print("⌛︎ ", terminator: "")
+        }
+        print(")", terminator:"")
       }
       print("")
     }

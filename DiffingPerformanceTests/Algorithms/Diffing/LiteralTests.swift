@@ -16,12 +16,6 @@ class LiteralTests: DiffingTestCase {
     measureDiffs(from: old, to: new, strict: true)
   }
 
-  func testHamlin() {
-    let a = Array("call this so we can override.")
-    let b = Array("so we can override")
-    measureDiffs(from: a, to: b)
-  }
-
   func testLoremIpsums() {
     let a = Array("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
     let b = Array("Loremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet consectetur adipisci[ng] velit, sed quia non-numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum[d] exercitationem ullam corporis suscipit laborum.")
@@ -40,7 +34,7 @@ class LiteralTests: DiffingTestCase {
     measureDiffs(from: a, to: b)
   }
   
-  func testReversed() {
+  func testSortedReversed() {
     let a = Array(0..<1000)
     let b = a.reversed()
     measureDiffs(from: a, to: b)
@@ -54,19 +48,13 @@ class LiteralTests: DiffingTestCase {
     
     let urlf55ea8f456 = testBundle.url(forResource: "btree.f55ea8f456", withExtension: "c")!
     let btreef55ea8f456 = try! String(contentsOf: urlf55ea8f456, encoding: .utf8).split(separator: "\n", omittingEmptySubsequences: false)
-    
+
     measureDiffs(from: btree79ce96ab39, to: btreef55ea8f456)
   }
   
-  func testSame() {
-    let a = Array("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-    let b = a
-    measureDiffs(from: a, to: b)
-  }
-
   func testOneSided() {
-    let a = Array("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-    let b = Array<Character>()
+    let a = Array(repeating: "0", count: 10000)
+    let b = Array<String>()
     measureDiffs(from: a, to: b)
   }
 
