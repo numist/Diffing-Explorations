@@ -49,6 +49,10 @@ class LiteralTests: DiffingTestCase {
     let urlf55ea8f456 = testBundle.url(forResource: "btree.f55ea8f456", withExtension: "c")!
     let btreef55ea8f456 = try! String(contentsOf: urlf55ea8f456, encoding: .utf8).split(separator: "\n", omittingEmptySubsequences: false)
 
+    /* NOTE:
+     * the diffutils utility produces a diff with 2259 changes
+     * the shortest edit script contains 1832 changes
+     */
     measureDiffs(from: btree79ce96ab39, to: btreef55ea8f456)
   }
   

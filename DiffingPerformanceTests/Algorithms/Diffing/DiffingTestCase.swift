@@ -9,7 +9,7 @@ import XCTest
 import Diffing
 
 let printStats = true
-let printAll = true
+let printAll = false
 
 class DiffingTestCase: XCTestCase {
   
@@ -20,12 +20,17 @@ class DiffingTestCase: XCTestCase {
     print("        │ 'n=' -- size of the collections being diffed              │")
     print("        │'|Δ|' -- count of individual changes in the diffs          │")
     print("        │ '==' -- count of element equality evaluations             │")
+#if !DEBUG
     print("        │  '⌛︎' -- wall clock time (when both algorithms exceed 10ms)│")
+#endif
     print("        └───────────────────────────────────────────────────────────┘")
   }()
   
   override static func setUp() {
     super.setUp()
+#if DEBUG
+    print("\n         Debug build detected, skipping wall clock time measurements\n")
+#endif
     _ = intro
   }
 
@@ -64,6 +69,16 @@ class DiffingTestCase: XCTestCase {
     var myersElapsed = -myersStart.timeIntervalSinceNow
     let baseline = comparisons
     
+    comparisons = 0
+    var hybridStart = Date()
+    let hd = difference(from: a, to: b)
+    var hybridElapsed = -hybridStart.timeIntervalSinceNow
+    let hybrid = comparisons
+
+#if DEBUG
+    hybridElapsed = 0.0
+    myersElapsed = 0.0
+#else
     if strict && myersElapsed < 0.2 {
       myersStart = Date()
       for _ in 0..<measureCount {
@@ -71,13 +86,7 @@ class DiffingTestCase: XCTestCase {
       }
       myersElapsed = -myersStart.timeIntervalSinceNow / Double(measureCount)
     }
-    
-    comparisons = 0
-    var hybridStart = Date()
-    let hd = difference(from: a, to: b)
-    var hybridElapsed = -hybridStart.timeIntervalSinceNow
-    let hybrid = comparisons
-    
+
     if strict && hybridElapsed < 0.2 {
       hybridStart = Date()
       for _ in 0..<measureCount {
@@ -85,8 +94,7 @@ class DiffingTestCase: XCTestCase {
       }
       hybridElapsed = -hybridStart.timeIntervalSinceNow / Double(measureCount)
     }
-
-//    XCTAssert(myersElapsed > 0.001 || hybridElapsed > 0.001, "Too fast to test!")
+#endif
 
     let ratio = Double(hybrid)/Double(baseline)
     if printStats && (printAll ||
@@ -98,10 +106,12 @@ class DiffingTestCase: XCTestCase {
       print("n=(\(a.count),\(b.count)):", terminator: "\t")
       print("|Δ|:\(hd.count)/\(md.count) (+\(String(format: "%.01f",hd.count==md.count ? 0.0 : Double(hd.count)/Double(md.count)*100.0-100.0))%)", terminator: "\t")
       print("==:\(hybrid)/\(baseline) (\(String(format: "%.01f",ratio*100.0))%)", terminator: "\t")
+#if !DEBUG
       print("⌛︎:\(String(format: "%.02f",hybridElapsed))/\(String(format: "%.02f",myersElapsed))", terminator: "")
       if myersElapsed > 0.001 && hybridElapsed > 0.001 {
         print(" (\(String(format: "%.01f",(hybridElapsed/myersElapsed)*100.0))%)", terminator: "")
       }
+#endif
       if !printAll {
         print("\t", terminator: "")
         print("(reasons: ", terminator: "")
