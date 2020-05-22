@@ -10,8 +10,6 @@
 		BC0A730A23552B680037EAFD /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC0A730923552B680037EAFD /* main.swift */; };
 		BC382A0024733123001DC36F /* Myers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156222C4722600290D70 /* Myers.swift */; };
 		BC390C052426A4CE00E2E916 /* Club.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC390C042426A4CE00E2E916 /* Club.swift */; };
-		BC746271243D90F1008C52B3 /* btree.f55ea8f456.c in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC746269243D8D8F008C52B3 /* btree.f55ea8f456.c */; };
-		BC746272243D90F5008C52B3 /* btree.79ce96ab39.c in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC74626A243D8D8F008C52B3 /* btree.79ce96ab39.c */; };
 		BC74627824411A92008C52B3 /* Vose.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156022C471FA00290D70 /* Vose.swift */; };
 		BC74627924411A92008C52B3 /* Xoshiro.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156622C476D400290D70 /* Xoshiro.swift */; };
 		BC74627A24411C1F008C52B3 /* Frequencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157522C56A6800290D70 /* Frequencies.swift */; };
@@ -21,6 +19,15 @@
 		BCA2156F22C47C4900290D70 /* Difference.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156E22C47C4900290D70 /* Difference.swift */; };
 		BCA2158222C5BBDA00290D70 /* DiffingTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2158122C5BBDA00290D70 /* DiffingTestCase.swift */; };
 		BCA2158422C5BC1C00290D70 /* LiteralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2158322C5BC1C00290D70 /* LiteralTests.swift */; };
+		BCB203F82477643600AD6DA9 /* Diffing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCA2154622C471E500290D70 /* Diffing.framework */; };
+		BCB203FE2477643C00AD6DA9 /* Correctness.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB203ED2477522E00AD6DA9 /* Correctness.swift */; };
+		BCB20401247764DC00AD6DA9 /* Frequencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157522C56A6800290D70 /* Frequencies.swift */; };
+		BCB20402247764DF00AD6DA9 /* Vose.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156022C471FA00290D70 /* Vose.swift */; };
+		BCB20403247764E200AD6DA9 /* Xoshiro.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2156622C476D400290D70 /* Xoshiro.swift */; };
+		BCB2040624776C1D00AD6DA9 /* btree.f55ea8f456.c in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC746269243D8D8F008C52B3 /* btree.f55ea8f456.c */; };
+		BCB2040724776C1D00AD6DA9 /* btree.79ce96ab39.c in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC74626A243D8D8F008C52B3 /* btree.79ce96ab39.c */; };
+		BCB2040E24776C4600AD6DA9 /* btree.f55ea8f456.c in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC746269243D8D8F008C52B3 /* btree.f55ea8f456.c */; };
+		BCB2040F24776C4600AD6DA9 /* btree.79ce96ab39.c in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC74626A243D8D8F008C52B3 /* btree.79ce96ab39.c */; };
 		BCBA1F172356464800DD6048 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCBA1F162356464800DD6048 /* main.swift */; };
 		BCBA1F1D235AE1BC00DD6048 /* Frequencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157522C56A6800290D70 /* Frequencies.swift */; };
 		BCDFFD6E2474A1DB00EC8864 /* Arrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCDFFD6D2474A1DB00EC8864 /* Arrow.swift */; };
@@ -28,6 +35,13 @@
 
 /* Begin PBXContainerItemProxy section */
 		BCA2155122C471E500290D70 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BCA2153D22C471E500290D70 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BCA2154522C471E500290D70;
+			remoteInfo = Diffing;
+		};
+		BCB203F92477643600AD6DA9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BCA2153D22C471E500290D70 /* Project object */;
 			proxyType = 1;
@@ -52,8 +66,19 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				BC746271243D90F1008C52B3 /* btree.f55ea8f456.c in CopyFiles */,
-				BC746272243D90F5008C52B3 /* btree.79ce96ab39.c in CopyFiles */,
+				BCB2040624776C1D00AD6DA9 /* btree.f55ea8f456.c in CopyFiles */,
+				BCB2040724776C1D00AD6DA9 /* btree.79ce96ab39.c in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCB2040D24776C3F00AD6DA9 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				BCB2040E24776C4600AD6DA9 /* btree.f55ea8f456.c in CopyFiles */,
+				BCB2040F24776C4600AD6DA9 /* btree.79ce96ab39.c in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,6 +113,8 @@
 		BCA2158122C5BBDA00290D70 /* DiffingTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffingTestCase.swift; sourceTree = "<group>"; };
 		BCA2158322C5BC1C00290D70 /* LiteralTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiteralTests.swift; sourceTree = "<group>"; };
 		BCB203ED2477522E00AD6DA9 /* Correctness.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Correctness.swift; sourceTree = "<group>"; };
+		BCB203F32477643500AD6DA9 /* DiffingUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DiffingUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCB203F72477643600AD6DA9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BCBA1F142356464800DD6048 /* DynamicMyersTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DynamicMyersTest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCBA1F162356464800DD6048 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		BCDFFD6D2474A1DB00EC8864 /* Arrow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arrow.swift; sourceTree = "<group>"; };
@@ -113,6 +140,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				BCA2155022C471E500290D70 /* Diffing.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCB203F02477643500AD6DA9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BCB203F82477643600AD6DA9 /* Diffing.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,8 +181,8 @@
 		BCA2153C22C471E500290D70 = {
 			isa = PBXGroup;
 			children = (
+				BCB203FF2477649900AD6DA9 /* Testing */,
 				BCA2154822C471E500290D70 /* Diffing */,
-				BCA2155322C471E500290D70 /* DiffingPerformanceTests */,
 				BCBA1F152356464800DD6048 /* DynamicMyersTest */,
 				BC0A730823552B680037EAFD /* EditGraphGenerator */,
 				BCA2154722C471E500290D70 /* Products */,
@@ -161,6 +196,7 @@
 				BCA2154F22C471E500290D70 /* DiffingPerformanceTests.xctest */,
 				BC0A730723552B680037EAFD /* EditGraphGenerator */,
 				BCBA1F142356464800DD6048 /* DynamicMyersTest */,
+				BCB203F32477643500AD6DA9 /* DiffingUnitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -181,33 +217,42 @@
 		BCA2155322C471E500290D70 /* DiffingPerformanceTests */ = {
 			isa = PBXGroup;
 			children = (
-				BCA2157222C4848100290D70 /* Algorithms */,
-				BC746268243D8D8F008C52B3 /* Literals */,
-				BCA2157522C56A6800290D70 /* Frequencies.swift */,
+				BCA2158122C5BBDA00290D70 /* DiffingTestCase.swift */,
+				BCA2158322C5BC1C00290D70 /* LiteralTests.swift */,
+				BCA2155422C471E500290D70 /* PrngTests.swift */,
 				BCA2155622C471E500290D70 /* Info.plist */,
 			);
 			path = DiffingPerformanceTests;
 			sourceTree = "<group>";
 		};
-		BCA2157222C4848100290D70 /* Algorithms */ = {
-			isa = PBXGroup;
-			children = (
-				BCA2158022C5BBAC00290D70 /* Diffing */,
-				BCA2156022C471FA00290D70 /* Vose.swift */,
-				BCA2156622C476D400290D70 /* Xoshiro.swift */,
-			);
-			path = Algorithms;
-			sourceTree = "<group>";
-		};
-		BCA2158022C5BBAC00290D70 /* Diffing */ = {
+		BCB203F42477643600AD6DA9 /* DiffingUnitTests */ = {
 			isa = PBXGroup;
 			children = (
 				BCB203ED2477522E00AD6DA9 /* Correctness.swift */,
-				BCA2158122C5BBDA00290D70 /* DiffingTestCase.swift */,
-				BCA2158322C5BC1C00290D70 /* LiteralTests.swift */,
-				BCA2155422C471E500290D70 /* PrngTests.swift */,
+				BCB203F72477643600AD6DA9 /* Info.plist */,
 			);
-			path = Diffing;
+			path = DiffingUnitTests;
+			sourceTree = "<group>";
+		};
+		BCB203FF2477649900AD6DA9 /* Testing */ = {
+			isa = PBXGroup;
+			children = (
+				BCA2155322C471E500290D70 /* DiffingPerformanceTests */,
+				BCB203F42477643600AD6DA9 /* DiffingUnitTests */,
+				BCB20400247764AF00AD6DA9 /* Shared */,
+			);
+			path = Testing;
+			sourceTree = "<group>";
+		};
+		BCB20400247764AF00AD6DA9 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				BCA2157522C56A6800290D70 /* Frequencies.swift */,
+				BCA2156022C471FA00290D70 /* Vose.swift */,
+				BCA2156622C476D400290D70 /* Xoshiro.swift */,
+				BC746268243D8D8F008C52B3 /* Literals */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		BCBA1F152356464800DD6048 /* DynamicMyersTest */ = {
@@ -285,6 +330,24 @@
 			productReference = BCA2154F22C471E500290D70 /* DiffingPerformanceTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		BCB203F22477643500AD6DA9 /* DiffingUnitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCB203FB2477643600AD6DA9 /* Build configuration list for PBXNativeTarget "DiffingUnitTests" */;
+			buildPhases = (
+				BCB203EF2477643500AD6DA9 /* Sources */,
+				BCB203F02477643500AD6DA9 /* Frameworks */,
+				BCB2040D24776C3F00AD6DA9 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BCB203FA2477643600AD6DA9 /* PBXTargetDependency */,
+			);
+			name = DiffingUnitTests;
+			productName = DiffingUnitTests;
+			productReference = BCB203F32477643500AD6DA9 /* DiffingUnitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		BCBA1F132356464800DD6048 /* DynamicMyersTest */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BCBA1F1A2356464800DD6048 /* Build configuration list for PBXNativeTarget "DynamicMyersTest" */;
@@ -308,7 +371,7 @@
 		BCA2153D22C471E500290D70 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1120;
+				LastSwiftUpdateCheck = 1130;
 				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = numist;
 				TargetAttributes = {
@@ -321,6 +384,9 @@
 					};
 					BCA2154E22C471E500290D70 = {
 						CreatedOnToolsVersion = 11.0;
+					};
+					BCB203F22477643500AD6DA9 = {
+						CreatedOnToolsVersion = 11.3.1;
 					};
 					BCBA1F132356464800DD6048 = {
 						CreatedOnToolsVersion = 11.2;
@@ -344,6 +410,7 @@
 				BCA2154E22C471E500290D70 /* DiffingPerformanceTests */,
 				BC0A730623552B680037EAFD /* EditGraphGenerator */,
 				BCBA1F132356464800DD6048 /* DynamicMyersTest */,
+				BCB203F22477643500AD6DA9 /* DiffingUnitTests */,
 			);
 		};
 /* End PBXProject section */
@@ -392,6 +459,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BCB203EF2477643500AD6DA9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BCB20403247764E200AD6DA9 /* Xoshiro.swift in Sources */,
+				BCB20401247764DC00AD6DA9 /* Frequencies.swift in Sources */,
+				BCB203FE2477643C00AD6DA9 /* Correctness.swift in Sources */,
+				BCB20402247764DF00AD6DA9 /* Vose.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BCBA1F102356464800DD6048 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -407,6 +485,11 @@
 			isa = PBXTargetDependency;
 			target = BCA2154522C471E500290D70 /* Diffing */;
 			targetProxy = BCA2155122C471E500290D70 /* PBXContainerItemProxy */;
+		};
+		BCB203FA2477643600AD6DA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BCA2154522C471E500290D70 /* Diffing */;
+			targetProxy = BCB203F92477643600AD6DA9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -613,7 +696,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = DiffingPerformanceTests/Info.plist;
+				INFOPLIST_FILE = Testing/DiffingPerformanceTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -631,7 +714,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = DiffingPerformanceTests/Info.plist;
+				INFOPLIST_FILE = Testing/DiffingPerformanceTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -641,6 +724,40 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		BCB203FC2477643600AD6DA9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Testing/DiffingUnitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = net.numist.DiffingUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BCB203FD2477643600AD6DA9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Testing/DiffingUnitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = net.numist.DiffingUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -699,6 +816,15 @@
 			buildConfigurations = (
 				BCA2155E22C471E500290D70 /* Debug */,
 				BCA2155F22C471E500290D70 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCB203FB2477643600AD6DA9 /* Build configuration list for PBXNativeTarget "DiffingUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCB203FC2477643600AD6DA9 /* Debug */,
+				BCB203FD2477643600AD6DA9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

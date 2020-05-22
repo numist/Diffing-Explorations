@@ -32,7 +32,7 @@ class CorrectnessClub: CorrectnessDifference {
   func testBtree79ce96ab39To93ba69ec97ByLine() {
     print("This test is considered passed if it finishes before you can read the rest of this log message (as opposed to a few hours, or longer)")
     
-    let testBundle = Bundle(for: LiteralTests.self)
+    let testBundle = Bundle(for: CorrectnessClub.self)
     let url79ce96ab39 = testBundle.url(forResource: "btree.79ce96ab39", withExtension: "c")!
     let btree79ce96ab39 = try! String(contentsOf: url79ce96ab39, encoding: .utf8).split(separator: "\n", omittingEmptySubsequences: false)
     verify(
@@ -222,6 +222,20 @@ class CorrectnessDifference: XCTestCase {
   func testAllRemove() {
     let a = ["t", "a", "c", "l", "c", "h", "r", "t", "g", "s"]
     let b = Array<String>()
+    let d = diff(from: a, to: b)
+    verify(from: a, to: b, produced: d)
+  }
+
+  func testDifferenceArrow() {
+    let a = Array(0..<100)
+    let b = Array(0..<50).reversed()+Array(51..<100)
+    let d = diff(from: a, to: b)
+    verify(from: a, to: b, produced: d)
+  }
+
+  func testDifferenceClub() {
+    let a = Array(0..<100)
+    let b = Array(0..<50).reversed()+Array(0..<50)
     let d = diff(from: a, to: b)
     verify(from: a, to: b, produced: d)
   }

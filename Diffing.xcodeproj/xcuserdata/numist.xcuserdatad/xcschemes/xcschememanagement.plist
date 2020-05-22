@@ -14,6 +14,11 @@
 			<key>orderHint</key>
 			<integer>2</integer>
 		</dict>
+		<key>DiffingUnitTests.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>4</integer>
+		</dict>
 		<key>DynamicMyersTest.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
@@ -38,6 +43,11 @@
 			<true/>
 		</dict>
 		<key>BCA2154E22C471E500290D70</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>BCB203F22477643500AD6DA9</key>
 		<dict>
 			<key>primary</key>
 			<true/>
