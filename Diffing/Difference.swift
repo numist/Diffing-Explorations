@@ -93,7 +93,7 @@ private func _hybrid<E>(
                to: sliceB, trie: trieB, alphabet: alphaB)
 }
 
-private func _pave<E>(
+func _pave<E>(
   from sliceA: _Slice<E>,
   to sliceB: _Slice<E>
 ) -> _Changes<E> {
