@@ -44,11 +44,11 @@ n=(10000,0):  |Δ|:10000/10000 (+0.0%)  ==:0/0  ⌛︎:0.02/0.89 (2.0%)
 n=(0,10000):  |Δ|:10000/10000 (+0.0%)  ==:0/0  ⌛︎:0.02/0.74 (2.4%)
 ```
 
-Of note: these measurements were taken *without* any improvements to `CollectionDifference.init()`, which is where this profile spent 85% of its time.
+Of note: these measurements were taken *without* any improvements to `CollectionDifference.init()`, where `club` spent 85% of its time.
 
 ### `[0...n]+[n...n×2]` ` → `[n...n×2]+[0...n]`
 
-This is a worst-case test for any Myers-derived algorithm, producing ¼ the maximum number of edit paths despite a result that is 50% matches. It's even worse for club, since every iteration includes seven unproductive element comparisons (for Myers' one) as element and n-gram membership testing fail to uncover obvious edits.
+This is a worst-case test for any Myers-derived algorithm, producing ¼ the maximum number of edit paths despite a result that is 50% matches. It's even worse for `club`, since every iteration includes seven unproductive element comparisons (for Myers' one) as element and n-gram membership testing fail to uncover obvious edits.
 
 To defend against this, `club`'s work queue supports a capacity limit (currently tuned to 25) that linearizes performance against this class of worst-case workload. This can be seen in the metrics as an order of magnitude improvement in both comparisons and runtime once a break-even point between the two algorithms is passed.
 
@@ -127,7 +127,7 @@ The following tests characterize `club`'s relative performance with randomly-gen
 
 The Binary alphabet uses frequences of 50% `"0"` and 50% `"1"`.
 
-These are the worst results of the test suite. Compared to Myers, `club` struggles to show performance improvements when statistically the string is half matches, while producing diffs with significantly more changes especially in shuffled tests. It's basically too smart for its own good.
+These are the worst results of the test suite. Compared to Myers, `club` struggles to show performance improvements when statistically the string is half matches, while producing diffs with significantly more changes, especially in shuffled tests. Basically, it's too smart for its own good.
 
 The good news here is that the raw time numbers here are tiny, some of the recorded slowdown is timing variability, and `club`'s performance starts pulling ahead significantly as *n* grows beyond ~5000.
 
@@ -168,7 +168,7 @@ n=(10000,10000):  |Δ|:6942/3828 (+81.3%)   ==:91760/12934884 (0.7%)  ⌛︎:0.1
 
 The Genes alphabet uses frequences of 25% `"A"`, 25% `"C"`, 25% `"G"`, and 25% `"T"`.
 
-Very similar to the Binary tests, but with `club` showing more of an advantage as n-gram testing becomes more useful given the larger alphabet. Diff size is still significantly regressed for shuffled collection tests due to tiny alphabet.
+Very similar to the Binary tests, but with `club` showing more of an advantage as n-gram testing becomes more useful given the larger alphabet. Diff size is still significantly regressed for shuffled collection tests due to the tiny alphabet.
 
 ```
 ================================= club/myers =================================
