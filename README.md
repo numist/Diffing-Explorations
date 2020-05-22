@@ -144,7 +144,7 @@ Some of the more interesting performance measurements:
 | lorem ipsum vs its reverse by character | 18484/101513 = 18.2% | 650/516 (+26.0%) |
 | lorem ipsum vs itself by character | 445/445 = 100.0% | 0/0 (+0.0%) |
 | 500 UUIDs vs its reverse | 7398/249501 = 3.0% | 998/998 (+0.0%) |
-| 500 UUIDs vs itself, randomized | 7627/222003 = 3.4% | 980/918 (+6.8%) |
+| 500 UUIDs vs itself, randomized | 6615/225687 = 2.9% | 930/924 (+0.6%) |
 | two randomly generated binary strings (n = 500) | 3878/33975 = 11.4% | 344/200 (+72.0%) |
 | randomly generated binary string vs its reverse (n = 500) | 7073/35302 = 20.0% | 232/198 (+17.2%) |
 
@@ -158,6 +158,8 @@ For practical purposes, I consider the fact that Myers' identifies so many match
 
 The performance in this doc is described in terms of element comparisons. No consideration is given to element hashing or the cost of maintaining the work queue.
 
-And in the real world, it shows: despite club's order of magnitude reduction in both active edit paths and element comparisons, Myers' is still faster for workloads it can complete in dozens of ms or less.
+And in the real world, it shows: despite club's order of magnitude reduction in both active edit paths and element comparisons, Myers' is still faster for workloads it can complete in dozens of ms or less. The accounting overhead of club's internal structures put it at a 10x disadvantage in terms of wall clock time per element comparison.
 
 That said, this implementation measures significantly faster on larger workloads. It should probably be used instead of Myers' whenever `n * m ≳ 2500`, preferably compensating for any shared prefix/suffix.
+
+A more complete investigation of the real-world performance of club diffing can be found in [Documents/Performance Analysis.md](Documents/Performance Analysis.md).
