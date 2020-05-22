@@ -127,7 +127,6 @@ func _club<E>(
             return true
           }
         }
-
         return false
       }
 
@@ -292,7 +291,20 @@ fileprivate class _WorkQueue {
       "Invalid `maxRoundSize` \(maxRoundSize) (must be > 0)")
     active.removeAll(keepingCapacity: true)
     var root: _QuadNode? = nil
-    pending.sort(by: { $0.netX + $0.netY > $1.netX + $1.netY })
+    /* Due to the enqueuing order of the diffing algorithm, tree insertion
+     * favours the northwest by about 7:1. Alternating the reported order of
+     * nodes while sorting by rank results in acceptable balancing.
+     */
+    var alternator = false
+    pending.sort(by: { left, right in
+      let leftRank = left.netX + left.netY
+      let rightRank = right.netX + right.netY
+      if leftRank == rightRank {
+        alternator = !alternator
+        return alternator
+      }
+      return leftRank > rightRank
+    })
     for e in pending {
       if let r = root {
         if r.insert(_QuadNode(e)) {
