@@ -53,7 +53,7 @@ func _club<E>(
    * performance) by the quadtree-backed `_WorkQueue`.
    */
   let workQ = _WorkQueue()
-  workQ.maxRoundSize = 50
+  workQ.maxRoundSize = 25
   var solutionNode: _EditTreeNode? = nil
   workQ.append(_EditTreeNode(x: a.range.startIndex, y: b.range.startIndex, parent: nil))
   while var current = workQ.popFirst(), solutionNode == nil {
@@ -293,7 +293,8 @@ fileprivate class _WorkQueue {
     var root: _QuadNode? = nil
     /* Due to the enqueuing order of the diffing algorithm, tree insertion
      * favours the northwest by about 7:1. Alternating the reported order of
-     * nodes while sorting by rank results in acceptable balancing.
+     * nodes while sorting by rank results in much better balancing.
+     * TODO(numist): but it would buy 5-10% of runtime in testWorkQueueOverload
      */
     var alternator = false
     pending.sort(by: { left, right in
