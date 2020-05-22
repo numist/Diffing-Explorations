@@ -253,32 +253,29 @@ struct _AlphabetTrie<Element> where Element: Hashable {
     }
   }
 
-  private func trim(_ offsets: [Int], to range: Range<Int>) -> [Int] {
-    var window = 0..<offsets.count
-    while !range.contains(offsets[window.startIndex]) {
-      window.removeFirst()
-    }
-    while !range.contains(offsets[window.endIndex - 1]) {
-      window.removeLast()
-    }
-
-    return Array(offsets[window])
+  func offsets(for e: Element, in range: Range<Int>) -> [Int] {
+    assert(range == buf.range, "range lookup tbi")
+    guard let offsets = root.children[e]?.locations else { return [] }
+    return offsets
   }
 
-  func offsets(for e: Element, in range: Range<Int>) -> [Int] {
-    guard let offsets = root.children[e]?.locations else { return [] }
-    if range == buf.range {
-      return offsets
+  // Factored binary search helper for membership testing functions
+  private func bsearch(for i: Int, in locations: [Int]) -> Int? {
+    var min = 0, max = locations.count
+    while min < max {
+      let pivot = (min + max)/2
+      let loc = locations[pivot]
+      if loc > i {
+        max = pivot
+      } else {
+        min = pivot + 1
+      }
     }
-    return trim(offsets, to: range)
+    return min < locations.count ? locations[min] : nil
   }
 
   private func first(_ offsets: [Int], in range: Range<Int>) -> Int? {
-    for off in offsets {
-      if range.contains(off) { return off }
-      if off >= range.endIndex { break }
-    }
-    return nil
+    return bsearch(for: range.startIndex - 1, in: offsets)
   }
 
   func offset(
@@ -310,20 +307,5 @@ struct _AlphabetTrie<Element> where Element: Hashable {
   func offset(of e: Element, in range: Range<Int>) -> Int? {
     guard let offsets = root.children[e]?.locations else { return nil }
     return first(offsets, in: range)
-  }
-
-  // Factored binary search helper for membership testing functions
-  private func bsearch(for i: Int, in locations: [Int]) -> Int? {
-    var min = 0, max = locations.count
-    while min < max {
-      let pivot = (min + max)/2
-      let loc = locations[pivot]
-      if loc > i {
-        max = pivot
-      } else {
-        min = pivot + 1
-      }
-    }
-    return min < locations.count ? locations[min] : nil
   }
 }
