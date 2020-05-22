@@ -162,4 +162,4 @@ And in the real world, it shows: despite club's order of magnitude reduction in 
 
 That said, this implementation measures significantly faster on larger workloads. It should probably be used instead of Myers' whenever `n * m ≳ 2500`, preferably compensating for any shared prefix/suffix.
 
-A more complete investigation of the real-world performance of club diffing can be found in [Documents/Performance Analysis.md](Documents/Performance Analysis.md).
+A more complete investigation of the real-world performance of club diffing can be found in [Documents/Performance Analysis.md](Documents/Performance%20Analysis.md).
