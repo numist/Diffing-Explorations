@@ -28,6 +28,8 @@
 		BCB2040724776C1D00AD6DA9 /* btree.79ce96ab39.c in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC74626A243D8D8F008C52B3 /* btree.79ce96ab39.c */; };
 		BCB2040E24776C4600AD6DA9 /* btree.f55ea8f456.c in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC746269243D8D8F008C52B3 /* btree.f55ea8f456.c */; };
 		BCB2040F24776C4600AD6DA9 /* btree.79ce96ab39.c in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC74626A243D8D8F008C52B3 /* btree.79ce96ab39.c */; };
+		BCB204132478FFFB00AD6DA9 /* sqlite-2.db in CopyFiles */ = {isa = PBXBuildFile; fileRef = BCB204112478FFEC00AD6DA9 /* sqlite-2.db */; };
+		BCB204142478FFFB00AD6DA9 /* sqlite.db in CopyFiles */ = {isa = PBXBuildFile; fileRef = BCB204122478FFEC00AD6DA9 /* sqlite.db */; };
 		BCBA1F172356464800DD6048 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCBA1F162356464800DD6048 /* main.swift */; };
 		BCBA1F1D235AE1BC00DD6048 /* Frequencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2157522C56A6800290D70 /* Frequencies.swift */; };
 		BCDFFD6E2474A1DB00EC8864 /* Arrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCDFFD6D2474A1DB00EC8864 /* Arrow.swift */; };
@@ -66,6 +68,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
+				BCB204132478FFFB00AD6DA9 /* sqlite-2.db in CopyFiles */,
+				BCB204142478FFFB00AD6DA9 /* sqlite.db in CopyFiles */,
 				BCB2040624776C1D00AD6DA9 /* btree.f55ea8f456.c in CopyFiles */,
 				BCB2040724776C1D00AD6DA9 /* btree.79ce96ab39.c in CopyFiles */,
 			);
@@ -115,6 +119,8 @@
 		BCB203ED2477522E00AD6DA9 /* Correctness.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Correctness.swift; sourceTree = "<group>"; };
 		BCB203F32477643500AD6DA9 /* DiffingUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DiffingUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCB203F72477643600AD6DA9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BCB204112478FFEC00AD6DA9 /* sqlite-2.db */ = {isa = PBXFileReference; lastKnownFileType = file; name = "sqlite-2.db"; path = "Testing/DiffingPerformanceTests/sqlite-2.db"; sourceTree = SOURCE_ROOT; };
+		BCB204122478FFEC00AD6DA9 /* sqlite.db */ = {isa = PBXFileReference; lastKnownFileType = file; name = sqlite.db; path = Testing/DiffingPerformanceTests/sqlite.db; sourceTree = SOURCE_ROOT; };
 		BCBA1F142356464800DD6048 /* DynamicMyersTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DynamicMyersTest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCBA1F162356464800DD6048 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		BCDFFD6D2474A1DB00EC8864 /* Arrow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arrow.swift; sourceTree = "<group>"; };
@@ -217,6 +223,7 @@
 		BCA2155322C471E500290D70 /* DiffingPerformanceTests */ = {
 			isa = PBXGroup;
 			children = (
+				BCB204102478FFD900AD6DA9 /* Literals */,
 				BCA2158122C5BBDA00290D70 /* DiffingTestCase.swift */,
 				BCA2158322C5BC1C00290D70 /* LiteralTests.swift */,
 				BCA2155422C471E500290D70 /* PrngTests.swift */,
@@ -247,12 +254,21 @@
 		BCB20400247764AF00AD6DA9 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				BC746268243D8D8F008C52B3 /* Literals */,
 				BCA2157522C56A6800290D70 /* Frequencies.swift */,
 				BCA2156022C471FA00290D70 /* Vose.swift */,
 				BCA2156622C476D400290D70 /* Xoshiro.swift */,
-				BC746268243D8D8F008C52B3 /* Literals */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		BCB204102478FFD900AD6DA9 /* Literals */ = {
+			isa = PBXGroup;
+			children = (
+				BCB204112478FFEC00AD6DA9 /* sqlite-2.db */,
+				BCB204122478FFEC00AD6DA9 /* sqlite.db */,
+			);
+			path = Literals;
 			sourceTree = "<group>";
 		};
 		BCBA1F152356464800DD6048 /* DynamicMyersTest */ = {
